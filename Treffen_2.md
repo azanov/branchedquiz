@@ -26,4 +26,3 @@ Alle notwendigen Programme installieren und einrichten
     *	Toogle
 *	Tutorial: „Plug-In für Moodle erstellen“ durcharbeiten
 *	Userstorys schreiben (Allessandro+?)
-+ Rückmeldungcfgh
