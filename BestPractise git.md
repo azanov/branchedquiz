@@ -15,7 +15,7 @@ Mit diesem Befehl lädst du den Branch hoch.
 ## 3. Dateien hochladen
 7. git add [FileName]
 8. git commit -m "Kommentar"
-9. git push -u origin master
+9. git push origin [FileName]
 
 ## 4. Pull Request setzen
 Kein eigenständiges hochladen von Updates zu "Master". Nur Pull Requests!
