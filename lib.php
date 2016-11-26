@@ -132,11 +132,6 @@ function testflow_refresh_events($courseid = 0) {
         }
     }
 
-    // foreach ($testflows as $testflow) {
-    //     // Create a function such as the one below to deal with updating calendar events.
-    //     // testflow_update_events($testflow);
-    // }
-
     return true;
 }
 
