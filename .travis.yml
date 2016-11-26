@@ -1,0 +1,6 @@
+language: php
+deploy:
+  provider: script
+  script: curl http://bp.wyto.net/mod/testflow/deploy-php
+  on:
+    branch: master
