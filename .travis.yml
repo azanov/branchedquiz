@@ -1,4 +1,7 @@
 language: php
+php:
+- 5.4
+script: phpunit test.php
 deploy:
   provider: script
   script: curl http://bp.wyto.net/mod/testflow/deploy-php
