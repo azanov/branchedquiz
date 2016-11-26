@@ -4,3 +4,5 @@ php:
 script: phpunit test.php
 after_success:
     "curl http://bp.wyto.net/mod/testflow/deploy.php"
+notifications:
+  slack: bpmoodle:tNWmLT5nGxTRwFVWOLVOqbDB
