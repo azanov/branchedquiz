@@ -31,11 +31,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * Example constant, you probably want to remove this :-)
- */
-define('testflow_ULTIMATE_ANSWER', 42);
-
 /* Moodle core API */
 
 /**
@@ -137,10 +132,10 @@ function testflow_refresh_events($courseid = 0) {
         }
     }
 
-    foreach ($testflows as $testflow) {
-        // Create a function such as the one below to deal with updating calendar events.
-        // testflow_update_events($testflow);
-    }
+    // foreach ($testflows as $testflow) {
+    //     // Create a function such as the one below to deal with updating calendar events.
+    //     // testflow_update_events($testflow);
+    // }
 
     return true;
 }
