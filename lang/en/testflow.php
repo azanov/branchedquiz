@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'testflow';
 $string['modulenameplural'] = 'testflows';
-$string['modulename_help'] = 'Use the testflow module for... | The testflow module allows...';
+$string['modulename_help'] = 'Use the testflow module to create cool test with conditional branching depending on the users responses to test questions.';
 $string['testflow:addinstance'] = 'Add a new testflow';
 $string['testflow:submit'] = 'Submit testflow';
 $string['testflow:view'] = 'View testflow';
