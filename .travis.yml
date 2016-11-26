@@ -3,4 +3,4 @@ php:
 - 5.4
 script: phpunit test.php
 after_success:
-    "curl http://bp.wyto.net/mod/testflow/deploy-php"
+    "curl http://bp.wyto.net/mod/testflow/deploy.php"
