@@ -28,7 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_testflow';
-$plugin->version = 0;
+$plugin->version = 2016112600;
 $plugin->release = 'v0.0.1';
 $plugin->requires = 2014051200;
 $plugin->maturity = MATURITY_ALPHA;
