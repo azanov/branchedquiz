@@ -43,6 +43,6 @@ script:
   - moodle-plugin-ci behat
 
 after_success:
-    "curl http://bp.wyto.net/mod/testflow/deploy.php"
+    "curl http://bp.wyto.net/question/behaviour/testflow/deploy.php"
 notifications:
   slack: bpmoodle:tNWmLT5nGxTRwFVWOLVOqbDB
