@@ -27,7 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_testflow';
+$plugin->component = 'qbehaviour_testflow';
 $plugin->version = 2016112601;
 $plugin->release = 'v0.0.1';
 $plugin->requires = 2014051200;
