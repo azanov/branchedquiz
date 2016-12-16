@@ -13,8 +13,5 @@ class qbehaviour_testflow extends question_behaviour {
         return true;
     }
 
-    public function is_archetypal() {
-        return true;
-    }
 
 }
