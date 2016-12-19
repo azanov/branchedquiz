@@ -34,4 +34,3 @@ class qbehaviour_testflow extends question_behaviour {
     }
 
 }
-echo '<!-- testflow -->';

@@ -27,6 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$PAGE->requires->js('/question/behaviour/testflow/module.js');
+
 class qbehaviour_testflow_type extends question_behaviour_type {
     public function is_archetypal() {
         return true;
