@@ -21,7 +21,7 @@
         <KEY NAME="next" TYPE="foreign" FIELDS="prev" REFTABLE="quiz_question" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="quizid-prev-points-next" UNIQUE="true" FIELDS="quizid, prev, points, next"/>
+        <INDEX NAME="prev-questionid-points-next" UNIQUE="true" FIELDS="prev, questionid, points, next"/>
       </INDEXES>
     </TABLE>
   </TABLES>
