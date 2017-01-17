@@ -7,8 +7,9 @@
     <TABLE NAME="quiz_question" COMMENT="Stores the question used in a quiz, with the order, and for each question the maximum mark (weight).">
       <FIELDS>
 	<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-       	<FIELD NAME="prev" TYPE="int" NOTNULL="true" DEFAULT="0" SEQUENCE="true" COMMENT="Foreign key references quiz_question.id."/>
-        <FIELD NAME="next" TYPE="int" NOTNULL="true" DEFAULT="0" SEQUENCE="true" COMMENT="Foreign key references quiz_question.id."/>
+       	<FIELD NAME="diff" TYPE="int" NOTNULL="true" DEFAULT="0" SEQUENCE="true" COMMENT="Foreign key references quiz_question.id. describes the point in previous path where it differes in reference to another (same question, same points, different next)"/>
+       	<FIELD NAME="prev" TYPE="int" NOTNULL="true" DEFAULT="0" SEQUENCE="true" COMMENT="Foreign key references quiz_question.id. describes the previous question that was answered (more exact: the previous subpath (question with earned points and prev of that))"/>
+        <FIELD NAME="next" TYPE="int" NOTNULL="true" DEFAULT="0" SEQUENCE="true" COMMENT="Foreign key references quiz_question.id. describes the next question this path goes to"/>
         <FIELD NAME="points" TYPE="number" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The amount of points the question referes to the given next"/>
         <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The feedback to show the given path and points"/>
         <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references question.id."/>
@@ -17,11 +18,12 @@
       <KEYS>
       <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id"/>
+        <KEY NAME="diff" TYPE="foreign" FIELDS="diff" REFTABLE="quiz_question" REFFIELDS="id"/>
         <KEY NAME="prev" TYPE="foreign" FIELDS="prev" REFTABLE="quiz_question" REFFIELDS="id"/>
-        <KEY NAME="next" TYPE="foreign" FIELDS="prev" REFTABLE="quiz_question" REFFIELDS="id"/>
+        <KEY NAME="next" TYPE="foreign" FIELDS="next" REFTABLE="quiz_question" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="prev-questionid-points-next" UNIQUE="true" FIELDS="prev, questionid, points, next"/>
+        <INDEX NAME="prev-diff-questionid-points-next" UNIQUE="true" FIELDS="prev, diff, questionid, points, next"/>
       </INDEXES>
     </TABLE>
   </TABLES>
