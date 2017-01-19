@@ -14,18 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * English strings for testflow
+ * Renderer outputting the quiz editing UI.
  *
- * You can have a rather longer description of the file as well,
- * if you like, and it can span multiple lines.
- *
- * @package    mod_testflow
- * @copyright  2016 Your Name <your@email.address>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package mod_quiz
+ * @copyright 2013 The Open University.
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_quiz\output;
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'testflow';
+require_once($CFG->dirroot.'/mod/quiz/classes/output/edit_renderer.php');
+
+use \mod_quiz\structure;
+use \html_writer;
+
+/**
+ * Renderer outputting the quiz editing UI.
+ *
+ * @copyright 2013 The Open University.
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since Moodle 2.7
+ */
+class bqedit_renderer extends \edit_renderer {
+
+}

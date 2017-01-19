@@ -1,35 +1,53 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="question/behaviour/testflow/db" VERSION="20170115" COMMENT="XMLDB file for Moodle question/behaviour/testflow"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
->
-  <TABLES>
-    <TABLE NAME="quiz_edge" COMMENT="Stores one edge of the generated graph">
-      <FIELDS>
-	<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="next" TYPE="int" NOTNULL="true" DEFAULT="0" SEQUENCE="true" COMMENT="Foreign key references quiz_node.id. describes the next question this path goes to"/>
-        <FIELD NAME="points" TYPE="number" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The amount of points the question referes to the given next"/>
-        <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The feedback to show the given path and points"/>
-        <FIELD NAME="nodeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references quiz_node.id."/>
-      </FIELDS>
-      <KEYS>
-      <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="nodeid" TYPE="foreign" FIELDS="nodeid" REFTABLE="quiz_node" REFFIELDS="id"/>
-        <KEY NAME="next" TYPE="foreign" FIELDS="next" REFTABLE="quiz_node" REFFIELDS="id"/>
-      </KEYS>
-      <INDEXES>
-        <INDEX NAME="nodeid-points-next" UNIQUE="true" FIELDS="nodeid, points, next"/>
-      </INDEXES>
-    </TABLE>
-    <TABLE NAME="quiz_node" COMMENT="Stores the node that a edge referes to">
-      <FIELDS>
-	<FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references question.id."/>
-      </FIELDS>
-      <KEYS>
-      <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-  </TABLES>
+<XMLDB PATH="mod/branchedquiz/db" VERSION="20170115" COMMENT="XMLDB file for Moodle question/behaviour/testflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd">
+    <TABLES>
+        <TABLE NAME="branchedquiz" COMMENT="Default comment for testflow, please edit me">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" />
+                <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course testflow activity belongs to" />
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" />
+                <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="General introduction of the testflow activity" />
+                <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)" />
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The time when the quiz was added to the course."/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Last modified time."/>
+                <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="quiz instance" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="course" UNIQUE="false" FIELDS="course" />
+            </INDEXES>
+            <INDEXES>
+                <INDEX NAME="quiz" UNIQUE="true" FIELDS="quizid" />
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="quiz_edge" COMMENT="Stores one edge of the generated graph">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+                <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" COMMENT="Foreign key references quiz_node.id. describes the next question this path goes to" />
+                <FIELD NAME="points" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" COMMENT="The amount of points the question referes to the given next" />
+                <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="true" LENGTH="2048" COMMENT="The feedback to show the given path and points" />
+                <FIELD NAME="nodeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references quiz_node.id." />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="nodeid" TYPE="foreign" FIELDS="nodeid" REFTABLE="quiz_node" REFFIELDS="id" />
+                <KEY NAME="next" TYPE="foreign" FIELDS="next" REFTABLE="quiz_node" REFFIELDS="id" />
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="nodeid-points-next" UNIQUE="true" FIELDS="nodeid, points, next" />
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="quiz_node" COMMENT="Stores the node that a edge referes to">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+                <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references question.id." />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+    </TABLES>
 </XMLDB>

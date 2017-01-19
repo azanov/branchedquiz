@@ -15,20 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Add description here
+ * Defines the renderer for the quiz module.
  *
- * Setting the $plugin->version to 0 prevents the plugin from being installed.
- * See https://docs.moodle.org/dev/version.php for more info.
- *
- * @package    mod_testflow
- * @copyright  2016 Your Name <your@email.address>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_quiz
+ * @copyright 2011 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 
 defined('MOODLE_INTERNAL') || die();
 
-class qbehaviour_testflow_renderer extends qbehaviour_renderer {
-	public function head_code(question_attempt $qa) {
-        return '<!-- testflow -->';
-    }
+require_once($CFG->dirroot.'/mod/quiz/renderer.php');
+
+/**
+ * The renderer for the quiz module.
+ *
+ * @copyright  2011 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class mod_branchedquiz_renderer extends mod_quiz_renderer {
+
 }

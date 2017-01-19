@@ -15,16 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Quiz activity version information.
+ * Defines the quiz module ettings form.
  *
- * @package   mod_flowquiz
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_quiz
+ * @copyright  2006 Jamie Pratt
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016052304;
-$plugin->requires  = 2016051900;
-$plugin->component = 'mod_branchedquiz';
-$plugin->cron      = 60;
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/mod/quiz/mod_form.php');
+
+
+/**
+ * Settings form for the quiz module.
+ *
+ * @copyright  2006 Jamie Pratt
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class mod_branchedquiz_mod_form extends mod_quiz_mod_form {
+}

@@ -15,21 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Add description here
+ * Library of functions for the quiz module.
  *
- * Setting the $plugin->version to 0 prevents the plugin from being installed.
- * See https://docs.moodle.org/dev/version.php for more info.
+ * This contains functions that are called also from outside the quiz module
+ * Functions that are only called by the quiz module itself are in {@link locallib.php}
  *
- * @package    mod_testflow
- * @copyright  2016 Your Name <your@email.address>
+ * @package    mod_quiz
+ * @copyright  1999 onwards Martin Dougiamas {@link http://moodle.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
+$capabilities = array(
 
-class qbehaviour_testflow_type extends question_behaviour_type {
-    public function is_archetypal() {
-        return true;
-    }
-}
+    'mod/branchedquiz:addinstance' => array(
+        'riskbitmask' => RISK_XSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+    ),
+);

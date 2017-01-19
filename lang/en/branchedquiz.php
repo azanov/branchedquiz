@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,22 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Add desxcription here
+ * Strings for component 'quiz', language 'en', branch 'MOODLE_20_STABLE'
  *
- * Setting the $plugin->version to 0 prevents the plugin from being installed.
- * See https://docs.moodle.org/dev/version.php for more info.
- *
- * @package    mod_testflow
- * @copyright  2016 Your Name <your@email.address>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_quiz
+ * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-class qbehaviour_testflow extends question_behaviour {
-
-    public function is_compatible_question(question_definition $question) {
-        return true;
-    }
-
-}
+$string['modulename'] = 'Branched Quiz';
+$string['modulename_help'] = '';
+$string['modulename_link'] = 'mod/branchedquiz/view';
+$string['modulenameplural'] = 'Quizzes';
+$string['pluginadministration'] = 'Quiz administration';
+$string['pluginname'] = 'Branched Quiz';

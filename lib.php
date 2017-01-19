@@ -24,7 +24,31 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016052304;
-$plugin->requires  = 2016051900;
-$plugin->component = 'mod_branchedquiz';
-$plugin->cron      = 60;
+require_once($CFG->dirroot . '/mod/quiz/lib.php');
+
+function branchedquiz_add_instance($quiz) {
+	print_r($quiz);
+
+	global $DB;
+    $cmid = $quiz->coursemodule;
+
+    $quiz->quizid = quiz_add_instance($quiz);
+    $quiz->created = time();
+    unset($quiz->id);
+
+    // Try to store it in the database.
+    return $DB->insert_record('branchedquiz', $quiz);
+
+}
+
+function branchedquiz_update_instance($quiz, $mform) {
+	return quiz_update_instance($quiz, $mform);
+}
+
+function branchedquiz_delete_instance($id) {
+	return quiz_delete_instance($id);
+}
+
+function branchedquiz_supports($feature) {
+    return quiz_supports($feature);
+}
