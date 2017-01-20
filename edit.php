@@ -179,7 +179,7 @@ $questionbank->process_actions($thispageurl, $cm);
 $PAGE->set_pagelayout('incourse');
 $PAGE->set_pagetype('mod-quiz-edit');
 
-$output = $PAGE->get_renderer('mod_quiz', 'bqedit');
+$output = $PAGE->get_renderer('mod_quiz', 'edit');
 
 $PAGE->set_title(get_string('editingquizx', 'quiz', format_string($quiz->name)));
 $PAGE->set_heading($course->fullname);
