@@ -15,28 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Renderer outputting the quiz editing UI.
+ * Provides code to be executed during the module uninstallation
  *
- * @package mod_quiz
- * @copyright 2013 The Open University.
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @see uninstall_plugin()
+ *
+ * @package    mod_testflow
+ * @copyright  2016 Your Name <your@email.address>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace mod_quiz\output;
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot.'/mod/quiz/classes/output/edit_renderer.php');
-
-use \mod_quiz\structure;
-use \html_writer;
 
 /**
- * Renderer outputting the quiz editing UI.
- *
- * @copyright 2013 The Open University.
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @since Moodle 2.7
+ * Custom uninstallation procedure
  */
-class bqedit_renderer extends \edit_renderer {
-
+function xmldb_branchedquiz_uninstall() {
+	global $DB;
+	$pfx = $DB->get_prefix();
+	$DB->execute('DROP VIEW IF EXISTS '.$pfx.'branchedquiz');
+    return true;
 }

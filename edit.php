@@ -54,12 +54,6 @@ $scrollpos = optional_param('scrollpos', '', PARAM_INT);
 list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
         question_edit_setup('editq', '/mod/branchedquiz/edit.php', true);
 
-$id = optional_param('cmid', 0, PARAM_INT); // Course Module ID, or ...
-$cm = get_coursemodule_from_id('branchedquiz', $id);
-$bq_quiz = $DB->get_record('branchedquiz', array('id' => $cm->instance), '*', MUST_EXIST);
-$quiz = $DB->get_record('quiz', array('id' => $bq_quiz->quizid), '*', MUST_EXIST);
-
-
 $defaultcategoryobj = question_make_default_categories($contexts->all());
 $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
 
@@ -67,23 +61,9 @@ $quizhasattempts = quiz_has_attempts($quiz->id);
 
 $PAGE->set_url($thispageurl);
 
-function create_quiz($cm, $quizid, $userid = null) {
-    global $DB;
-
-    $quiz = quiz_access_manager::load_quiz_and_settings($quizid);
-    $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
-
-    // Update quiz with override information.
-    if ($userid) {
-        $quiz = quiz_update_effective_access($quiz, $userid);
-    }
-
-    return new quiz($quiz, $cm, $course);
-}
-
 // Get the course object and related bits.
 $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
-$quizobj = create_quiz($cm, $bq_quiz->quizid); // new quiz($quiz, $cm, $course);
+$quizobj = new quiz($quiz, $cm, $course);
 $structure = $quizobj->get_structure();
 
 // You need mod/quiz:manage in addition to question capabilities to access this page.
@@ -199,7 +179,7 @@ $questionbank->process_actions($thispageurl, $cm);
 $PAGE->set_pagelayout('incourse');
 $PAGE->set_pagetype('mod-quiz-edit');
 
-$output = $PAGE->get_renderer('mod_quiz', 'edit');
+$output = $PAGE->get_renderer('mod_quiz', 'bqedit');
 
 $PAGE->set_title(get_string('editingquizx', 'quiz', format_string($quiz->name)));
 $PAGE->set_heading($course->fullname);

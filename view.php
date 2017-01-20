@@ -27,10 +27,9 @@
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->libdir.'/gradelib.php');
 require_once($CFG->dirroot.'/mod/quiz/locallib.php');
+require_once($CFG->dirroot.'/mod/branchedquiz/attemptlib.php');
 require_once($CFG->libdir . '/completionlib.php');
 require_once($CFG->dirroot . '/course/format/lib.php');
-
-global $DB;
 
 $id = optional_param('id', 0, PARAM_INT); // Course Module ID, or ...
 $q = optional_param('q',  0, PARAM_INT);  // Quiz ID.
@@ -49,27 +48,9 @@ if ($id) {
     if (!$course = $DB->get_record('course', array('id' => $quiz->course))) {
         print_error('invalidcourseid');
     }
-    if (!$cm = get_coursemodule_from_instance("branchedquiz", $quiz->id, $course->id)) {
+    if (!$cm = get_coursemodule_from_instance("quiz", $quiz->id, $course->id)) {
         print_error('invalidcoursemodule');
     }
-}
-
-
-$bq_quiz = $DB->get_record('branchedquiz', array('id' => $cm->instance), '*', MUST_EXIST);
-$def_quiz = $DB->get_record('quiz', array('id' => $bq_quiz->quizid), '*', MUST_EXIST);
-
-function create_quiz($cm, $quizid, $userid = null) {
-    global $DB;
-
-    $quiz = quiz_access_manager::load_quiz_and_settings($quizid);
-    $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
-
-    // Update quiz with override information.
-    if ($userid) {
-        $quiz = quiz_update_effective_access($quiz, $userid);
-    }
-
-    return new quiz($quiz, $cm, $course);
 }
 
 // Check login and get context.
@@ -84,7 +65,7 @@ $canpreview = has_capability('mod/quiz:preview', $context);
 
 // Create an object to manage all the other (non-roles) access rules.
 $timenow = time();
-$quizobj = create_quiz($cm, $bq_quiz->quizid, $USER->id);
+$quizobj = branchedquiz::create($cm->instance, $USER->id);
 $accessmanager = new quiz_access_manager($quizobj, $timenow,
         has_capability('mod/quiz:ignoretimelimits', $context, null, false));
 $quiz = $quizobj->get_quiz();
@@ -125,7 +106,7 @@ $numattempts = count($attempts);
 $viewobj->attempts = $attempts;
 $viewobj->attemptobjs = array();
 foreach ($attempts as $attempt) {
-    $viewobj->attemptobjs[] = new quiz_attempt($attempt, $quiz, $def_quiz, $course, false);
+    $viewobj->attemptobjs[] = new quiz_attempt($attempt, $quiz, $cm, $course, false);
 }
 
 // Work out the final grade, checking whether it was overridden in the gradebook.
@@ -161,7 +142,7 @@ if (!empty($grading_info->items)) {
 $title = $course->shortname . ': ' . format_string($quiz->name);
 $PAGE->set_title($title);
 $PAGE->set_heading($course->fullname);
-$output = $PAGE->get_renderer('mod_branchedquiz');
+$output = $PAGE->get_renderer('mod_quiz');
 
 // Print table with existing attempts.
 if ($attempts) {
