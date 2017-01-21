@@ -28,6 +28,7 @@
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
 require_once($CFG->dirroot . '/mod/branchedquiz/attemptlib.php');
 
 // Get submitted parameters.
@@ -109,7 +110,7 @@ if ($currentattemptid) {
     }
 }
 
-$attempt = quiz_prepare_and_start_new_attempt($quizobj, $attemptnumber, $lastattempt);
+$attempt = branchedquiz_prepare_and_start_new_attempt($quizobj, $attemptnumber, $lastattempt);
 
 // Redirect to the attempt page.
 redirect($quizobj->attempt_url($attempt->id, $page));

@@ -111,3 +111,121 @@ function branchedquiz_extend_settings_navigation($settings, $quiznode) {
 
     question_extend_settings_navigation($quiznode, $PAGE->cm->context)->trim_if_empty();
 }
+
+function branchedquiz_grade_item_update($quiz, $grades = null) {
+    global $CFG, $OUTPUT;
+    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+    require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
+    require_once($CFG->libdir . '/gradelib.php');
+
+    if (array_key_exists('cmidnumber', $quiz)) { // May not be always present.
+        $params = array('itemname' => $quiz->name, 'idnumber' => $quiz->cmidnumber);
+    } else {
+        $params = array('itemname' => $quiz->name);
+    }
+
+    if ($quiz->grade > 0) {
+        $params['gradetype'] = GRADE_TYPE_VALUE;
+        $params['grademax']  = $quiz->grade;
+        $params['grademin']  = 0;
+
+    } else {
+        $params['gradetype'] = GRADE_TYPE_NONE;
+    }
+
+    // What this is trying to do:
+    // 1. If the quiz is set to not show grades while the quiz is still open,
+    //    and is set to show grades after the quiz is closed, then create the
+    //    grade_item with a show-after date that is the quiz close date.
+    // 2. If the quiz is set to not show grades at either of those times,
+    //    create the grade_item as hidden.
+    // 3. If the quiz is set to show grades, create the grade_item visible.
+    $openreviewoptions = mod_quiz_display_options::make_from_quiz($quiz,
+            mod_quiz_display_options::LATER_WHILE_OPEN);
+    $closedreviewoptions = mod_quiz_display_options::make_from_quiz($quiz,
+            mod_quiz_display_options::AFTER_CLOSE);
+    if ($openreviewoptions->marks < question_display_options::MARK_AND_MAX &&
+            $closedreviewoptions->marks < question_display_options::MARK_AND_MAX) {
+        $params['hidden'] = 1;
+
+    } else if ($openreviewoptions->marks < question_display_options::MARK_AND_MAX &&
+            $closedreviewoptions->marks >= question_display_options::MARK_AND_MAX) {
+        if ($quiz->timeclose) {
+            $params['hidden'] = $quiz->timeclose;
+        } else {
+            $params['hidden'] = 1;
+        }
+
+    } else {
+        // Either
+        // a) both open and closed enabled
+        // b) open enabled, closed disabled - we can not "hide after",
+        //    grades are kept visible even after closing.
+        $params['hidden'] = 0;
+    }
+
+    if (!$params['hidden']) {
+        // If the grade item is not hidden by the quiz logic, then we need to
+        // hide it if the quiz is hidden from students.
+        if (property_exists($quiz, 'visible')) {
+            // Saving the quiz form, and cm not yet updated in the database.
+            $params['hidden'] = !$quiz->visible;
+        } else {
+            $cm = get_coursemodule_from_instance('branchedquiz', $quiz->id);
+            $params['hidden'] = !$cm->visible;
+        }
+    }
+
+    if ($grades  === 'reset') {
+        $params['reset'] = true;
+        $grades = null;
+    }
+
+    $gradebook_grades = grade_get_grades($quiz->course, 'mod', 'quiz', $quiz->id);
+    if (!empty($gradebook_grades->items)) {
+        $grade_item = $gradebook_grades->items[0];
+        if ($grade_item->locked) {
+            // NOTE: this is an extremely nasty hack! It is not a bug if this confirmation fails badly. --skodak.
+            $confirm_regrade = optional_param('confirm_regrade', 0, PARAM_INT);
+            if (!$confirm_regrade) {
+                if (!AJAX_SCRIPT) {
+                    $message = get_string('gradeitemislocked', 'grades');
+                    $back_link = $CFG->wwwroot . '/mod/branchedquiz/report.php?q=' . $quiz->id .
+                            '&amp;mode=overview';
+                    $regrade_link = qualified_me() . '&amp;confirm_regrade=1';
+                    echo $OUTPUT->box_start('generalbox', 'notice');
+                    echo '<p>'. $message .'</p>';
+                    echo $OUTPUT->container_start('buttons');
+                    echo $OUTPUT->single_button($regrade_link, get_string('regradeanyway', 'grades'));
+                    echo $OUTPUT->single_button($back_link,  get_string('cancel'));
+                    echo $OUTPUT->container_end();
+                    echo $OUTPUT->box_end();
+                }
+                return GRADE_UPDATE_ITEM_LOCKED;
+            }
+        }
+    }
+
+    return grade_update('mod/branchedquiz', $quiz->course, 'mod', 'branchedquiz', $quiz->id, 0, $grades, $params);
+}
+
+function branchedquiz_update_grades($quiz, $userid = 0, $nullifnone = true) {
+    global $CFG, $DB;
+    require_once($CFG->libdir . '/gradelib.php');
+
+    if ($quiz->grade == 0) {
+        branchedquiz_grade_item_update($quiz);
+
+    } else if ($grades = quiz_get_user_grades($quiz, $userid)) {
+        branchedquiz_grade_item_update($quiz, $grades);
+
+    } else if ($userid && $nullifnone) {
+        $grade = new stdClass();
+        $grade->userid = $userid;
+        $grade->rawgrade = null;
+        branchedquiz_grade_item_update($quiz, $grade);
+
+    } else {
+        branchedquiz_grade_item_update($quiz);
+    }
+}
