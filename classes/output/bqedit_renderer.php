@@ -22,7 +22,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_quiz\output;
+namespace mod_branchedquiz\output;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/quiz/classes/output/edit_renderer.php');
@@ -37,7 +37,7 @@ use \html_writer;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since Moodle 2.7
  */
-class bqedit_renderer extends \edit_renderer {
+class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 	protected function initialise_editing_javascript(structure $structure,
             \question_edit_contexts $contexts, array $pagevars, \moodle_url $pageurl) {
 
