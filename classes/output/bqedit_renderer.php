@@ -131,4 +131,92 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
         return true;
     }
+
+    public function section_remove_icon($section) {
+        $title = get_string('sectionheadingremove', 'quiz', $section->heading);
+        $url = new \moodle_url('/mod/branchedquiz/edit.php',
+                array('sesskey' => sesskey(), 'removesection' => '1', 'sectionid' => $section->id));
+        $image = $this->pix_icon('t/delete', $title);
+        return $this->action_link($url, $image, null, array(
+                'class' => 'cm-edit-action editing_delete', 'data-action' => 'deletesection'));
+    }
+
+    public function edit_menu_actions(structure $structure, $page,
+            \moodle_url $pageurl, array $pagevars) {
+        $questioncategoryid = question_get_category_id_from_pagevars($pagevars);
+        static $str;
+        if (!isset($str)) {
+            $str = get_strings(array('addasection', 'addaquestion', 'addarandomquestion',
+                    'addarandomselectedquestion', 'questionbank'), 'quiz');
+        }
+
+        // Get section, page, slotnumber and maxmark.
+        $actions = array();
+
+        // Add a new section to the add_menu if possible. This is always added to the HTML
+        // then hidden with CSS when no needed, so that as things are re-ordered, etc. with
+        // Ajax it can be relevaled again when necessary.
+        $params = array('cmid' => $structure->get_cmid(), 'addsectionatpage' => $page);
+
+        $actions['addasection'] = new \action_menu_link_secondary(
+                new \moodle_url($pageurl, $params),
+                new \pix_icon('t/add', $str->addasection, 'moodle', array('class' => 'iconsmall', 'title' => '')),
+                $str->addasection, array('class' => 'cm-edit-action addasection', 'data-action' => 'addasection')
+        );
+
+        // Add a new question to the quiz.
+        $returnurl = new \moodle_url($pageurl, array('addonpage' => $page));
+        $params = array('returnurl' => $returnurl->out_as_local_url(false),
+                'cmid' => $structure->get_cmid(), 'category' => $questioncategoryid,
+                'addonpage' => $page, 'appendqnumstring' => 'addquestion');
+
+        $actions['addaquestion'] = new \action_menu_link_secondary(
+            new \moodle_url('/question/addquestion.php', $params),
+            new \pix_icon('t/add', $str->addaquestion, 'moodle', array('class' => 'iconsmall', 'title' => '')),
+            $str->addaquestion, array('class' => 'cm-edit-action addquestion', 'data-action' => 'addquestion')
+        );
+
+        // Call question bank.
+        $icon = new \pix_icon('t/add', $str->questionbank, 'moodle', array('class' => 'iconsmall', 'title' => ''));
+        if ($page) {
+            $title = get_string('addquestionfrombanktopage', 'quiz', $page);
+        } else {
+            $title = get_string('addquestionfrombankatend', 'quiz');
+        }
+        $attributes = array('class' => 'cm-edit-action questionbank',
+                'data-header' => $title, 'data-action' => 'questionbank', 'data-addonpage' => $page);
+        $actions['questionbank'] = new \action_menu_link_secondary($pageurl, $icon, $str->questionbank, $attributes);
+
+        // Add a random question.
+        $returnurl = new \moodle_url('/mod/branchedquiz/edit.php', array('cmid' => $structure->get_cmid(), 'data-addonpage' => $page));
+        $params = array('returnurl' => $returnurl, 'cmid' => $structure->get_cmid(), 'appendqnumstring' => 'addarandomquestion');
+        $url = new \moodle_url('/mod/branchedquiz/addrandom.php', $params);
+        $icon = new \pix_icon('t/add', $str->addarandomquestion, 'moodle', array('class' => 'iconsmall', 'title' => ''));
+        $attributes = array('class' => 'cm-edit-action addarandomquestion', 'data-action' => 'addarandomquestion');
+        if ($page) {
+            $title = get_string('addrandomquestiontopage', 'quiz', $page);
+        } else {
+            $title = get_string('addrandomquestionatend', 'quiz');
+        }
+        $attributes = array_merge(array('data-header' => $title, 'data-addonpage' => $page), $attributes);
+        $actions['addarandomquestion'] = new \action_menu_link_secondary($url, $icon, $str->addarandomquestion, $attributes);
+
+        return $actions;
+    }
+
+    protected function random_question_form(\moodle_url $thispageurl, \question_edit_contexts $contexts, array $pagevars) {
+
+        if (!$contexts->have_cap('moodle/question:useall')) {
+            return '';
+        }
+        $randomform = new \quiz_add_random_form(new \moodle_url('/mod/branchedquiz/addrandom.php'),
+                                 array('contexts' => $contexts, 'cat' => $pagevars['cat']));
+        $randomform->set_data(array(
+                'category' => $pagevars['cat'],
+                'returnurl' => $thispageurl->out_as_local_url(true),
+                'randomnumber' => 1,
+                'cmid' => $thispageurl->param('cmid'),
+        ));
+        return html_writer::div($randomform->render(), 'randomquestionformforpopup');
+    }
 }
