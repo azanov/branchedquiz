@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <XMLDB PATH="mod/branchedquiz/db" VERSION="20170115" COMMENT="XMLDB file for Moodle question/behaviour/testflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd">
     <TABLES>
-        <TABLE NAME="quiz_edge" COMMENT="Stores one edge of the generated graph">
+        <TABLE NAME="branchedquiz_edge" COMMENT="Stores one edge of the generated graph">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" COMMENT="Foreign key references quiz_node.id. describes the next question this path goes to" />
+				<FIELD NAME="nodeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references branchedquiz_node.id." />
+                <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" COMMENT="Foreign key references branchedquiz_node.id. describes the next question this path goes to" />
                 <FIELD NAME="points" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" COMMENT="The amount of points the question referes to the given next" />
                 <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="true" LENGTH="2048" COMMENT="The feedback to show the given path and points" />
-                <FIELD NAME="nodeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references quiz_node.id." />
+				<FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references branchedquiz.id." />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
                 <KEY NAME="nodeid" TYPE="foreign" FIELDS="nodeid" REFTABLE="quiz_node" REFFIELDS="id" />
                 <KEY NAME="next" TYPE="foreign" FIELDS="next" REFTABLE="quiz_node" REFFIELDS="id" />
+				<KEY NAME="quizid" TYPE="foreign" FIELDS="quizid" REFTABLE="branchedquiz" REFFIELDS="id" />
             </KEYS>
             <INDEXES>
                 <INDEX NAME="nodeid-points-next" UNIQUE="true" FIELDS="nodeid, points, next" />
             </INDEXES>
         </TABLE>
-        <TABLE NAME="quiz_node" COMMENT="Stores the node that a edge referes to">
+        <TABLE NAME="branchedquiz_node" COMMENT="Stores the node that a edge referes to">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
                 <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references question.id." />
