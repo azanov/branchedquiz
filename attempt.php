@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/mod/branchedquiz/attemptlib.php');
 if ($id = optional_param('id', 0, PARAM_INT)) {
     redirect($CFG->wwwroot . '/mod/branchedquiz/startattempt.php?cmid=' . $id . '&sesskey=' . sesskey());
 } else if ($qid = optional_param('q', 0, PARAM_INT)) {
-    if (!$cm = get_coursemodule_from_instance('quiz', $qid)) {
+    if (!$cm = get_coursemodule_from_instance('branchedquiz', $qid)) {
         print_error('invalidquizid', 'quiz');
     }
     redirect(new moodle_url('/mod/branchedquiz/startattempt.php',

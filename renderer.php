@@ -52,4 +52,57 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
                     array('class' => 'mod_quiz-next-nav'));
         }
     }
+
+    protected function attempt_navigation_buttons($page, $lastpage) {
+        $output = '';
+
+        $output .= html_writer::start_tag('div', array('class' => 'submitbtns'));
+
+        // Hide the button to return to the previous question
+
+        // if ($page > 0) {
+        //     $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'previous',
+        //             'value' => get_string('navigateprevious', 'quiz'), 'class' => 'mod_quiz-prev-nav'));
+        // }
+        if ($lastpage) {
+            $nextlabel = get_string('endtest', 'quiz');
+        } else {
+            $nextlabel = get_string('navigatenext', 'quiz');
+        }
+        $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'next',
+                'value' => $nextlabel, 'class' => 'mod_quiz-next-nav'));
+        $output .= html_writer::end_tag('div');
+
+        return $output;
+    }
+
+    public function navigation_panel(quiz_nav_panel_base $panel) {
+
+        $output = '';
+        $userpicture = $panel->user_picture();
+        if ($userpicture) {
+            $fullname = fullname($userpicture->user);
+            if ($userpicture->size === true) {
+                $fullname = html_writer::div($fullname);
+            }
+            $output .= html_writer::tag('div', $this->render($userpicture) . $fullname,
+                    array('id' => 'user-picture', 'class' => 'clearfix'));
+        }
+        $output .= $panel->render_before_button_bits($this);
+
+        // $bcc = $panel->get_button_container_class();
+        // $output .= html_writer::start_tag('div', array('class' => "qn_buttons clearfix $bcc"));
+        // foreach ($panel->get_question_buttons() as $button) {
+        //     $output .= $this->render($button);
+        // }
+        // $output .= html_writer::end_tag('div');
+
+        $output .= html_writer::tag('div', $panel->render_end_bits($this),
+                array('class' => 'othernav'));
+
+        $this->page->requires->js_init_call('M.mod_quiz.nav.init', null, false,
+                quiz_get_js_module());
+
+        return $output;
+    }
 }
