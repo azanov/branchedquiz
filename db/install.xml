@@ -23,12 +23,11 @@
         <TABLE NAME="branchedquiz_node" COMMENT="Stores the node that a edge referes to">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references question.id." />
+                <FIELD NAME="page" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="page of current question" />
 		<FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references branchedquiz.id." />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
-                <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id" />
                 <KEY NAME="quizid" TYPE="foreign" FIELDS="quizid" REFTABLE="branchedquiz" REFFIELDS="id" />
             </KEYS>
         </TABLE>
