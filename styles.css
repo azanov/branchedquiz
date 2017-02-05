@@ -1,0 +1,13 @@
+#page-mod-quiz-edit ul.slots li.section li.activity .activityinstance {
+    position: relative;
+}
+#page-mod-quiz-edit ul.slots li.section li.activity {
+	position: absolute;
+	padding: 15px;
+	border: 1px solid #2e6f9a;
+}
+#page-mod-quiz-edit ul.slots li.section ul.section {
+	position: relative;
+	height: 800px;
+
+}
