@@ -229,3 +229,16 @@ function branchedquiz_update_grades($quiz, $userid = 0, $nullifnone = true) {
         branchedquiz_grade_item_update($quiz);
     }
 }
+
+function branchedquiz_attempt_summary_link_to_reports($quiz, $cm, $context, $returnzero = false,
+        $currentgroup = 0) {
+    global $CFG;
+    $summary = quiz_num_attempt_summary($quiz, $cm, $returnzero, $currentgroup);
+    if (!$summary) {
+        return '';
+    }
+    require_once($CFG->dirroot . '/mod/quiz/report/reportlib.php');
+    $url = new moodle_url('/mod/branchedquiz/report.php', array(
+            'id' => $cm->id, 'mode' => quiz_report_default_report($context)));
+    return html_writer::link($url, $summary);
+}

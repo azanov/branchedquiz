@@ -38,6 +38,68 @@ use \html_writer;
  * @since Moodle 2.7
  */
 class bqedit_renderer extends \mod_quiz\output\edit_renderer {
+
+    public function edit_page(\quiz $quizobj, structure $structure,
+            \question_edit_contexts $contexts, \moodle_url $pageurl, array $pagevars) {
+        $output = '';
+
+        // Page title.
+        $output .= $this->heading_with_help(get_string('editingquizx', 'quiz',
+                format_string($quizobj->get_quiz_name())), 'editingquiz', 'quiz', '',
+                get_string('basicideasofquiz', 'quiz'), 2);
+
+        // Information at the top.
+        $output .= $this->branchedquiz_state_warnings($quizobj);
+        $output .= $this->quiz_information($structure);
+        $output .= $this->maximum_grade_input($structure, $pageurl);
+        $output .= $this->repaginate_button($structure, $pageurl);
+        $output .= $this->total_marks($quizobj->get_quiz());
+
+        // Show the questions organised into sections and pages.
+        $output .= $this->start_section_list($structure);
+
+        foreach ($structure->get_sections() as $section) {
+            $output .= $this->start_section($structure, $section);
+            $output .= $this->questions_in_section($structure, $section, $contexts, $pagevars, $pageurl);
+
+            if ($structure->is_last_section($section)) {
+                $output .= \html_writer::start_div('last-add-menu');
+                $output .= html_writer::tag('span', $this->add_menu_actions($structure, 0,
+                        $pageurl, $contexts, $pagevars), array('class' => 'add-menu-outer'));
+                $output .= \html_writer::end_div();
+            }
+
+            $output .= $this->end_section();
+        }
+
+        $output .= $this->end_section_list();
+
+        // Initialise the JavaScript.
+        $this->initialise_editing_javascript($structure, $contexts, $pagevars, $pageurl);
+
+        // Include the contents of any other popups required.
+        if ($structure->can_be_edited()) {
+            $popups = '';
+
+            $popups .= $this->question_bank_loading();
+            $this->page->requires->yui_module('moodle-mod_quiz-quizquestionbank',
+                    'M.mod_quiz.quizquestionbank.init',
+                    array('class' => 'questionbank', 'cmid' => $structure->get_cmid()));
+
+            $popups .= $this->random_question_form($pageurl, $contexts, $pagevars);
+            $this->page->requires->yui_module('moodle-mod_quiz-randomquestion',
+                    'M.mod_quiz.randomquestion.init');
+
+            $output .= html_writer::div($popups, 'mod_quiz_edit_forms');
+
+            // Include the question chooser.
+            $output .= $this->question_chooser();
+            $this->page->requires->yui_module('moodle-mod_quiz-questionchooser', 'M.mod_quiz.init_questionchooser');
+        }
+
+        return $output;
+    }
+
 	protected function initialise_editing_javascript(structure $structure,
             \question_edit_contexts $contexts, array $pagevars, \moodle_url $pageurl) {
 
@@ -218,5 +280,25 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                 'cmid' => $thispageurl->param('cmid'),
         ));
         return html_writer::div($randomform->render(), 'randomquestionformforpopup');
+    }
+
+    public function branchedquiz_state_warnings(\quiz $quizobj) {
+        $warnings = array();
+
+        if (quiz_has_attempts($quizobj->get_quizid())) {
+            $reviewlink = branchedquiz_attempt_summary_link_to_reports($quizobj->get_quiz(),
+                    $quizobj->get_cm(), $quizobj->get_context());
+            $warnings[] = get_string('cannoteditafterattempts', 'quiz', $reviewlink);
+        }
+
+        if (empty($warnings)) {
+            return '';
+        }
+
+        $output = array();
+        foreach ($warnings as $warning) {
+            $output[] = \html_writer::tag('p', $warning);
+        }
+        return $this->box(implode("\n", $output), 'statusdisplay');
     }
 }
