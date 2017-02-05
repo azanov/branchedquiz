@@ -9,5 +9,5 @@
 #page-mod-quiz-edit ul.slots li.section ul.section {
 	position: relative;
 	height: 800px;
-
+	overflow: auto;
 }

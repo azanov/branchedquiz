@@ -4,30 +4,32 @@
         <TABLE NAME="branchedquiz_edge" COMMENT="Stores one edge of the generated graph">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="nodeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references branchedquiz_node.id." />
-                <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" COMMENT="Foreign key references branchedquiz_node.id. describes the next question this path goes to" />
-                <FIELD NAME="points" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" COMMENT="The amount of points the question referes to the given next" />
-                <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="true" LENGTH="2048" COMMENT="The feedback to show the given path and points" />
-                <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references branchedquiz.id." />
+                <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
+                <FIELD NAME="points" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" />
+                <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" />
+                <FIELD NAME="prev" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" />
+                <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="true" LENGTH="2048" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
-                <KEY NAME="nodeid" TYPE="foreign" FIELDS="nodeid" REFTABLE="quiz_node" REFFIELDS="id" />
-                <KEY NAME="next" TYPE="foreign" FIELDS="next" REFTABLE="quiz_node" REFFIELDS="id" />
                 <KEY NAME="quizid" TYPE="foreign" FIELDS="quizid" REFTABLE="branchedquiz" REFFIELDS="id" />
+                <KEY NAME="next" TYPE="foreign" FIELDS="next" REFTABLE="branchedquiz_node" REFFIELDS="id" />
+                <KEY NAME="prev" TYPE="foreign" FIELDS="prev" REFTABLE="branchedquiz_node" REFFIELDS="id" />
             </KEYS>
             <INDEXES>
-                <INDEX NAME="nodeid-points-next" UNIQUE="true" FIELDS="nodeid, points, next" />
+                <INDEX NAME="quizid-prev-points-next" UNIQUE="true" FIELDS="quizid, prev, points, next" />
             </INDEXES>
         </TABLE>
         <TABLE NAME="branchedquiz_node" COMMENT="Stores the node that a edge referes to">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="page" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="page of current question" />
-		<FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Foreign key references branchedquiz.id." />
+                <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
+                <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
+                <FIELD NAME="nodetype" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id" />
                 <KEY NAME="quizid" TYPE="foreign" FIELDS="quizid" REFTABLE="branchedquiz" REFFIELDS="id" />
             </KEYS>
         </TABLE>
