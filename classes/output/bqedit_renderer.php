@@ -55,8 +55,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         $output .= $this->repaginate_button($structure, $pageurl);
         $output .= $this->total_marks($quizobj->get_quiz());
 
-        $output .= '<script src="https://jsplumbtoolkit.com/community/demo/statemachine/lib/jsPlumb-2.2.8.js"></script>';
-        $output .= '<style>@import url("/mod/branchedquiz/styles.css");</style>';
+
 
         // Show the questions organised into sections and pages.
         $output .= $this->start_section_list($structure);
@@ -100,7 +99,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
             $this->page->requires->yui_module('moodle-mod_quiz-questionchooser', 'M.mod_quiz.init_questionchooser');
         }
 
-        $output .= '<script src="/mod/branchedquiz/edit.js"></script>';
+
 
         return $output;
     }
