@@ -25,13 +25,58 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/quiz/lib.php');
+require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
 
 function branchedquiz_add_instance($quiz) {
     return quiz_add_instance($quiz);
 }
 
 function branchedquiz_update_instance($quiz, $mform) {
-	return quiz_update_instance($quiz, $mform);
+	    global $CFG, $DB;
+    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
+    // Process the options from the form.
+    $result = quiz_process_options($quiz);
+    if ($result && is_string($result)) {
+        return $result;
+    }
+
+    // Get the current value, so we can see what changed.
+    $oldquiz = $DB->get_record('quiz', array('id' => $quiz->instance));
+
+    // We need two values from the existing DB record that are not in the form,
+    // in some of the function calls below.
+    $quiz->sumgrades = $oldquiz->sumgrades;
+    $quiz->grade     = $oldquiz->grade;
+
+    // Update the database.
+    $quiz->id = $quiz->instance;
+    $DB->update_record('quiz', $quiz);
+
+    // Do the processing required after an add or an update.
+    quiz_after_add_or_update($quiz);
+
+    if ($oldquiz->grademethod != $quiz->grademethod) {
+        quiz_update_all_final_grades($quiz);
+        quiz_update_grades($quiz);
+    }
+
+    $quizdateschanged = $oldquiz->timelimit   != $quiz->timelimit
+                     || $oldquiz->timeclose   != $quiz->timeclose
+                     || $oldquiz->graceperiod != $quiz->graceperiod;
+    if ($quizdateschanged) {
+        quiz_update_open_attempts(array('quizid' => $quiz->id));
+    }
+
+    // Delete any previous preview attempts.
+    branchedquiz_delete_previews($quiz);
+
+    // Repaginate, if asked to.
+    if (!empty($quiz->repaginatenow)) {
+        quiz_repaginate_questions($quiz->id, $quiz->questionsperpage);
+    }
+
+    return true;
 }
 
 function branchedquiz_delete_instance($id) {

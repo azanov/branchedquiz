@@ -43,6 +43,7 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
 require_once($CFG->dirroot . '/mod/branchedquiz/classes/output/bqedit_renderer.php');
 require_once($CFG->dirroot . '/mod/quiz/addrandomform.php');
 require_once($CFG->dirroot . '/question/editlib.php');
@@ -102,7 +103,7 @@ if (optional_param('repaginate', false, PARAM_BOOL) && confirm_sesskey()) {
     $structure->check_can_be_edited();
     $questionsperpage = optional_param('questionsperpage', $quiz->questionsperpage, PARAM_INT);
     quiz_repaginate_questions($quiz->id, $questionsperpage );
-    quiz_delete_previews($quiz);
+    branchedquiz_delete_previews($quiz);
     redirect($afteractionurl);
 }
 
@@ -111,8 +112,8 @@ if (($addquestion = optional_param('addquestion', 0, PARAM_INT)) && confirm_sess
     $structure->check_can_be_edited();
     quiz_require_question_use($addquestion);
     $addonpage = optional_param('addonpage', 0, PARAM_INT);
-    quiz_add_quiz_question($addquestion, $quiz, $addonpage);
-    quiz_delete_previews($quiz);
+    branchedquiz_add_quiz_question($addquestion, $quiz, $addonpage);
+    branchedquiz_delete_previews($quiz);
     quiz_update_sumgrades($quiz);
     $thispageurl->param('lastchanged', $addquestion);
     redirect($afteractionurl);
@@ -127,10 +128,10 @@ if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
         if (preg_match('!^q([0-9]+)$!', $key, $matches)) {
             $key = $matches[1];
             quiz_require_question_use($key);
-            quiz_add_quiz_question($key, $quiz, $addonpage);
+            branchedquiz_add_quiz_question($key, $quiz, $addonpage);
         }
     }
-    quiz_delete_previews($quiz);
+    branchedquiz_delete_previews($quiz);
     quiz_update_sumgrades($quiz);
     redirect($afteractionurl);
 }
@@ -139,7 +140,7 @@ if ($addsectionatpage = optional_param('addsectionatpage', false, PARAM_INT)) {
     // Add a section to the quiz.
     $structure->check_can_be_edited();
     $structure->add_section_heading($addsectionatpage);
-    quiz_delete_previews($quiz);
+    branchedquiz_delete_previews($quiz);
     redirect($afteractionurl);
 }
 
@@ -152,7 +153,7 @@ if ((optional_param('addrandom', false, PARAM_BOOL)) && confirm_sesskey()) {
     $randomcount = required_param('randomcount', PARAM_INT);
     quiz_add_random_questions($quiz, $addonpage, $categoryid, $randomcount, $recurse);
 
-    quiz_delete_previews($quiz);
+    branchedquiz_delete_previews($quiz);
     quiz_update_sumgrades($quiz);
     redirect($afteractionurl);
 }

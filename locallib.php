@@ -210,3 +210,78 @@ function branchedquiz_prepare_and_start_new_attempt(branchedquiz $quizobj, $atte
 
     return $attempt;
 }
+
+function branchedquiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark = null) {
+    global $DB;
+    $slots = $DB->get_records('quiz_slots', array('quizid' => $quiz->id),
+            'slot', 'questionid, slot, page, id');
+
+    if (array_key_exists($questionid, $slots)) {
+        return false;
+    }
+
+    $trans = $DB->start_delegated_transaction();
+
+    $maxpage = 1;
+    $numonlastpage = 0;
+    foreach ($slots as $slot) {
+        if ($slot->page > $maxpage) {
+            $maxpage = $slot->page;
+            $numonlastpage = 1;
+        } else {
+            $numonlastpage += 1;
+        }
+    }
+
+    // Add the new question instance.
+    $slot = new stdClass();
+    $slot->quizid = $quiz->id;
+    $slot->questionid = $questionid;
+
+    if ($maxmark !== null) {
+        $slot->maxmark = $maxmark;
+    } else {
+        $slot->maxmark = $DB->get_field('question', 'defaultmark', array('id' => $questionid));
+    }
+
+    // Always add the question on new page
+
+    // if (is_int($page) && $page >= 1) {
+    //     // Adding on a given page.
+    //     $lastslotbefore = 0;
+    //     foreach (array_reverse($slots) as $otherslot) {
+    //         if ($otherslot->page > $page) {
+    //             $DB->set_field('quiz_slots', 'slot', $otherslot->slot + 1, array('id' => $otherslot->id));
+    //         } else {
+    //             $lastslotbefore = $otherslot->slot;
+    //             break;
+    //         }
+    //     }
+    //     $slot->slot = $lastslotbefore + 1;
+    //     $slot->page = min($page, $maxpage + 1);
+
+    //     $DB->execute("
+    //             UPDATE {quiz_sections}
+    //                SET firstslot = firstslot + 1
+    //              WHERE quizid = ?
+    //                AND firstslot > ?
+    //             ", array($quiz->id, max($lastslotbefore, 1)));
+
+    // } else {
+        $lastslot = end($slots);
+        if ($lastslot) {
+            $slot->slot = $lastslot->slot + 1;
+        } else {
+            $slot->slot = 1;
+        }
+        if ($quiz->questionsperpage && $numonlastpage >= $quiz->questionsperpage) {
+            $slot->page = $maxpage + 1;
+        } else {
+            $slot->page = $maxpage;
+        }
+    // }
+
+    $DB->insert_record('quiz_slots', $slot);
+    $trans->allow_commit();
+}
+
