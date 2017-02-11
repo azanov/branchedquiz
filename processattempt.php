@@ -30,6 +30,7 @@
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
 require_once($CFG->dirroot . '/mod/branchedquiz/attemptlib.php');
 
 // Remember the current time as the time any responses were submitted
@@ -48,9 +49,29 @@ $scrollpos     = optional_param('scrollpos',     '',     PARAM_RAW);
 
 $attemptobj = branchedquiz_attempt::create($attemptid);
 
+//note: the first page in processattempt is 0, in questions however 1
+// if page == -1, user gets  summary page
+$slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage+1);
+$points = $attemptobj->get_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
+
+if (!is_null($points)){
+    // check if points don't matter == -1
+    $edge = $DB->get_record_sql('SELECT * FROM {quiz_edge} WHERE nodeid = ? AND points = -1', array($slotid, -1));
+
+    if (!$edge){
+        $edge = $DB->get_record_sql('SELECT * FROM {quiz_edge} WHERE nodeid = ? AND points = ?', array($slotid, $points));
+
+    }
+
+    $branched_next = slotid_to_page($attemptobj->get_quizobj(), $edge->next);
+
+    if ($branched_next != -1) $branched_next -= 1;
+}
+
 // Set $nexturl now.
 if ($next) {
-    $page = $nextpage;
+    $page =   $branched_next;
+    //$page =   $nextpage;
 } else if ($previous && $thispage > 0) {
     $page = $thispage - 1;
 } else {

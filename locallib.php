@@ -285,3 +285,65 @@ function branchedquiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark 
     $trans->allow_commit();
 }
 
+/**
+ * returns the slotid of the given page
+ * @param $quizobj
+ * @param $page
+ * @return int
+ */
+function page_to_slotid($quizobj, $page){
+    $quizobj->preload_questions();
+    $quizobj->load_questions();
+    //questions
+    $qs = $quizobj->get_questions();
+    $slotid = -1;
+
+    foreach(array_keys($qs) as $id){
+        if ($qs[$id]->page == $page){
+            $slotid = $qs[$id]->slotid;
+            break;
+        }
+    }
+
+    return $slotid;
+}
+
+/**
+ * returns the slot of the given page
+ * @param $quizobj
+ * @param $page
+ * @return int
+ */
+function page_to_slot($quizobj, $page){
+    $quizobj->preload_questions();
+    $quizobj->load_questions();
+    //questions
+    $qs = $quizobj->get_questions();
+    $slot = -1;
+
+    foreach(array_keys($qs) as $id){
+        if ($qs[$id]->page == $page) $slot = $qs[$id]->slot;
+    }
+
+    return $slot;
+}
+
+/**
+ * returns the page number of the slotid
+ * @param $quizobj
+ * @param $slotid
+ * @return int
+ */
+function slotid_to_page($quizobj, $slotid){
+    $quizobj->preload_questions();
+    $quizobj->load_questions();
+    //questions
+    $qs = $quizobj->get_questions();
+    $page = -1;
+
+    foreach(array_keys($qs) as $id){
+        if ($qs[$id]->slotid == $slotid) $page = $qs[$id]->page;
+    }
+
+    return $page;
+}

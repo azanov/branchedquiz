@@ -175,7 +175,9 @@ if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
 $questionbank = new mod_branchedquiz\question\bank\custom_view($contexts, $thispageurl, $course, $cm, $quiz);
 $questionbank->set_quiz_has_attempts($quizhasattempts);
 $questionbank->process_actions($thispageurl, $cm);
-
+$quizobj->preload_questions();
+$quizobj->load_questions();
+print_r($quizobj->get_questions()[6]);
 // End of process commands =====================================================.
 
 $PAGE->set_pagelayout('incourse');
