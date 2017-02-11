@@ -105,4 +105,62 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
 
         return $output;
     }
+
+    /**
+     * Ouputs the form for making an attempt
+     *
+     * @param quiz_attempt $attemptobj
+     * @param int $page Current page number
+     * @param array $slots Array of integers relating to questions
+     * @param int $id ID of the attempt
+     * @param int $nextpage Next page number
+     */
+    public function attempt_form($attemptobj, $page, $slots, $id, $nextpage) {
+        $output = '';
+
+        // Start the form.
+        $output .= html_writer::start_tag('form',
+            array('action' => $attemptobj->processattempt_url(), 'method' => 'post',
+                'enctype' => 'multipart/form-data', 'accept-charset' => 'utf-8',
+                'id' => 'responseform'));
+        $output .= html_writer::start_tag('div');
+
+        // Print all the questions.
+        foreach ($slots as $slot) {
+            $output .= $attemptobj->render_question($slot, false, $this,
+                $attemptobj->attempt_url($slot, $page), $this);
+        }
+
+        $navmethod = $attemptobj->get_quiz()->navmethod;
+        // replaced $attemptobj->is_last_page($page) to false - to hide "finish attempt"
+        $output .= $this->attempt_navigation_buttons($page, false, $navmethod);
+
+        // Some hidden fields to trach what is going on.
+        $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'attempt',
+            'value' => $attemptobj->get_attemptid()));
+        $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'thispage',
+            'value' => $page, 'id' => 'followingpage'));
+        $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'nextpage',
+            'value' => $nextpage));
+        $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'timeup',
+            'value' => '0', 'id' => 'timeup'));
+        $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey',
+            'value' => sesskey()));
+        $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'scrollpos',
+            'value' => '', 'id' => 'scrollpos'));
+
+        // Add a hidden field with questionids. Do this at the end of the form, so
+        // if you navigate before the form has finished loading, it does not wipe all
+        // the student's answers.
+        $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'slots',
+            'value' => implode(',', $attemptobj->get_active_slots($page))));
+
+        // Finish the form.
+        $output .= html_writer::end_tag('div');
+        $output .= html_writer::end_tag('form');
+
+        $output .= $this->connection_warning();
+
+        return $output;
+    }
 }
