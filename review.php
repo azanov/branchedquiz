@@ -257,6 +257,9 @@ $navbc = $attemptobj->get_navigation_panel($output, 'quiz_review_nav_panel', $pa
 $regions = $PAGE->blocks->get_regions();
 $PAGE->blocks->add_fake_block($navbc, reset($regions));
 
+// show only questions of current path
+$slots = get_current_path_slots($attemptobj);
+
 echo $output->review_page($attemptobj, $slots, $page, $showall, $lastpage, $options, $summarydata);
 
 // Trigger an event for this review.

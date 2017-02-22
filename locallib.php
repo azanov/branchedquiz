@@ -347,3 +347,27 @@ function slotid_to_page($quizobj, $slotid){
 
     return $page;
 }
+
+/**
+ * retuns slots of questions that the user has actually seen in current path,
+ * but not in the order in which he saw the questions
+ * @param $attemptobj
+ * @return array of slots that the user has actually seen in current path
+ */
+
+function get_current_path_slots($attemptobj){
+
+    $quizobj = $attemptobj->get_quizobj();
+    $quizobj->preload_questions();
+    $quizobj->load_questions();
+
+    $qs = $quizobj->get_questions();
+
+    $slots = array();
+
+    foreach(array_keys($qs) as $id){
+        if (!empty(($attemptobj->get_question_mark($qs[$id]->slot)))) array_push($slots, $qs[$id]->slot);
+    }
+
+    return $slots;
+}
