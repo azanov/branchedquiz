@@ -371,3 +371,54 @@ function get_current_path_slots($attemptobj){
 
     return $slots;
 }
+
+/**
+ * used in summary table, to pass the summary table on questions in current path
+ * @param $attemptobj
+ * @return int sum of max grades of all questions in current path
+ */
+
+function get_sum_max_grades($attemptobj){
+
+    $slots = get_current_path_slots($attemptobj);
+
+    $quba = $attemptobj->get_quba();
+
+    $sum = 0;
+
+    foreach($slots as $slot){
+        $sum += $quba->get_question_max_mark($slot);
+    }
+
+    return $sum;
+}
+
+
+/**
+ * Convert the raw grade stored in $attempt into a grade out of the maximum
+ * grade for this quiz.
+ *
+ * @param float $rawgrade the unadjusted grade, fof example $attempt->sumgrades
+ * @param object $quiz the quiz object. Only the fields grade, sumgrades and decimalpoints are used.
+ * @param bool|string $format whether to format the results for display
+ *      or 'question' to format a question grade (different number of decimal places.
+ * @param $sum_max sum of max grades for all slots in current path
+ * @return float|string the rescaled grade, or null/the lang string 'notyetgraded'
+ *      if the $grade is null.
+ */
+function branchedquiz_rescale_grade($rawgrade, $quiz, $sum_max, $format = true) {
+
+    if (is_null($rawgrade)) {
+        $grade = null;
+    } else if ($sum_max >= 0.000005) {
+        $grade = $rawgrade * $quiz->grade /$sum_max;
+    } else {
+        $grade = 0;
+    }
+    if ($format === 'question') {
+        $grade = quiz_format_question_grade($quiz, $grade);
+    } else if ($format) {
+        $grade = quiz_format_grade($quiz, $grade);
+    }
+    return $grade;
+}

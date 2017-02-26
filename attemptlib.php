@@ -97,6 +97,11 @@ class branchedquiz extends quiz {
 }
 
 class branchedquiz_attempt extends quiz_attempt {
+
+    public function get_quba(){
+        return $this->quba;
+    }
+
     protected static function create_helper($conditions) {
         global $DB;
 
