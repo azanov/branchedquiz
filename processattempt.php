@@ -52,7 +52,7 @@ $attemptobj = branchedquiz_attempt::create($attemptid);
 //note: the first page in processattempt is 0, in questions however 1
 // if page == -1, user gets  summary page
 $slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage+1);
-$points = $attemptobj->get_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
+if ($slotid != -1) $points = $attemptobj->get_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
 
 if (!is_null($points)){
     // check if points don't matter == -1
