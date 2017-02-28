@@ -53,7 +53,7 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         }
     }
 
-    protected function attempt_navigation_buttons($page, $lastpage) {
+    protected function attempt_navigation_buttons($page, $lastpage, $navmethod = 'free') {
         $output = '';
 
         $output .= html_writer::start_tag('div', array('class' => 'submitbtns'));
