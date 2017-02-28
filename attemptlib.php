@@ -102,6 +102,10 @@ class branchedquiz_attempt extends quiz_attempt {
         return $this->quba;
     }
 
+    public function get_unformatted_question_mark($slot) {
+        return $this->quba->get_question_mark($slot);
+    }
+
     protected static function create_helper($conditions) {
         global $DB;
 
