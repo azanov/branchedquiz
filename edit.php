@@ -14,106 +14,206 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
 /**
- * This page deals with processing responses during an attempt at a quiz.
+ * Page to edit quizzes
  *
- * People will normally arrive here from a form submission on attempt.php or
- * summary.php, and once the responses are processed, they will be redirected to
- * attempt.php or summary.php.
+ * This page generally has two columns:
+ * The right column lists all available questions in a chosen category and
+ * allows them to be edited or more to be added. This column is only there if
+ * the quiz does not already have student attempts
+ * The left column lists all questions that have been added to the current quiz.
+ * The lecturer can add questions from the right hand list to the quiz or remove them
  *
- * This code used to be near the top of attempt.php, if you are looking for CVS history.
+ * The script also processes a number of actions:
+ * Actions affecting a quiz:
+ * up and down  Changes the order of questions and page breaks
+ * addquestion  Adds a single question to the quiz
+ * add          Adds several selected questions to the quiz
+ * addrandom    Adds a certain number of random questions to the quiz
+ * repaginate   Re-paginates the quiz
+ * delete       Removes a question from the quiz
+ * savechanges  Saves the order and grades for questions in the quiz
  *
- * @package   mod_quiz
- * @copyright 2009 Tim Hunt
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_quiz
+ * @copyright  1999 onwards Martin Dougiamas and others {@link http://moodle.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../../config.php');
+
+require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
-require_once($CFG->dirroot . '/mod/branchedquiz/attemptlib.php');
+require_once($CFG->dirroot . '/mod/branchedquiz/classes/output/bqedit_renderer.php');
+require_once($CFG->dirroot . '/mod/quiz/addrandomform.php');
+require_once($CFG->dirroot . '/question/editlib.php');
+require_once($CFG->dirroot . '/question/category_class.php');
 
-// Remember the current time as the time any responses were submitted
-// (so as to make sure students don't get penalized for slow processing on this page).
-$timenow = time();
+// These params are only passed from page request to request while we stay on
+// this page otherwise they would go in question_edit_setup.
+$scrollpos = optional_param('scrollpos', '', PARAM_INT);
 
-// Get submitted parameters.
-$attemptid     = required_param('attempt',  PARAM_INT);
-$thispage      = optional_param('thispage', 0, PARAM_INT);
-$nextpage      = optional_param('nextpage', 0, PARAM_INT);
-$previous      = optional_param('previous',      false, PARAM_BOOL);
-$next          = optional_param('next',          false, PARAM_BOOL);
-$finishattempt = optional_param('finishattempt', false, PARAM_BOOL);
-$timeup        = optional_param('timeup',        0,      PARAM_BOOL); // True if form was submitted by timer.
-$scrollpos     = optional_param('scrollpos',     '',     PARAM_RAW);
+list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
+        question_edit_setup('editq', '/mod/branchedquiz/edit.php', true);
 
-$attemptobj = branchedquiz_attempt::create($attemptid);
+$defaultcategoryobj = question_make_default_categories($contexts->all());
+$defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
 
-//note: the first page in processattempt is 0, in questions however 1
-// if page == -1, user gets  summary page
-$slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage+1);
-if ($slotid != -1) $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
-//echo $points;
-if (!is_null($points)){
-    // check if points don't matter == -1
-    $edge = $DB->get_record_sql('SELECT * FROM {quiz_edge} WHERE nodeid = ? AND points = -1', array($slotid, -1));
+$quizhasattempts = quiz_has_attempts($quiz->id);
 
-    if (!$edge){
-        $edge = $DB->get_record_sql('SELECT * FROM {quiz_edge} WHERE nodeid = ? AND points = ?', array($slotid, $points));
+$PAGE->set_url($thispageurl);
 
-    }
-    
-    $branched_next = slotid_to_page($attemptobj->get_quizobj(), $edge->next);
+// Get the course object and related bits.
+$course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
+$quizobj = new quiz($quiz, $cm, $course);
+$structure = $quizobj->get_structure();
 
-    if ($branched_next != -1) $branched_next -= 1;
-}
+// You need mod/quiz:manage in addition to question capabilities to access this page.
+require_capability('mod/quiz:manage', $contexts->lowest());
 
-// Set $nexturl now.
-if ($next) {
-    $page =   $branched_next;
-    //$page =   $nextpage;
-} else if ($previous && $thispage > 0) {
-    $page = $thispage - 1;
-} else {
-    $page = $thispage;
-}
-if ($page == -1) {
-    $nexturl = $attemptobj->summary_url();
-} else {
-    $nexturl = $attemptobj->attempt_url(null, $page);
-    if ($scrollpos !== '') {
-        $nexturl->param('scrollpos', $scrollpos);
+// Log this visit.
+$params = array(
+    'courseid' => $course->id,
+    'context' => $contexts->lowest(),
+    'other' => array(
+        'quizid' => $quiz->id
+    )
+);
+$event = \mod_quiz\event\edit_page_viewed::create($params);
+$event->trigger();
+
+// Process commands ============================================================.
+
+// Get the list of question ids had their check-boxes ticked.
+$selectedslots = array();
+$params = (array) data_submitted();
+foreach ($params as $key => $value) {
+    if (preg_match('!^s([0-9]+)$!', $key, $matches)) {
+        $selectedslots[] = $matches[1];
     }
 }
 
-// Check login.
-require_login($attemptobj->get_course(), false, $attemptobj->get_cm());
-require_sesskey();
-
-// Check that this attempt belongs to this user.
-if ($attemptobj->get_userid() != $USER->id) {
-    throw new moodle_quiz_exception($attemptobj->get_quizobj(), 'notyourattempt');
+$afteractionurl = new moodle_url($thispageurl);
+if ($scrollpos) {
+    $afteractionurl->param('scrollpos', $scrollpos);
 }
 
-// Check capabilities.
-if (!$attemptobj->is_preview_user()) {
-    $attemptobj->require_capability('mod/quiz:attempt');
+if (optional_param('repaginate', false, PARAM_BOOL) && confirm_sesskey()) {
+    // Re-paginate the quiz.
+    $structure->check_can_be_edited();
+    $questionsperpage = optional_param('questionsperpage', $quiz->questionsperpage, PARAM_INT);
+    quiz_repaginate_questions($quiz->id, $questionsperpage );
+    branchedquiz_delete_previews($quiz);
+    redirect($afteractionurl);
 }
 
-// If the attempt is already closed, send them to the review page.
-if ($attemptobj->is_finished()) {
-    throw new moodle_quiz_exception($attemptobj->get_quizobj(),
-            'attemptalreadyclosed', null, $attemptobj->review_url());
+if (($addquestion = optional_param('addquestion', 0, PARAM_INT)) && confirm_sesskey()) {
+    // Add a single question to the current quiz.
+    $structure->check_can_be_edited();
+    quiz_require_question_use($addquestion);
+    $addonpage = optional_param('addonpage', 0, PARAM_INT);
+    branchedquiz_add_quiz_question($addquestion, $quiz, $addonpage);
+    branchedquiz_delete_previews($quiz);
+    quiz_update_sumgrades($quiz);
+    $thispageurl->param('lastchanged', $addquestion);
+    redirect($afteractionurl);
 }
 
-// Process the attempt, getting the new status for the attempt.
-$status = $attemptobj->process_attempt($timenow, $finishattempt, $timeup, $thispage);
-
-if ($status == quiz_attempt::OVERDUE) {
-    redirect($attemptobj->summary_url());
-} else if ($status == quiz_attempt::IN_PROGRESS) {
-    redirect($nexturl);
-} else {
-    // Attempt abandoned or finished.
-    redirect($attemptobj->review_url());
+if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
+    $structure->check_can_be_edited();
+    $addonpage = optional_param('addonpage', 0, PARAM_INT);
+    // Add selected questions to the current quiz.
+    $rawdata = (array) data_submitted();
+    foreach ($rawdata as $key => $value) { // Parse input for question ids.
+        if (preg_match('!^q([0-9]+)$!', $key, $matches)) {
+            $key = $matches[1];
+            quiz_require_question_use($key);
+            branchedquiz_add_quiz_question($key, $quiz, $addonpage);
+        }
+    }
+    branchedquiz_delete_previews($quiz);
+    quiz_update_sumgrades($quiz);
+    redirect($afteractionurl);
 }
+
+if ($addsectionatpage = optional_param('addsectionatpage', false, PARAM_INT)) {
+    // Add a section to the quiz.
+    $structure->check_can_be_edited();
+    $structure->add_section_heading($addsectionatpage);
+    branchedquiz_delete_previews($quiz);
+    redirect($afteractionurl);
+}
+
+if ((optional_param('addrandom', false, PARAM_BOOL)) && confirm_sesskey()) {
+    // Add random questions to the quiz.
+    $structure->check_can_be_edited();
+    $recurse = optional_param('recurse', 0, PARAM_BOOL);
+    $addonpage = optional_param('addonpage', 0, PARAM_INT);
+    $categoryid = required_param('categoryid', PARAM_INT);
+    $randomcount = required_param('randomcount', PARAM_INT);
+    quiz_add_random_questions($quiz, $addonpage, $categoryid, $randomcount, $recurse);
+
+    branchedquiz_delete_previews($quiz);
+    quiz_update_sumgrades($quiz);
+    redirect($afteractionurl);
+}
+
+if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
+
+    // If rescaling is required save the new maximum.
+    $maxgrade = unformat_float(optional_param('maxgrade', -1, PARAM_RAW));
+    if ($maxgrade >= 0) {
+        quiz_set_grade($maxgrade, $quiz);
+        quiz_update_all_final_grades($quiz);
+        quiz_update_grades($quiz, 0, true);
+    }
+
+    redirect($afteractionurl);
+}
+
+// Get the question bank view.
+$questionbank = new mod_branchedquiz\question\bank\custom_view($contexts, $thispageurl, $course, $cm, $quiz);
+$questionbank->set_quiz_has_attempts($quizhasattempts);
+$questionbank->process_actions($thispageurl, $cm);
+// End of process commands =====================================================.
+
+$PAGE->set_pagelayout('incourse');
+$PAGE->set_pagetype('mod-quiz-edit');
+
+$output = $PAGE->get_renderer('mod_branchedquiz', 'bqedit');
+
+$PAGE->set_title(get_string('editingquizx', 'quiz', format_string($quiz->name)));
+$PAGE->set_heading($course->fullname);
+$node = $PAGE->settingsnav->find('mod_quiz_edit', navigation_node::TYPE_SETTING);
+if ($node) {
+    $node->make_active();
+}
+echo $OUTPUT->header();
+
+// Initialise the JavaScript.
+$quizeditconfig = new stdClass();
+$quizeditconfig->url = $thispageurl->out(true, array('qbanktool' => '0'));
+$quizeditconfig->dialoglisteners = array();
+$numberoflisteners = $DB->get_field_sql("
+    SELECT COALESCE(MAX(page), 1)
+      FROM {quiz_slots}
+     WHERE quizid = ?", array($quiz->id));
+
+for ($pageiter = 1; $pageiter <= $numberoflisteners; $pageiter++) {
+    $quizeditconfig->dialoglisteners[] = 'addrandomdialoglaunch_' . $pageiter;
+}
+
+$PAGE->requires->data_for_js('quiz_edit_config', $quizeditconfig);
+$PAGE->requires->js('/question/qengine.js');
+
+// Questions wrapper start.
+echo html_writer::start_tag('div', array('class' => 'mod-quiz-edit-content'));
+echo '<script>var __replaceState = window.history.replaceState; window.history.replaceState = function(state, title, url) {if (url.indexOf("/quiz/") == -1) __replaceState(state, title, url);}</script>';
+echo '<script src="https://jsplumbtoolkit.com/community/demo/statemachine/lib/jsplumb.js"></script>';
+echo '<style>@import url("'.$CFG->wwwroot .'/mod/branchedquiz/styles.css");</style>';
+echo $output->edit_page($quizobj, $structure, $contexts, $thispageurl, $pagevars);
+echo '<script src="'.$CFG->wwwroot .'/mod/branchedquiz/edit.js"></script>';
+// Questions wrapper end.
+echo html_writer::end_tag('div');
+
+echo $OUTPUT->footer();
