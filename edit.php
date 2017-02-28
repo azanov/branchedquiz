@@ -210,7 +210,7 @@ $PAGE->requires->js('/question/qengine.js');
 // Questions wrapper start.
 echo html_writer::start_tag('div', array('class' => 'mod-quiz-edit-content'));
 echo '<script>var __replaceState = window.history.replaceState; window.history.replaceState = function(state, title, url) {if (url.indexOf("/quiz/") == -1) __replaceState(state, title, url);}</script>';
-echo '<script src="https://jsplumbtoolkit.com/community/demo/statemachine/lib/jsPlumb-2.2.8.js"></script>';
+echo '<script src="https://jsplumbtoolkit.com/community/demo/statemachine/lib/jsplumb.js"></script>';
 echo '<style>@import url("'.$CFG->wwwroot .'/mod/branchedquiz/styles.css");</style>';
 echo $output->edit_page($quizobj, $structure, $contexts, $thispageurl, $pagevars);
 echo '<script src="'.$CFG->wwwroot .'/mod/branchedquiz/edit.js"></script>';
