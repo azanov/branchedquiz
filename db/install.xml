@@ -4,8 +4,10 @@
         <TABLE NAME="branchedquiz_edge" COMMENT="Stores one edge of the generated graph">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
-                <FIELD NAME="points" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" />
+                <FIELD NAME="nodeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
+                <FIELD NAME="lowerbound" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" SEQUENCE="false" DECIMAL="5" />
+                <FIELD NAME="operator" TYPE="text" NOTNULL="true" LENGTH="8"/>
+                <FIELD NAME="upperbound" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" SEQUENCE="false" DECIMAL="5" />
                 <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" />
                 <FIELD NAME="prev" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" />
                 <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="true" LENGTH="2048" />
@@ -17,7 +19,7 @@
                 <KEY NAME="prev" TYPE="foreign" FIELDS="prev" REFTABLE="branchedquiz_node" REFFIELDS="id" />
             </KEYS>
             <INDEXES>
-                <INDEX NAME="quizid-prev-points-next" UNIQUE="true" FIELDS="quizid, prev, points, next" />
+                <INDEX NAME="quizid-prev-lowerbound-upperbound-next" UNIQUE="true" FIELDS="quizid, prev, lowerbound, upperbound, next" />
             </INDEXES>
         </TABLE>
         <TABLE NAME="branchedquiz_node" COMMENT="Stores the node that a edge referes to">
