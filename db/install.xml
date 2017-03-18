@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/branchedquiz/db" VERSION="20170115" COMMENT="XMLDB file for Moodle question/behaviour/testflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd">
+<XMLDB PATH="mod/branchedquiz/db" VERSION="20170318" COMMENT="XMLDB file for Moodle question/behaviour/testflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd">
     <TABLES>
         <TABLE NAME="branchedquiz_edge" COMMENT="Stores one edge of the generated graph">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
                 <FIELD NAME="nodeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
-                <FIELD NAME="lowerbound" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" SEQUENCE="false" DECIMAL="5" />
+                <FIELD NAME="lowerbound" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" SEQUENCE="false" DECIMALS="5" />
                 <FIELD NAME="operator" TYPE="text" NOTNULL="true" LENGTH="8"/>
-                <FIELD NAME="upperbound" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" SEQUENCE="false" DECIMAL="5" />
+                <FIELD NAME="upperbound" TYPE="number" NOTNULL="true" DEFAULT="0" LENGTH="10" SEQUENCE="false" DECIMALS="5" />
                 <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" />
                 <FIELD NAME="prev" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" />
                 <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="true" LENGTH="2048" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
-                <KEY NAME="quizid" TYPE="foreign" FIELDS="quizid" REFTABLE="branchedquiz" REFFIELDS="id" />
+                <KEY NAME="nodeid" TYPE="foreign" FIELDS="nodeid" REFTABLE="branchedquiz_node" REFFIELDS="id" />
                 <KEY NAME="next" TYPE="foreign" FIELDS="next" REFTABLE="branchedquiz_node" REFFIELDS="id" />
                 <KEY NAME="prev" TYPE="foreign" FIELDS="prev" REFTABLE="branchedquiz_node" REFFIELDS="id" />
             </KEYS>
