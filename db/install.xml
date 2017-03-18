@@ -5,9 +5,9 @@
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
                 <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
-                <FIELD NAME="lowerbound" TYPE="float" NOTNULL="true" DEFAULT="0" LENGTH="10" />
+                <FIELD NAME="lowerbound" TYPE="float" NOTNULL="false" DEFAULT="0" LENGTH="10" />
                 <FIELD NAME="operator" TYPE="text" NOTNULL="true" LENGTH="8">
-                <FIELD NAME="upperbound" TYPE="float" NOTNULL="true" DEFAULT="0" LENGTH="10" />
+                <FIELD NAME="upperbound" TYPE="float" NOTNULL="false" DEFAULT="0" LENGTH="10" />
                 <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" />
                 <FIELD NAME="prev" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" />
                 <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="true" LENGTH="2048" />
