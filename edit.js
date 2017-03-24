@@ -54,7 +54,7 @@ jsPlumb.ready(function() {
                 label = edge.lowerbound + ' <= x <= ' + edge.upperbound;
                 break;
         }
-        return ('' + label).replace(/0+$/, '0');
+        return ('' + label).replace(/\.0+$/, '.0');
     }
 
     function showEdge(c) {
