@@ -10,3 +10,5 @@ nbproject/
 composer.phar
 phpunit.xml
 .php_cs.cache
+*.sublime-project
+*.sublime-workspace

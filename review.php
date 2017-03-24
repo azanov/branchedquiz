@@ -28,6 +28,8 @@
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
+
 require_once($CFG->dirroot . '/mod/quiz/report/reportlib.php');
 require_once($CFG->dirroot . '/mod/branchedquiz/attemptlib.php');
 
@@ -185,8 +187,10 @@ if (!empty($overtime)) {
     );
 }
 
+$sum_max = get_sum_max_grades($attemptobj);
+
 // Show marks (if the user is allowed to see marks at the moment).
-$grade = quiz_rescale_grade($attempt->sumgrades, $quiz, false);
+$grade = branchedquiz_rescale_grade($attempt->sumgrades, $quiz, $sum_max, false);
 if ($options->marks >= question_display_options::MARK_AND_MAX && quiz_has_grades($quiz)) {
 
     if ($attempt->state != quiz_attempt::FINISHED) {
@@ -200,10 +204,10 @@ if ($options->marks >= question_display_options::MARK_AND_MAX && quiz_has_grades
 
     } else {
         // Show raw marks only if they are different from the grade (like on the view page).
-        if ($quiz->grade != $quiz->sumgrades) {
+        if ($quiz->grade !=  $sum_max){
             $a = new stdClass();
             $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
-            $a->maxgrade = quiz_format_grade($quiz, $quiz->sumgrades);
+            $a->maxgrade = quiz_format_grade($quiz, $sum_max);
             $summarydata['marks'] = array(
                 'title'   => get_string('marks', 'quiz'),
                 'content' => get_string('outofshort', 'quiz', $a),
@@ -216,7 +220,7 @@ if ($options->marks >= question_display_options::MARK_AND_MAX && quiz_has_grades
         $a->maxgrade = quiz_format_grade($quiz, $quiz->grade);
         if ($quiz->grade != 100) {
             $a->percent = html_writer::tag('b', format_float(
-                    $attempt->sumgrades * 100 / $quiz->sumgrades, 0));
+                    $attempt->sumgrades * 100 / $sum_max, 0));
             $formattedgrade = get_string('outofpercent', 'quiz', $a);
         } else {
             $formattedgrade = get_string('outof', 'quiz', $a);
@@ -256,6 +260,9 @@ $output = $PAGE->get_renderer('mod_branchedquiz');
 $navbc = $attemptobj->get_navigation_panel($output, 'quiz_review_nav_panel', $page, $showall);
 $regions = $PAGE->blocks->get_regions();
 $PAGE->blocks->add_fake_block($navbc, reset($regions));
+
+// show only questions of current path
+$slots = get_current_path_slots($attemptobj);
 
 echo $output->review_page($attemptobj, $slots, $page, $showall, $lastpage, $options, $summarydata);
 

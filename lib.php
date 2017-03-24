@@ -287,3 +287,27 @@ function branchedquiz_attempt_summary_link_to_reports($quiz, $cm, $context, $ret
             'id' => $cm->id, 'mode' => quiz_report_default_report($context)));
     return html_writer::link($url, $summary);
 }
+
+function branchedquiz_get_edges($quiz) {
+    global $DB;
+    $edges = $DB->get_records_sql('SELECT {branchedquiz_edge}.* FROM {branchedquiz_edge} INNER JOIN {quiz_slots} ON {quiz_slots}.id = {branchedquiz_edge}.slotid WHERE {quiz_slots}.quizid = ?', array($quiz->id));
+
+    foreach($edges as $edge) {
+        if ($edge->operator == OPERATOR_LESS_OR_EQUAL && $edge->upperbound == NULL) {
+            $edge->operator = OPERATOR_UI_ONLY_MIN;
+        } else if ($edge->operator == OPERATOR_LESS_OR_EQUAL && $edge->lowerbound == NULL) {
+            $edge->operator = OPERATOR_UI_ONLY_MAX;
+        } else if ($edge->operator == OPERATOR_LESS && $edge->lowerbound == NULL) {
+            $edge->operator = OPERATOR_UI_ONLY_LESS;
+        } else if ($edge->operator == OPERATOR_LESS && $edge->upperbound == NULL) {
+            $edge->operator = OPERATOR_UI_ONLY_MORE;
+        }
+    }
+
+    return $edges;
+}
+
+function branchedquiz_get_node($slot) {
+    global $DB;
+    return $DB->get_record_sql('SELECT * FROM {branchedquiz_node} WHERE slotid = ?', array($slot));
+}

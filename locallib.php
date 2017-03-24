@@ -282,6 +282,301 @@ function branchedquiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark 
     // }
 
     $DB->insert_record('quiz_slots', $slot);
+
+
+
     $trans->allow_commit();
+
+    $trans = $DB->start_delegated_transaction();
+    $slot = $DB->get_record_sql('SELECT * FROM {quiz_slots} WHERE quizid = ? AND questionid = ?', array($quiz->id, $questionid));
+    print_r($slot);
+    $node = new stdClass();
+    $node->quizid = $quiz->id;
+    $node->slotid = $slot->id;
+    $node->nodetype = 0;
+    $node->x = 30;
+    $node->y = 30 * $slot->slot + 50 * ($slot->slot - 1);
+
+    $DB->insert_record('branchedquiz_node', $node);
+    $trans->allow_commit();
+
 }
 
+/**
+ * returns the slotid of the given page
+ * @param $quizobj
+ * @param $page
+ * @return int
+ */
+function page_to_slotid($quizobj, $page){
+    $quizobj->preload_questions();
+    $quizobj->load_questions();
+    //questions
+    $qs = $quizobj->get_questions();
+    $slotid = -1;
+
+    foreach(array_keys($qs) as $id){
+        if ($qs[$id]->page == $page){
+            $slotid = $qs[$id]->slotid;
+            break;
+        }
+    }
+
+    return $slotid;
+}
+
+/**
+ * returns the slot of the given page
+ * @param $quizobj
+ * @param $page
+ * @return int
+ */
+function page_to_slot($quizobj, $page){
+    $quizobj->preload_questions();
+    $quizobj->load_questions();
+    //questions
+    $qs = $quizobj->get_questions();
+    $slot = -1;
+
+    foreach(array_keys($qs) as $id){
+        if ($qs[$id]->page == $page) $slot = $qs[$id]->slot;
+    }
+
+    return $slot;
+}
+
+/**
+ * returns the page number of the slotid
+ * @param $quizobj
+ * @param $slotid
+ * @return int
+ */
+function slotid_to_page($quizobj, $slotid){
+    $quizobj->preload_questions();
+    $quizobj->load_questions();
+    //questions
+    $qs = $quizobj->get_questions();
+    $page = -1;
+
+    foreach(array_keys($qs) as $id){
+        if ($qs[$id]->slotid == $slotid) $page = $qs[$id]->page;
+    }
+
+    return $page;
+}
+
+/**
+ * retuns slots of questions that the user has actually seen in current path,
+ * but not in the order in which he saw the questions
+ * @param $attemptobj
+ * @return array of slots that the user has actually seen in current path
+ */
+
+function get_current_path_slots($attemptobj){
+
+    $quizobj = $attemptobj->get_quizobj();
+    $quizobj->preload_questions();
+    $quizobj->load_questions();
+
+    $qs = $quizobj->get_questions();
+
+    $slots = array();
+
+    foreach(array_keys($qs) as $id){
+        $tmp = ($attemptobj->get_question_mark($qs[$id]->slot));
+        if (!empty($tmp)) array_push($slots, $qs[$id]->slot);
+    }
+
+    return $slots;
+}
+
+/**
+ * used in summary table, to pass the summary table on questions in current path
+ * @param $attemptobj
+ * @return int sum of max grades of all questions in current path
+ */
+
+function get_sum_max_grades($attemptobj){
+
+    $slots = get_current_path_slots($attemptobj);
+
+    $quba = $attemptobj->get_quba();
+
+    $sum = 0;
+
+    foreach($slots as $slot){
+        $sum += $quba->get_question_max_mark($slot);
+    }
+
+    return $sum;
+}
+
+
+/**
+ * Convert the raw grade stored in $attempt into a grade out of the maximum
+ * grade for this quiz.
+ *
+ * @param float $rawgrade the unadjusted grade, fof example $attempt->sumgrades
+ * @param object $quiz the quiz object. Only the fields grade, sumgrades and decimalpoints are used.
+ * @param bool|string $format whether to format the results for display
+ *      or 'question' to format a question grade (different number of decimal places.
+ * @param $sum_max sum of max grades for all slots in current path
+ * @return float|string the rescaled grade, or null/the lang string 'notyetgraded'
+ *      if the $grade is null.
+ */
+function branchedquiz_rescale_grade($rawgrade, $quiz, $sum_max, $format = true) {
+
+    if (is_null($rawgrade)) {
+        $grade = null;
+    } else if ($sum_max >= 0.000005) {
+        $grade = $rawgrade * $quiz->grade /$sum_max;
+    } else {
+        $grade = 0;
+    }
+    if ($format === 'question') {
+        $grade = quiz_format_question_grade($quiz, $grade);
+    } else if ($format) {
+        $grade = quiz_format_grade($quiz, $grade);
+    }
+    return $grade;
+}
+
+function branchedquiz_set_grade($newgrade, $quiz) {
+    global $DB;
+    // This is potentially expensive, so only do it if necessary.
+    if (abs($quiz->grade - $newgrade) < 1e-7) {
+        // Nothing to do.
+        return true;
+    }
+    $oldgrade = $quiz->grade;
+    $quiz->grade = $newgrade;
+    // Use a transaction, so that on those databases that support it, this is safer.
+    $transaction = $DB->start_delegated_transaction();
+    // Update the quiz table.
+    $DB->set_field('quiz', 'grade', $newgrade, array('id' => $quiz->instance));
+    if ($oldgrade < 1) {
+        // If the old grade was zero, we cannot rescale, we have to recompute.
+        // We also recompute if the old grade was too small to avoid underflow problems.
+        quiz_update_all_final_grades($quiz);
+    } else {
+        // We can rescale the grades efficiently.
+        $timemodified = time();
+        $DB->execute("
+                UPDATE {quiz_grades}
+                SET grade = ? * grade, timemodified = ?
+                WHERE quiz = ?
+        ", array($newgrade/$oldgrade, $timemodified, $quiz->id));
+    }
+    if ($oldgrade > 1e-7) {
+        // Update the quiz_feedback table.
+        $factor = $newgrade/$oldgrade;
+        $DB->execute("
+                UPDATE {quiz_feedback}
+                SET mingrade = ? * mingrade, maxgrade = ? * maxgrade
+                WHERE quizid = ?
+        ", array($factor, $factor, $quiz->id));
+    }
+    // Update grade item and send all grades to gradebook.
+    branchedquiz_grade_item_update($quiz);
+    branchedquiz_update_grades($quiz);
+    $transaction->allow_commit();
+    return true;
+}
+
+function branchedquiz_add_edge($quiz, $startSlot, $endSlot) {
+    global $DB;
+    $edge = new stdClass();
+    $edge->slotid = $startSlot;
+    $edge->next = $endSlot;
+    $edge->operator = '';
+    $edge->feedbacktext = '';
+    return $DB->insert_record('branchedquiz_edge', $edge);
+}
+
+function branchedquiz_remove_node($quiz, $slotId) {
+    global $DB;
+    $DB->delete_records('branchedquiz_node', array('quizid' => $quiz->id, 'id' => $slotId));
+    $DB->delete_records('branchedquiz_edge', array('slotid' => $slotId));
+    $DB->delete_records('branchedquiz_edge', array('next' => $slotId));
+}
+
+function branchedquiz_pos_node($quiz, $slot, $x, $y) {
+    global $DB;
+    $node = $DB->get_record('branchedquiz_node', array('quizid' => $quiz->id, 'slotid' => $slot));
+    $node->x = $x;
+    $node->y = $y;
+    $DB->update_record('branchedquiz_node', $node);
+}
+
+define("OPERATOR_EQUAL", "eq");
+define("OPERATOR_LESS", "le");
+define("OPERATOR_LESS_OR_EQUAL", "lq");
+define("OPERATOR_UI_ONLY_MAX", "max");
+define("OPERATOR_UI_ONLY_MIN", "min");
+define("OPERATOR_UI_ONLY_LESS", "less");
+define("OPERATOR_UI_ONLY_MORE", "more");
+
+function branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperbound) {
+    global $DB;
+    $edge = $DB->get_record('branchedquiz_edge', array('id' => $id));
+
+    if (empty($operator) || $operator == '') {
+        // all results
+        $edge->operator = $operator;
+        $edge->lowerbound = NULL;
+        $edge->upperbound = NULL;
+    } else if ($operator == OPERATOR_EQUAL) {
+
+        // fixed result only
+        $edge->operator = $operator;
+        $edge->lowerbound = $lowerbound;
+        $edge->upperbound = $lowerbound;
+
+    } else if ($operator == OPERATOR_UI_ONLY_MIN) {
+
+        $edge->operator = OPERATOR_LESS_OR_EQUAL;
+        $edge->lowerbound = $lowerbound;
+        $edge->upperbound = NULL;
+
+    } else if ($operator == OPERATOR_UI_ONLY_MAX) {
+
+        $edge->operator = OPERATOR_LESS_OR_EQUAL;
+        $edge->lowerbound = NULL;
+        $edge->upperbound = $upperbound;
+
+    } else if ($operator == OPERATOR_LESS) {
+
+        $edge->operator = OPERATOR_LESS;
+        $edge->lowerbound = $lowerbound;
+        $edge->upperbound = $upperbound;
+
+    } else if ($operator == OPERATOR_LESS_OR_EQUAL) {
+
+        $edge->operator = OPERATOR_LESS_OR_EQUAL;
+        $edge->lowerbound = $lowerbound;
+        $edge->upperbound = $upperbound;
+
+    } else if ($operator == OPERATOR_UI_ONLY_LESS) {
+
+        $edge->operator = OPERATOR_LESS;
+        $edge->lowerbound = NULL;
+        $edge->upperbound = $upperbound;
+
+    } else if ($operator == OPERATOR_UI_ONLY_MORE) {
+
+        $edge->operator = OPERATOR_LESS;
+        $edge->lowerbound = $lowerbound;
+        $edge->upperbound = NULL;
+
+    }
+
+    $DB->update_record('branchedquiz_edge', $edge);
+
+    $edge->operator = $operator;
+    return $edge;
+}
+
+function branchedquiz_remove_edge($quiz, $id) {
+    global $DB;
+    $DB->delete_records('branchedquiz_edge', array('id' => $id));
+}

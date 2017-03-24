@@ -30,6 +30,7 @@
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
 require_once($CFG->dirroot . '/mod/branchedquiz/attemptlib.php');
 
 // Remember the current time as the time any responses were submitted
@@ -48,9 +49,81 @@ $scrollpos     = optional_param('scrollpos',     '',     PARAM_RAW);
 
 $attemptobj = branchedquiz_attempt::create($attemptid);
 
+//note: the first page in processattempt is 0, in questions however 1
+// if page == -1, user gets  summary page
+$slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage+1);
+$points = -1;
+if ($slotid != -1) $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
+$next_slotid = -1;
+
+// print_r($points);
+
+if (!is_null($points)){
+    // echo 'tzest';
+    // check if points don't matter  lowerbound == null && upperbound == null
+    $edge = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND lowerbound IS NULL AND upperbound IS NULL', array($slotid));
+
+    // print_r($edge);
+
+    //if query is empty, then points matter
+    if (!$edge){
+        $edge_eq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, "=", $points, $points));
+        $edge_lt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, "<"));
+        $edge_lt_eq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, "<="));
+
+        // operator == equal
+        if ($edge_eq){
+            assert($edge_eq->upperbound == $edge_eq->lowerbound);
+            $next_slotid = $edge_eq->next;
+
+        }
+        // operator == less than
+        if ($edge_lt) {
+            foreach ($edge_lt as $lt) {
+                $up = $lt->upperbound;
+                $low = $lt->lowerbound;
+                // valid values for upperbound and lowerbound
+                if (!is_null($low) && !is_null($up)) {
+                    if ($points < $up && $points > $low) $next_slotid = $lt->next;
+                    // no upperbound
+                } else if (!is_null($low) && is_null($up)) {
+                    if ($points > $low) $next_slotid = $lt->next;
+                    // no lowerbound
+                } else if (is_null($low) && !is_null($up)) {
+                    if ($points < $up) $next_slotid = $lt->next;
+                }
+            }
+        }
+        //operator == less than or equal
+        if ($edge_lt_eq){
+                foreach ($edge_lt_eq as $lt_eq) {
+                    $up = $lt_eq->upperbound;
+                    $low = $lt_eq->lowerbound;
+                    // valid values for upperbound and lowerbound
+                    if (!is_null($low) && !is_null($up)) {
+                        if ($points <= $up && $points >= $low) $next_slotid = $lt_eq->next;
+                        // no upperbound
+                    } elseif (!is_null($low) && is_null($up)) {
+                        if ($points >= $Low) $next_slotid = $lt_eq->next;
+                        // no lowerbound
+                    } else if (is_null($low) && !is_null($up)) {
+                        if ($points <= $up) $next_slotid = $lt_eq->next;
+                    }
+                }
+        }
+    }else{
+        $next_slotid = $edge->next;
+    }
+
+    $branched_next = slotid_to_page($attemptobj->get_quizobj(), $next_slotid);
+
+    if ($branched_next != -1) $branched_next -= 1;
+}
+
 // Set $nexturl now.
 if ($next) {
-    $page = $nextpage;
+    $page =   $branched_next;
+    //$page =   $nextpage;
 } else if ($previous && $thispage > 0) {
     $page = $thispage - 1;
 } else {

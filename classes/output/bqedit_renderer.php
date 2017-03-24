@@ -26,6 +26,7 @@ namespace mod_branchedquiz\output;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/quiz/classes/output/edit_renderer.php');
+require_once($CFG->dirroot.'/mod/branchedquiz/lib.php');
 
 use \mod_quiz\structure;
 use \html_writer;
@@ -61,8 +62,6 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         $output .= $this->start_section_list($structure);
 
         foreach ($structure->get_sections() as $section) {
-            $output .= $this->start_section($structure, $section);
-            $output .= $this->questions_in_section($structure, $section, $contexts, $pagevars, $pageurl);
 
             if ($structure->is_last_section($section)) {
                 $output .= \html_writer::start_div('last-add-menu');
@@ -71,10 +70,56 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                 $output .= \html_writer::end_div();
             }
 
+            $output .= $this->start_section($structure, $section);
+
+            $output .= $this->questions_in_section($structure, $section, $contexts, $pagevars, $pageurl);
+            $output .= '<div class="branchedquiz-panel js-question-panel" >';
+                $output .= '<h4></h4>';
+                $output .= '<div class="branchedquiz-panel-actions">';
+                    $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-set-first-question" data-quizid="'.$structure->get_quizid().'">Als Start-Frage setzen</a>';
+                    $output .= '<br />';
+                    $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-remove-question" data-quizid="'.$structure->get_quizid().'">Frage löschen</a>';
+                $output .= '</div>';
+                $output .= '<div class="branchedquiz-panel-text js-question-panel-text"></div>';
+            $output .= '</div>';
+
+            $output .= '<div class="branchedquiz-panel js-edge-panel" >';
+                $output .= '<h4>Verbindung</h4>';
+                $output .= '<div class="branchedquiz-panel-actions">';
+                    $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-remove-edge" data-quizid="'.$structure->get_quizid().'">Verbindung löschen</a>';
+                $output .= '</div>';
+                $output .= '<form action="javascript:;" method="POST" class="js-edge-form branchedquiz-form">';
+                    $output .= '<input type="hidden" name="class" value="resource"/>';
+                    $output .= '<input type="hidden" name="field" value="updateedge"/>';
+                    $output .= '<input type="hidden" name="sesskey" value="'.sesskey().'"/>';
+                    $output .= '<input type="hidden" name="quizid" value="'.$structure->get_quizid().'" />';
+                    $output .= '<input type="hidden" name="id" class="js-edge-id" />';
+
+                    $output .= '<label for="operator"></label>';
+                    $output .= '<select name="operator" class="js-operator branchedquiz-input">';
+                        $output .= '<option value="">Alle Ergebnisse</option>';
+                        $output .= '<option value="eq">Fixe Punktanzahl</option>';
+                        $output .= '<option value="min">Mindestens (x >= n)</option>';
+                        $output .= '<option value="less">Kleiner als (x < n)</option>';
+                        $output .= '<option value="more">Größer als (x > n)</option>';
+                        $output .= '<option value="max">Maximal (x <= n)</option>';
+                        $output .= '<option value="le">Interval (a &lt; x &lt; b)</option>';
+                        $output .= '<option value="lq">Interval (a &lt;= x &lt;= b)</option>';
+                    $output .= '</select>';
+                    $output .= '<input type="text" name="lowerbound" class="js-lowerbound branchedquiz-input"/>';
+                    $output .= '<input type="text" name="upperbound" class="js-upperbound branchedquiz-input"/>';
+                    $output .= '<button type="submit">speichern</button>';
+                $output .= '</form>';
+            $output .= '</div>';
+
+
+
             $output .= $this->end_section();
         }
 
         $output .= $this->end_section_list();
+
+
 
         // Initialise the JavaScript.
         $this->initialise_editing_javascript($structure, $contexts, $pagevars, $pageurl);
@@ -111,7 +156,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         foreach ($structure->get_slots_in_section($section->id) as $slot) {
             $output .= $this->question_row($structure, $slot, $contexts, $pagevars, $pageurl);
         }
-        return html_writer::tag('ul', $output, array('class' => 'section img-text js-question-canvas jtk-surface jtk-surface-nopan', 'id' => 'questionCanvas'));
+        return html_writer::tag('div', $output, array('class' => 'section img-text js-question-canvas jtk-surface jtk-surface-nopan', 'id' => 'questionCanvas'));
     }
 
     public function question_row(structure $structure, $slot, $contexts, $pagevars, $pageurl) {
@@ -128,17 +173,27 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         // Question HTML.
         $questionhtml = $this->question($structure, $slot, $pageurl);
         $qtype = $structure->get_question_type_for_slot($slot);
-        $questionclasses = 'activity ' . $qtype . ' qtype_' . $qtype . ' slot';
+        $questionclasses = 'activity js-branchedquiz-question ' . $qtype . ' qtype_' . $qtype . ' slot';
 
         $questionhtml = '<div class="ep"></div>'.$questionhtml;
 
         $question = $structure->get_question_in_slot($slot);
 
-        $output .= html_writer::tag('li', $questionhtml . $joinhtml,
+
+        $questionname = shorten_text(format_string($question->name), 100);
+
+        $node = branchedquiz_get_node($structure->get_slot_id_for_slot($slot));
+        // print_r($node);
+        $output .= html_writer::tag('div', $questionhtml . $joinhtml,
                 array('class' => $questionclasses, 'id' => 'slot-' . $structure->get_slot_id_for_slot($slot),
                         'data-canfinish' => $structure->can_finish_during_the_attempt($slot),
                         'data-question-id' => $question->questionid,
-                        'data-slot' => $slot
+                        'data-slot' => $slot,
+                        'data-slot-id' => $structure->get_slot_id_for_slot($slot),
+                        'data-text' => $question->questiontext,
+                        'data-title' => $questionname,
+                        'data-x' => $node->x,
+                        'data-y' => $node->y
                         ));
 
         return $output;
@@ -153,8 +208,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
             $sectionstyle = ' only-has-one-slot';
         }
 
-        $output .= html_writer::start_tag('li', array('id' => 'section-'.$section->id,
-            'class' => 'section main clearfix'.$sectionstyle, 'role' => 'region',
+        $output .= html_writer::start_tag('div', array('id' => 'section-'.$section->id,
+            'class' => 'section main clearfix'.$sectionstyle, 'role' => 'region', 'data-id' => $section->id, 'data-quiz-id' => $structure->get_quizid(),
             'aria-label' => $section->heading));
 
         $output .= html_writer::start_div('content');
@@ -388,9 +443,9 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         $output = '';
         // $output .= html_writer::start_tag('div');
 
-        if ($structure->can_be_edited()) {
-            $output .= $this->question_move_icon($structure, $slot);
-        }
+        // if ($structure->can_be_edited()) {
+        //     $output .= $this->question_move_icon($structure, $slot);
+        // }
 
         // $output .= html_writer::start_div('mod-indent-outer');
         // $output .= $this->question_number($structure->get_displayed_number_for_slot($slot));
@@ -439,7 +494,9 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                 'returnurl' => $pageurl->out_as_local_url(),
                 'cmid' => $structure->get_cmid(), 'id' => $question->id));
 
-        $instancename = quiz_question_tostring($question);
+
+
+        $instancename = quiz_question_tostring($question, false, false);
 
         $qtype = \question_bank::get_qtype($question->qtype, false);
         $namestr = $qtype->local_name();
@@ -457,6 +514,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         $output .= html_writer::link($editurl, $activitylink,
                 array('title' => get_string('editquestion', 'quiz').' '.$title));
 
+
+
         return $output;
     }
 
@@ -469,7 +528,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
         $temp = clone($question);
         $temp->questiontext = '';
-        $instancename = quiz_question_tostring($temp);
+        $instancename = quiz_question_tostring($temp, false, false);
 
         $configuretitle = get_string('configurerandomquestion', 'quiz');
         $qtype = \question_bank::get_qtype($question->qtype, false);
@@ -500,9 +559,9 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         return '';
     }
 
-    public function maximum_grade_input($structure, \moodle_url $pageurl) {
-        return '';
-    }
+    // public function maximum_grade_input($structure, \moodle_url $pageurl) {
+    //     return '';
+    // }
 
     protected function repaginate_form(structure $structure, \moodle_url $pageurl) {
         return '';
