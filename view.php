@@ -23,7 +23,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->libdir.'/gradelib.php');
 require_once($CFG->dirroot.'/mod/quiz/locallib.php');
@@ -123,9 +122,9 @@ if (!$canpreview) {
 $mygradeoverridden = false;
 $gradebookfeedback = '';
 
-$grading_info = grade_get_grades($course->id, 'mod', 'quiz', $quiz->id, $USER->id);
-if (!empty($grading_info->items)) {
-    $item = $grading_info->items[0];
+$gradinginfo = grade_get_grades($course->id, 'mod', 'quiz', $quiz->id, $USER->id);
+if (!empty($gradinginfo->items)) {
+    $item = $gradinginfo->items[0];
     if (isset($item->grades[$USER->id])) {
         $grade = $item->grades[$USER->id];
 

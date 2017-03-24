@@ -32,7 +32,7 @@ function branchedquiz_add_instance($quiz) {
 }
 
 function branchedquiz_update_instance($quiz, $mform) {
-	    global $CFG, $DB;
+    global $CFG, $DB;
     require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
     // Process the options from the form.
@@ -106,21 +106,21 @@ function branchedquiz_extend_settings_navigation($settings, $quiznode) {
     }
 
     if (has_capability('mod/quiz:manageoverrides', $PAGE->cm->context)) {
-        $url = new moodle_url('/mod/branchedquiz/overrides.php', array('cmid'=>$PAGE->cm->id));
+        $url = new moodle_url('/mod/branchedquiz/overrides.php', array('cmid' => $PAGE->cm->id));
         $node = navigation_node::create(get_string('groupoverrides', 'quiz'),
-                new moodle_url($url, array('mode'=>'group')),
+                new moodle_url($url, array('mode' => 'group')),
                 navigation_node::TYPE_SETTING, null, 'mod_quiz_groupoverrides');
         $quiznode->add_node($node, $beforekey);
 
         $node = navigation_node::create(get_string('useroverrides', 'quiz'),
-                new moodle_url($url, array('mode'=>'user')),
+                new moodle_url($url, array('mode' => 'user')),
                 navigation_node::TYPE_SETTING, null, 'mod_quiz_useroverrides');
         $quiznode->add_node($node, $beforekey);
     }
 
     if (has_capability('mod/quiz:manage', $PAGE->cm->context)) {
         $node = navigation_node::create(get_string('editquiz', 'quiz'),
-                new moodle_url('/mod/branchedquiz/edit.php', array('cmid'=>$PAGE->cm->id)),
+                new moodle_url('/mod/branchedquiz/edit.php', array('cmid' => $PAGE->cm->id)),
                 navigation_node::TYPE_SETTING, null, 'mod_quiz_edit',
                 new pix_icon('t/edit', ''));
         $quiznode->add_node($node, $beforekey);
@@ -128,7 +128,7 @@ function branchedquiz_extend_settings_navigation($settings, $quiznode) {
 
     if (has_capability('mod/quiz:preview', $PAGE->cm->context)) {
         $url = new moodle_url('/mod/branchedquiz/startattempt.php',
-                array('cmid'=>$PAGE->cm->id, 'sesskey'=>sesskey()));
+                array('cmid' => $PAGE->cm->id, 'sesskey' => sesskey()));
         $node = navigation_node::create(get_string('preview', 'quiz'), $url,
                 navigation_node::TYPE_SETTING, null, 'mod_quiz_preview',
                 new pix_icon('i/preview', ''));
@@ -180,10 +180,10 @@ function branchedquiz_grade_item_update($quiz, $grades = null) {
 
     // What this is trying to do:
     // 1. If the quiz is set to not show grades while the quiz is still open,
-    //    and is set to show grades after the quiz is closed, then create the
-    //    grade_item with a show-after date that is the quiz close date.
+    // and is set to show grades after the quiz is closed, then create the
+    // grade_item with a show-after date that is the quiz close date.
     // 2. If the quiz is set to not show grades at either of those times,
-    //    create the grade_item as hidden.
+    // create the grade_item as hidden.
     // 3. If the quiz is set to show grades, create the grade_item visible.
     $openreviewoptions = mod_quiz_display_options::make_from_quiz($quiz,
             mod_quiz_display_options::LATER_WHILE_OPEN);
@@ -205,7 +205,7 @@ function branchedquiz_grade_item_update($quiz, $grades = null) {
         // Either
         // a) both open and closed enabled
         // b) open enabled, closed disabled - we can not "hide after",
-        //    grades are kept visible even after closing.
+        // grades are kept visible even after closing.
         $params['hidden'] = 0;
     }
 
@@ -221,28 +221,28 @@ function branchedquiz_grade_item_update($quiz, $grades = null) {
         }
     }
 
-    if ($grades  === 'reset') {
+    if ($grades === 'reset') {
         $params['reset'] = true;
         $grades = null;
     }
 
-    $gradebook_grades = grade_get_grades($quiz->course, 'mod', 'quiz', $quiz->id);
-    if (!empty($gradebook_grades->items)) {
-        $grade_item = $gradebook_grades->items[0];
-        if ($grade_item->locked) {
+    $gradebookgrades = grade_get_grades($quiz->course, 'mod', 'quiz', $quiz->id);
+    if (!empty($gradebookgrades->items)) {
+        $gradeitem = $gradebookgrades->items[0];
+        if ($gradeitem->locked) {
             // NOTE: this is an extremely nasty hack! It is not a bug if this confirmation fails badly. --skodak.
-            $confirm_regrade = optional_param('confirm_regrade', 0, PARAM_INT);
-            if (!$confirm_regrade) {
+            $confirmregrade = optional_param('confirm_regrade', 0, PARAM_INT);
+            if (!$confirmregrade) {
                 if (!AJAX_SCRIPT) {
                     $message = get_string('gradeitemislocked', 'grades');
-                    $back_link = $CFG->wwwroot . '/mod/branchedquiz/report.php?q=' . $quiz->id .
+                    $backlink = $CFG->wwwroot . '/mod/branchedquiz/report.php?q=' . $quiz->id .
                             '&amp;mode=overview';
-                    $regrade_link = qualified_me() . '&amp;confirm_regrade=1';
+                    $regradelink = qualified_me() . '&amp;confirm_regrade=1';
                     echo $OUTPUT->box_start('generalbox', 'notice');
                     echo '<p>'. $message .'</p>';
                     echo $OUTPUT->container_start('buttons');
-                    echo $OUTPUT->single_button($regrade_link, get_string('regradeanyway', 'grades'));
-                    echo $OUTPUT->single_button($back_link,  get_string('cancel'));
+                    echo $OUTPUT->single_button($regradelink, get_string('regradeanyway', 'grades'));
+                    echo $OUTPUT->single_button($backlink,  get_string('cancel'));
                     echo $OUTPUT->container_end();
                     echo $OUTPUT->box_end();
                 }
@@ -292,14 +292,14 @@ function branchedquiz_get_edges($quiz) {
     global $DB;
     $edges = $DB->get_records_sql('SELECT {branchedquiz_edge}.* FROM {branchedquiz_edge} INNER JOIN {quiz_slots} ON {quiz_slots}.id = {branchedquiz_edge}.slotid WHERE {quiz_slots}.quizid = ?', array($quiz->id));
 
-    foreach($edges as $edge) {
-        if ($edge->operator == OPERATOR_LESS_OR_EQUAL && $edge->upperbound == NULL) {
+    foreach ($edges as $edge) {
+        if ($edge->operator == OPERATOR_LESS_OR_EQUAL && $edge->upperbound == null) {
             $edge->operator = OPERATOR_UI_ONLY_MIN;
-        } else if ($edge->operator == OPERATOR_LESS_OR_EQUAL && $edge->lowerbound == NULL) {
+        } else if ($edge->operator == OPERATOR_LESS_OR_EQUAL && $edge->lowerbound == null) {
             $edge->operator = OPERATOR_UI_ONLY_MAX;
-        } else if ($edge->operator == OPERATOR_LESS && $edge->lowerbound == NULL) {
+        } else if ($edge->operator == OPERATOR_LESS && $edge->lowerbound == null) {
             $edge->operator = OPERATOR_UI_ONLY_LESS;
-        } else if ($edge->operator == OPERATOR_LESS && $edge->upperbound == NULL) {
+        } else if ($edge->operator == OPERATOR_LESS && $edge->upperbound == null) {
             $edge->operator = OPERATOR_UI_ONLY_MORE;
         }
     }

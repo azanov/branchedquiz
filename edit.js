@@ -1,38 +1,37 @@
-jsPlumb.ready(function () {
+jsPlumb.ready(function() {
 
     var canvas = document.getElementById("questionCanvas");
     var questions = jsPlumb.getSelector(".js-question-canvas .activity");
     var connections = {};
     var selectedConnection = null;
 
-    // setup some defaults for jsPlumb.
     var instance = jsPlumb.getInstance({
         Endpoint: [
             "Dot", {
                 radius: 2
-            }],
+            }
+        ],
         Connector: "StateMachine",
-        HoverPaintStyle: {stroke: "#d30c0c", strokeWidth: 2 },
+        HoverPaintStyle: { stroke: "#d30c0c", strokeWidth: 2 },
         ConnectionOverlays: [
-            [ "Arrow", {
+            ["Arrow", {
                 location: 1,
                 id: "arrow",
                 length: 14,
-                // foldback: 0.8
-            } ],
-            [ "Label", { label: "Alle", id: "label", cssClass: "aLabel" }]
+            }],
+            ["Label", { label: "Alle", id: "label", cssClass: "aLabel" }]
         ],
         Container: "questionCanvas"
     });
 
-    instance.registerConnectionType("basic", { anchor:"Continuous", connector:"StateMachine" });
+    instance.registerConnectionType("basic", { anchor: "Continuous", connector: "StateMachine" });
 
     window.jsp = instance;
 
     function getEdgeLabel(edge) {
         var label = 'Alle';
 
-        switch(edge.operator) {
+        switch (edge.operator) {
             case 'eq':
                 label = edge.lowerbound;
                 break;
@@ -55,7 +54,7 @@ jsPlumb.ready(function () {
                 label = edge.lowerbound + ' <= x <= ' + edge.upperbound;
                 break;
         }
-        return (''+label).replace(/0+$/, '0');
+        return ('' + label).replace(/0+$/, '0');
     }
 
     function showEdge(c) {
@@ -84,16 +83,10 @@ jsPlumb.ready(function () {
 
     instance.bind("click", showEdge);
 
-
-    //
-    // initialise element as connection targets and source.
-    //
     var initNode = function(el) {
-
-        // initialise draggable elements.
         instance.draggable(el, {
-            grid:[50,50],
-            stop: function(e){
+            grid: [50, 50],
+            stop: function(e) {
                 var $el = $(e.el),
                     id = $el.data('slot-id'),
                     quizId = $el.closest('.section.main').data('quiz-id'),
@@ -105,12 +98,8 @@ jsPlumb.ready(function () {
                         quizId + '&id=' + id + '&sesskey=' + M.cfg.sesskey + '&x=' + x + '&y=' + y,
                     type: 'POST',
                     success: function(result) {
-                        console.log(result);
                         if (result.error) {
                             alert(result.error);
-                        } else {
-                            // var c = instance.connect({ source: params.connection.sourceId, target: params.connection.targetId, type:"basic", test: 1 });
-                            // connections[]
                         }
                     },
                     error: function() {
@@ -124,39 +113,37 @@ jsPlumb.ready(function () {
             filter: ".ep",
             anchor: "Continuous",
             connectorStyle: { stroke: "#0072b8", strokeWidth: 2, outlineStroke: "transparent", outlineWidth: 4 },
-            connectionType:"basic",
-            extract:{
-                "action":"the-action"
-            },
-            // maxConnections: 2,
-            // onMaxConnections: function (info, e) {
-            //     alert("Maximum connections (" + info.maxConnections + ") reached");
-            // }
-
+            connectionType: "basic",
+            extract: {
+                "action": "the-action"
+            }
         });
 
         instance.makeTarget(el, {
             dropOptions: { hoverClass: "dragHover" },
             anchor: "Continuous",
             allowLoopback: false,
-            beforeDrop: function (params) {
+            beforeDrop: function(params) {
                 var $source = $(params.connection.source),
                     $target = $(params.connection.target),
                     quizId = $source.closest('.section.main').data('quiz-id'),
                     startSlot = $source.data('slot-id')
-                    endSlot = $target.data('slot-id');
+                endSlot = $target.data('slot-id');
 
                 $.ajax({
                     url: '/mod/branchedquiz/edit_rest.php?class=resource&field=addedge&quizid=' +
                         quizId + '&startSlot=' + startSlot + '&sesskey=' + M.cfg.sesskey + '&endSlot=' + endSlot,
                     type: 'POST',
                     success: function(result) {
-                        console.log(result);
                         if (result.error) {
                             alert(result.error);
                         } else {
                             var c = instance.connect({
-                                source: params.connection.sourceId, target: params.connection.targetId, type:"basic", test: 1 });
+                                source: params.connection.sourceId,
+                                target: params.connection.targetId,
+                                type: "basic",
+                                test: 1
+                            });
                             c.setData({
                                 edgeId: result.id
                             })
@@ -179,18 +166,14 @@ jsPlumb.ready(function () {
                 });
 
                 return false;
-                // return confirm("Connect " + params.sourceId + " to " + params.targetId + "?");
             },
         });
 
-        // this is not part of the core demo functionality; it is a means for the Toolkit edition's wrapped
-        // version of this demo to find out about new nodes being added.
-        //
         instance.fire("jsPlumbDemoNodeAdded", el);
     };
 
     // suspend drawing and initialise.
-    instance.batch(function () {
+    instance.batch(function() {
 
         var slots = {};
 
@@ -202,52 +185,28 @@ jsPlumb.ready(function () {
             questions[i].style.top = (questions[i].dataset.y ? questions[i].dataset.y : (30 * slot + 50 * (slot - 1))) + 'px';
 
             initNode(questions[i], true);
-
-
         }
 
         if (branchedquiz_edges) {
             for (var k in branchedquiz_edges) {
                 if (branchedquiz_edges.hasOwnProperty(k)) {
-                   connections[branchedquiz_edges[k].id] = branchedquiz_edges[k];
-                   var c = instance.connect({
-                        source: 'slot-' + branchedquiz_edges[k].slotid, target: 'slot-' + branchedquiz_edges[k].next, type:"basic" },
-                        {
-                            edgeId: branchedquiz_edges[k].id
-                        }
-                    );
-                   c.setData({
+                    connections[branchedquiz_edges[k].id] = branchedquiz_edges[k];
+                    var c = instance.connect({
+                        source: 'slot-' + branchedquiz_edges[k].slotid,
+                        target: 'slot-' + branchedquiz_edges[k].next,
+                        type: "basic"
+                    }, {
                         edgeId: branchedquiz_edges[k].id
-                   });
-                   c.getOverlay('label').setLabel(getEdgeLabel(connections[branchedquiz_edges[k].id]));
-                   connections[branchedquiz_edges[k].id].instance = c;
-                   console.log(c);
+                    });
+                    c.setData({
+                        edgeId: branchedquiz_edges[k].id
+                    });
+                    c.getOverlay('label').setLabel(getEdgeLabel(connections[branchedquiz_edges[k].id]));
+                    connections[branchedquiz_edges[k].id].instance = c;
                 }
             }
         }
-
-        // for (var i = 0; i < questions.length; i++) {
-        //     var slot = Number(questions[i].dataset.slot) + 1;
-        //     if (slots[slot])
-        //         instance.connect({ source: questions[i].id, target: slots[slot], type:"basic" });
-        // }
-
-
     });
-
-    // instance.bind("connection", function (info) {
-    //     var c = {
-    //         slotid: info.source.dataset.slotId,
-    //         next: info.target.dataset.slotId,
-    //         feedbacktext: "",
-    //         lowerbound: null,
-    //         operator: "",
-    //         upperbound: ""
-    //     };
-    //     connections[info.getData().edgeId] = c;
-    //     console.log(connections);
-    //     info.connection.getOverlay("label").setLabel(getEdgeLabel());
-    // });
 
     jsPlumb.fire("jsPlumbDemoLoaded", instance);
 
@@ -273,8 +232,6 @@ jsPlumb.ready(function () {
             slot: $self.data('slot')
         }
 
-        console.log(selectedQuestion)
-
         if ($self.hasClass('selected')) {
             $pnl
                 .find('h4')
@@ -286,21 +243,18 @@ jsPlumb.ready(function () {
                 .find('.js-question-panel-text')
                 .html(selectedQuestion.text)
                 .find('p').each(function(index, item) {
-                    if($.trim($(item).text()) === "") {
+                    if ($.trim($(item).text()) === "") {
                         $(item).remove();
                     }
                 });
 
             $pnl.show();
-            MathJax.Hub.Queue(["Typeset",MathJax.Hub,$pnl.find('.question-panel-text')[0]]);
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, $pnl.find('.question-panel-text')[0]]);
         } else {
             $pnl.hide();
         }
 
     });
-
-    // console.log(M.cfg.sesskey)
-
 
     $('.js-set-first-question').on('click', function() {
 
@@ -314,7 +268,6 @@ jsPlumb.ready(function () {
                 quizId + '&id=' + selectedQuestion.slotId + '&sesskey=' + M.cfg.sesskey + '&sectionId=' + selectedQuestion.sectionId,
             type: 'POST',
             success: function(result) {
-                console.log(result);
                 if (result.error) {
                     alert(result.error);
                 } else {
@@ -336,18 +289,16 @@ jsPlumb.ready(function () {
             sessKey = $self.data('sesskey');
 
         $self.attr('disabled', true);
-        if(confirm('Sind Sie sicher, dass Sie die Frage löschen möchten?')) {
+        if (confirm('Sind Sie sicher, dass Sie die Frage löschen möchten?')) {
             $.ajax({
                 url: '/mod/branchedquiz/edit_rest.php?class=resource&quizid=' + quizId + '&id=' +
                     selectedQuestion.slotId + '&sesskey=' + M.cfg.sesskey,
                 type: 'DELETE',
                 success: function(result) {
-                    console.log(result);
                     if (result.error) {
                         alert(result.error);
                     } else {
                         instance.remove('slot-' + selectedQuestion.slotId);
-                        // $('#slot-' + selectedQuestion.slotId).remove();
                         selectedQuestion = null;
                         $('.js-question-panel').hide();
                     }
@@ -368,13 +319,12 @@ jsPlumb.ready(function () {
             sessKey = $self.data('sesskey');
 
         $self.attr('disabled', true);
-        if(confirm('Sind Sie sicher, dass Sie die Verbindung löschen möchten?')) {
+        if (confirm('Sind Sie sicher, dass Sie die Verbindung löschen möchten?')) {
             $.ajax({
                 url: '/mod/branchedquiz/edit_rest.php?class=edge&quizid=' + quizId + '&id=' +
                     selectedConnection.id + '&sesskey=' + M.cfg.sesskey,
                 type: 'DELETE',
                 success: function(result) {
-                    console.log(result);
                     if (result.error) {
                         alert(result.error);
                     } else {
@@ -393,7 +343,7 @@ jsPlumb.ready(function () {
     });
 
     $('.js-operator').on('change', function() {
-        switch($(this).val()) {
+        switch ($(this).val()) {
             case '':
                 $('.js-lowerbound').hide();
                 $('.js-upperbound').hide();
@@ -428,7 +378,6 @@ jsPlumb.ready(function () {
             url: '/mod/branchedquiz/edit_rest.php?' + data,
             type: 'POST',
             success: function(result) {
-                console.log(result);
                 if (result.error) {
                     alert(result.error);
                 } else {

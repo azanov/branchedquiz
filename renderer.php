@@ -58,12 +58,6 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
 
         $output .= html_writer::start_tag('div', array('class' => 'submitbtns'));
 
-        // Hide the button to return to the previous question
-
-        // if ($page > 0) {
-        //     $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'previous',
-        //             'value' => get_string('navigateprevious', 'quiz'), 'class' => 'mod_quiz-prev-nav'));
-        // }
         if ($lastpage) {
             $nextlabel = get_string('endtest', 'quiz');
         } else {
@@ -89,13 +83,6 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
                     array('id' => 'user-picture', 'class' => 'clearfix'));
         }
         $output .= $panel->render_before_button_bits($this);
-
-        // $bcc = $panel->get_button_container_class();
-        // $output .= html_writer::start_tag('div', array('class' => "qn_buttons clearfix $bcc"));
-        // foreach ($panel->get_question_buttons() as $button) {
-        //     $output .= $this->render($button);
-        // }
-        // $output .= html_writer::end_tag('div');
 
         $output .= html_writer::tag('div', $panel->render_end_bits($this),
                 array('class' => 'othernav'));

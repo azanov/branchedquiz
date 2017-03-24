@@ -100,15 +100,6 @@ $attemptobj->fire_attempt_viewed_event();
 
 // Get the list of questions needed by this page.
 $slots = $attemptobj->get_slots($page);
-//$quizobj = $attemptobj->get_quizobj();
-
-//$quizobj->preload_questions();
-//$quizobj->load_questions();
-//print_r($quizobj->get_questions());
-
-//echo nl2br("\n slot id " . get_slotid($quizobj, end($slots)));
-//echo nl2br("\n page " . get_page($quizobj, end($slots)));
-
 
 // Check.
 if (empty($slots)) {

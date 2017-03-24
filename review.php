@@ -37,7 +37,7 @@ $attemptid = required_param('attempt', PARAM_INT);
 $page      = optional_param('page', 0, PARAM_INT);
 $showall   = optional_param('showall', null, PARAM_BOOL);
 
-$url = new moodle_url('/mod/branchedquiz/review.php', array('attempt'=>$attemptid));
+$url = new moodle_url('/mod/branchedquiz/review.php', array('attempt' => $attemptid));
 if ($page !== 0) {
     $url->param('page', $page);
 } else if ($showall) {
@@ -111,7 +111,7 @@ $headtags = $attemptobj->get_html_head_contributions($page, $showall);
 $PAGE->set_title($attemptobj->get_quiz_name());
 $PAGE->set_heading($attemptobj->get_course()->fullname);
 
-// Summary table start. ============================================================================
+// Summary table start.
 
 // Work out some time-related things.
 $attempt = $attemptobj->get_attempt();
@@ -187,15 +187,14 @@ if (!empty($overtime)) {
     );
 }
 
-$sum_max = get_sum_max_grades($attemptobj);
+$summax = get_sum_max_grades($attemptobj);
 
 // Show marks (if the user is allowed to see marks at the moment).
-$grade = branchedquiz_rescale_grade($attempt->sumgrades, $quiz, $sum_max, false);
+$grade = branchedquiz_rescale_grade($attempt->sumgrades, $quiz, $summax, false);
 if ($options->marks >= question_display_options::MARK_AND_MAX && quiz_has_grades($quiz)) {
 
     if ($attempt->state != quiz_attempt::FINISHED) {
         // Cannot display grade.
-
     } else if (is_null($grade)) {
         $summarydata['grade'] = array(
             'title'   => get_string('grade', 'quiz'),
@@ -204,10 +203,10 @@ if ($options->marks >= question_display_options::MARK_AND_MAX && quiz_has_grades
 
     } else {
         // Show raw marks only if they are different from the grade (like on the view page).
-        if ($quiz->grade !=  $sum_max){
+        if ($quiz->grade !=  $summax) {
             $a = new stdClass();
             $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
-            $a->maxgrade = quiz_format_grade($quiz, $sum_max);
+            $a->maxgrade = quiz_format_grade($quiz, $summax);
             $summarydata['marks'] = array(
                 'title'   => get_string('marks', 'quiz'),
                 'content' => get_string('outofshort', 'quiz', $a),
@@ -220,7 +219,7 @@ if ($options->marks >= question_display_options::MARK_AND_MAX && quiz_has_grades
         $a->maxgrade = quiz_format_grade($quiz, $quiz->grade);
         if ($quiz->grade != 100) {
             $a->percent = html_writer::tag('b', format_float(
-                    $attempt->sumgrades * 100 / $sum_max, 0));
+                    $attempt->sumgrades * 100 / $summax, 0));
             $formattedgrade = get_string('outofpercent', 'quiz', $a);
         } else {
             $formattedgrade = get_string('outof', 'quiz', $a);
@@ -244,7 +243,7 @@ if ($options->overallfeedback && $feedback) {
     );
 }
 
-// Summary table end. ==============================================================================
+// Summary table end.
 
 if ($showall) {
     $slots = $attemptobj->get_slots();
@@ -261,7 +260,7 @@ $navbc = $attemptobj->get_navigation_panel($output, 'quiz_review_nav_panel', $pa
 $regions = $PAGE->blocks->get_regions();
 $PAGE->blocks->add_fake_block($navbc, reset($regions));
 
-// show only questions of current path
+// Show only questions of current path.
 $slots = get_current_path_slots($attemptobj);
 
 echo $output->review_page($attemptobj, $slots, $page, $showall, $lastpage, $options, $summarydata);

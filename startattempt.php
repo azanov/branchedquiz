@@ -66,8 +66,7 @@ $timenow = time();
 $accessmanager = $quizobj->get_access_manager($timenow);
 
 // Validate permissions for creating a new attempt and start a new preview attempt if required.
-list($currentattemptid, $attemptnumber, $lastattempt, $messages, $page) =
-    quiz_validate_new_attempt($quizobj, $accessmanager, $forcenew, $page, true);
+list($currentattemptid, $attemptnumber, $lastattempt, $messages, $page) = quiz_validate_new_attempt($quizobj, $accessmanager, $forcenew, $page, true);
 
 // Check access.
 if (!$quizobj->is_preview_user() && $messages) {

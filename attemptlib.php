@@ -66,7 +66,7 @@ class branchedquiz extends quiz {
         return new moodle_url('/mod/branchedquiz/review.php', array('attempt' => $attemptid));
     }
 
-	public static function create($quizid, $userid = null) {
+    public static function create($quizid, $userid = null) {
         global $DB;
 
         $quiz = quiz_access_manager::load_quiz_and_settings($quizid);
@@ -98,7 +98,7 @@ class branchedquiz extends quiz {
 
 class branchedquiz_attempt extends quiz_attempt {
 
-    public function get_quba(){
+    public function get_quba() {
         return $this->quba;
     }
 
