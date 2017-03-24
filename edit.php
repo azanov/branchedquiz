@@ -113,6 +113,7 @@ if (($addquestion = optional_param('addquestion', 0, PARAM_INT)) && confirm_sess
     quiz_require_question_use($addquestion);
     $addonpage = optional_param('addonpage', 0, PARAM_INT);
     branchedquiz_add_quiz_question($addquestion, $quiz, $addonpage);
+    quiz_repaginate_questions($quiz->id, 1);
     branchedquiz_delete_previews($quiz);
     quiz_update_sumgrades($quiz);
     $thispageurl->param('lastchanged', $addquestion);
@@ -124,6 +125,7 @@ if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
     $addonpage = optional_param('addonpage', 0, PARAM_INT);
     // Add selected questions to the current quiz.
     $rawdata = (array) data_submitted();
+    $y = 30;
     foreach ($rawdata as $key => $value) { // Parse input for question ids.
         if (preg_match('!^q([0-9]+)$!', $key, $matches)) {
             $key = $matches[1];
@@ -131,6 +133,7 @@ if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
             branchedquiz_add_quiz_question($key, $quiz, $addonpage);
         }
     }
+    quiz_repaginate_questions($quiz->id, 1);
     branchedquiz_delete_previews($quiz);
     quiz_update_sumgrades($quiz);
     redirect($afteractionurl);
@@ -163,9 +166,9 @@ if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
     // If rescaling is required save the new maximum.
     $maxgrade = unformat_float(optional_param('maxgrade', -1, PARAM_RAW));
     if ($maxgrade >= 0) {
-        quiz_set_grade($maxgrade, $quiz);
+        branchedquiz_set_grade($maxgrade, $quiz);
         quiz_update_all_final_grades($quiz);
-        quiz_update_grades($quiz, 0, true);
+        branchedquiz_update_grades($quiz, 0, true);
     }
 
     redirect($afteractionurl);
@@ -207,11 +210,21 @@ $PAGE->requires->data_for_js('quiz_edit_config', $quizeditconfig);
 $PAGE->requires->js('/question/qengine.js');
 
 // Questions wrapper start.
-echo html_writer::start_tag('div', array('class' => 'mod-quiz-edit-content'));
+echo html_writer::start_tag('div', array('class' => 'mod-quiz-edit-content mod-branchedquiz-edit-content'));
 echo '<script>var __replaceState = window.history.replaceState; window.history.replaceState = function(state, title, url) {if (url.indexOf("/quiz/") == -1) __replaceState(state, title, url);}</script>';
 echo '<script src="https://jsplumbtoolkit.com/community/demo/statemachine/lib/jsplumb.js"></script>';
 echo '<style>@import url("'.$CFG->wwwroot .'/mod/branchedquiz/styles.css");</style>';
 echo $output->edit_page($quizobj, $structure, $contexts, $thispageurl, $pagevars);
+
+echo '<script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>';
+
+$edges = branchedquiz_get_edges($quiz);
+echo '<script>';
+echo 'var branchedquiz_edges = ';
+echo json_encode($edges);
+echo ';';
+echo '</script>';
+
 echo '<script src="'.$CFG->wwwroot .'/mod/branchedquiz/edit.js"></script>';
 // Questions wrapper end.
 echo html_writer::end_tag('div');

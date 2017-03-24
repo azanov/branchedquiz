@@ -282,7 +282,24 @@ function branchedquiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark 
     // }
 
     $DB->insert_record('quiz_slots', $slot);
+
+
+
     $trans->allow_commit();
+
+    $trans = $DB->start_delegated_transaction();
+    $slot = $DB->get_record_sql('SELECT * FROM {quiz_slots} WHERE quizid = ? AND questionid = ?', array($quiz->id, $questionid));
+    print_r($slot);
+    $node = new stdClass();
+    $node->quizid = $quiz->id;
+    $node->slotid = $slot->id;
+    $node->nodetype = 0;
+    $node->x = 30;
+    $node->y = 30 * $slot->slot + 50 * ($slot->slot - 1);
+
+    $DB->insert_record('branchedquiz_node', $node);
+    $trans->allow_commit();
+
 }
 
 /**
@@ -366,7 +383,8 @@ function get_current_path_slots($attemptobj){
     $slots = array();
 
     foreach(array_keys($qs) as $id){
-        if (!empty(($attemptobj->get_question_mark($qs[$id]->slot)))) array_push($slots, $qs[$id]->slot);
+        $tmp = ($attemptobj->get_question_mark($qs[$id]->slot));
+        if (!empty($tmp)) array_push($slots, $qs[$id]->slot);
     }
 
     return $slots;
@@ -421,4 +439,144 @@ function branchedquiz_rescale_grade($rawgrade, $quiz, $sum_max, $format = true) 
         $grade = quiz_format_grade($quiz, $grade);
     }
     return $grade;
+}
+
+function branchedquiz_set_grade($newgrade, $quiz) {
+    global $DB;
+    // This is potentially expensive, so only do it if necessary.
+    if (abs($quiz->grade - $newgrade) < 1e-7) {
+        // Nothing to do.
+        return true;
+    }
+    $oldgrade = $quiz->grade;
+    $quiz->grade = $newgrade;
+    // Use a transaction, so that on those databases that support it, this is safer.
+    $transaction = $DB->start_delegated_transaction();
+    // Update the quiz table.
+    $DB->set_field('quiz', 'grade', $newgrade, array('id' => $quiz->instance));
+    if ($oldgrade < 1) {
+        // If the old grade was zero, we cannot rescale, we have to recompute.
+        // We also recompute if the old grade was too small to avoid underflow problems.
+        quiz_update_all_final_grades($quiz);
+    } else {
+        // We can rescale the grades efficiently.
+        $timemodified = time();
+        $DB->execute("
+                UPDATE {quiz_grades}
+                SET grade = ? * grade, timemodified = ?
+                WHERE quiz = ?
+        ", array($newgrade/$oldgrade, $timemodified, $quiz->id));
+    }
+    if ($oldgrade > 1e-7) {
+        // Update the quiz_feedback table.
+        $factor = $newgrade/$oldgrade;
+        $DB->execute("
+                UPDATE {quiz_feedback}
+                SET mingrade = ? * mingrade, maxgrade = ? * maxgrade
+                WHERE quizid = ?
+        ", array($factor, $factor, $quiz->id));
+    }
+    // Update grade item and send all grades to gradebook.
+    branchedquiz_grade_item_update($quiz);
+    branchedquiz_update_grades($quiz);
+    $transaction->allow_commit();
+    return true;
+}
+
+function branchedquiz_add_edge($quiz, $startSlot, $endSlot) {
+    global $DB;
+    $edge = new stdClass();
+    $edge->slotid = $startSlot;
+    $edge->next = $endSlot;
+    $edge->operator = '';
+    $edge->feedbacktext = '';
+    return $DB->insert_record('branchedquiz_edge', $edge);
+}
+
+function branchedquiz_remove_node($quiz, $slotId) {
+    global $DB;
+    $DB->delete_records('branchedquiz_node', array('quizid' => $quiz->id, 'id' => $slotId));
+    $DB->delete_records('branchedquiz_edge', array('slotid' => $slotId));
+    $DB->delete_records('branchedquiz_edge', array('next' => $slotId));
+}
+
+function branchedquiz_pos_node($quiz, $slot, $x, $y) {
+    global $DB;
+    $node = $DB->get_record('branchedquiz_node', array('quizid' => $quiz->id, 'slotid' => $slot));
+    $node->x = $x;
+    $node->y = $y;
+    $DB->update_record('branchedquiz_node', $node);
+}
+
+define("OPERATOR_EQUAL", "eq");
+define("OPERATOR_LESS", "le");
+define("OPERATOR_LESS_OR_EQUAL", "lq");
+define("OPERATOR_UI_ONLY_MAX", "max");
+define("OPERATOR_UI_ONLY_MIN", "min");
+define("OPERATOR_UI_ONLY_LESS", "less");
+define("OPERATOR_UI_ONLY_MORE", "more");
+
+function branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperbound) {
+    global $DB;
+    $edge = $DB->get_record('branchedquiz_edge', array('id' => $id));
+
+    if (empty($operator) || $operator == '') {
+        // all results
+        $edge->operator = $operator;
+        $edge->lowerbound = NULL;
+        $edge->upperbound = NULL;
+    } else if ($operator == OPERATOR_EQUAL) {
+
+        // fixed result only
+        $edge->operator = $operator;
+        $edge->lowerbound = $lowerbound;
+        $edge->upperbound = $lowerbound;
+
+    } else if ($operator == OPERATOR_UI_ONLY_MIN) {
+
+        $edge->operator = OPERATOR_LESS_OR_EQUAL;
+        $edge->lowerbound = $lowerbound;
+        $edge->upperbound = NULL;
+
+    } else if ($operator == OPERATOR_UI_ONLY_MAX) {
+
+        $edge->operator = OPERATOR_LESS_OR_EQUAL;
+        $edge->lowerbound = NULL;
+        $edge->upperbound = $upperbound;
+
+    } else if ($operator == OPERATOR_LESS) {
+
+        $edge->operator = OPERATOR_LESS;
+        $edge->lowerbound = $lowerbound;
+        $edge->upperbound = $upperbound;
+
+    } else if ($operator == OPERATOR_LESS_OR_EQUAL) {
+
+        $edge->operator = OPERATOR_LESS_OR_EQUAL;
+        $edge->lowerbound = $lowerbound;
+        $edge->upperbound = $upperbound;
+
+    } else if ($operator == OPERATOR_UI_ONLY_LESS) {
+
+        $edge->operator = OPERATOR_LESS;
+        $edge->lowerbound = NULL;
+        $edge->upperbound = $upperbound;
+
+    } else if ($operator == OPERATOR_UI_ONLY_MORE) {
+
+        $edge->operator = OPERATOR_LESS;
+        $edge->lowerbound = $lowerbound;
+        $edge->upperbound = NULL;
+
+    }
+
+    $DB->update_record('branchedquiz_edge', $edge);
+
+    $edge->operator = $operator;
+    return $edge;
+}
+
+function branchedquiz_remove_edge($quiz, $id) {
+    global $DB;
+    $DB->delete_records('branchedquiz_edge', array('id' => $id));
 }

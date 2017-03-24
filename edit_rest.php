@@ -28,6 +28,8 @@ if (!defined('AJAX_SCRIPT')) {
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/mod/branchedquiz/lib.php');
+require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
 
 // Initialise ALL the incoming parameters here, up front.
 $quizid     = required_param('quizid', PARAM_INT);
@@ -47,11 +49,22 @@ $maxmark    = optional_param('maxmark', '', PARAM_FLOAT);
 $newheading = optional_param('newheading', '', PARAM_TEXT);
 $shuffle    = optional_param('newshuffle', 0, PARAM_INT);
 $page       = optional_param('page', '', PARAM_INT);
+
+$startSlot   = optional_param('startSlot', '', PARAM_INT);
+$endSlot   = optional_param('endSlot', '', PARAM_INT);
+
+$x   = optional_param('x', '', PARAM_INT);
+$y   = optional_param('y', '', PARAM_INT);
+
+$operator = optional_param('operator', '', PARAM_ALPHA);
+$lowerbound    = optional_param('lowerbound', '', PARAM_FLOAT);
+$upperbound    = optional_param('upperbound', '', PARAM_FLOAT);
+
 $PAGE->set_url('/mod/branchedquiz/edit-rest.php',
         array('quizid' => $quizid, 'class' => $class));
 
 require_sesskey();
-$quiz = $DB->get_record('quiz', array('id' => $quizid), '*', MUST_EXIST);
+$quiz = $DB->get_record('branchedquiz', array('id' => $quizid), '*', MUST_EXIST);
 $cm = get_coursemodule_from_instance('branchedquiz', $quiz->id, $quiz->course);
 $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
 require_login($course, false, $cm);
@@ -107,8 +120,27 @@ switch($requestmethod) {
                             }
                         }
                         $structure->move_slot($id, $previousid, $page);
-                        quiz_delete_previews($quiz);
+                        branchedquiz_delete_previews($quiz);
                         echo json_encode(array('visible' => true));
+                        break;
+
+                    case 'addedge':
+                        require_capability('mod/quiz:manage', $modcontext);
+                        $edgeId = branchedquiz_add_edge($quiz, $startSlot, $endSlot);
+                        echo json_encode(array('id' => $edgeId));
+                        break;
+
+                    case 'updateedge':
+                        require_capability('mod/quiz:manage', $modcontext);
+
+                        $edge = branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperbound);
+                        echo json_encode($edge);
+                        break;
+
+                    case 'posnode':
+                        require_capability('mod/quiz:manage', $modcontext);
+                        $edgeId = branchedquiz_pos_node($quiz, $id, $x, $y);
+                        echo json_encode(array('x' => $x, 'y' => $y));
                         break;
 
                     case 'getmaxmark':
@@ -170,10 +202,16 @@ switch($requestmethod) {
                     throw new moodle_exception('AJAX commands.php: Bad slot ID '.$id);
                 }
                 $structure->remove_slot($slot->slot);
+                branchedquiz_remove_node($quiz, $id);
                 quiz_delete_previews($quiz);
                 quiz_update_sumgrades($quiz);
                 echo json_encode(array('newsummarks' => quiz_format_grade($quiz, $quiz->sumgrades),
                             'deleted' => true, 'newnumquestions' => $structure->get_question_count()));
+                break;
+            case 'edge':
+                require_capability('mod/quiz:manage', $modcontext);
+                branchedquiz_remove_edge($quiz, $id);
+                echo json_encode(array('success' => 1));
                 break;
         }
         break;

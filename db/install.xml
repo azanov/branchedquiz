@@ -4,36 +4,41 @@
         <TABLE NAME="branchedquiz_edge" COMMENT="Stores one edge of the generated graph">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="nodeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
-                <FIELD NAME="lowerbound" TYPE="number" NOTNULL="false" DEFAULT="null" LENGTH="10" SEQUENCE="false" DECIMALS="5" />
+                <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
+                <FIELD NAME="lowerbound" TYPE="number" NOTNULL="false" LENGTH="10" SEQUENCE="false" DECIMALS="5" />
                 <FIELD NAME="operator" TYPE="text" NOTNULL="true" LENGTH="8"/>
-                <FIELD NAME="upperbound" TYPE="number" NOTNULL="false" DEFAULT="null" LENGTH="10" SEQUENCE="false" DECIMALS="5" />
+                <FIELD NAME="upperbound" TYPE="number" NOTNULL="false" LENGTH="10" SEQUENCE="false" DECIMALS="5" />
                 <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="-1" />
                 <FIELD NAME="prev" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" />
-                <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="true" LENGTH="2048" />
+                <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="false" LENGTH="2048" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
-                <KEY NAME="nodeid" TYPE="foreign" FIELDS="nodeid" REFTABLE="branchedquiz_node" REFFIELDS="id" />
+                <KEY NAME="slotid" TYPE="foreign" FIELDS="slotid" REFTABLE="branchedquiz_node" REFFIELDS="id" />
                 <KEY NAME="next" TYPE="foreign" FIELDS="next" REFTABLE="branchedquiz_node" REFFIELDS="id" />
                 <KEY NAME="prev" TYPE="foreign" FIELDS="prev" REFTABLE="branchedquiz_node" REFFIELDS="id" />
             </KEYS>
             <INDEXES>
-                <INDEX NAME="quizid-prev-lowerbound-upperbound-next" UNIQUE="true" FIELDS="nodeid, prev, lowerbound, upperbound, next" />
+                <INDEX NAME="slotid-prev-lowerbound-upperbound-next" UNIQUE="true" FIELDS="slotid, prev, lowerbound, upperbound, next" />
             </INDEXES>
         </TABLE>
         <TABLE NAME="branchedquiz_node" COMMENT="Stores the node that a edge referes to">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="nodeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
-                <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
+                <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="x" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="30" />
+                <FIELD NAME="y" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="30" />
                 <FIELD NAME="nodetype" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
-                <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id" />
-                <KEY NAME="nodeid" TYPE="foreign" FIELDS="nodeid" REFTABLE="branchedquiz" REFFIELDS="id" />
+                <KEY NAME="quizid" TYPE="foreign" FIELDS="quizid" REFTABLE="quiz" REFFIELDS="id" />
+                <KEY NAME="slotid" TYPE="foreign" FIELDS="id" REFTABLE="quiz_slots" REFFIELDS="id" />
             </KEYS>
+            <INDEXES>
+                <INDEX NAME="slotid" UNIQUE="true" FIELDS="slotid" />
+            </INDEXES>
         </TABLE>
     </TABLES>
 </XMLDB>
