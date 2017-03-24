@@ -94,7 +94,7 @@ jsPlumb.ready(function() {
                     y = e.finalPos[1];
 
                 $.ajax({
-                    url: '/mod/branchedquiz/edit_rest.php?class=resource&field=posnode&quizid=' +
+                    url: branchedquizRestPath + '?class=resource&field=posnode&quizid=' +
                         quizId + '&id=' + id + '&sesskey=' + M.cfg.sesskey + '&x=' + x + '&y=' + y,
                     type: 'POST',
                     success: function(result) {
@@ -131,7 +131,7 @@ jsPlumb.ready(function() {
                 endSlot = $target.data('slot-id');
 
                 $.ajax({
-                    url: '/mod/branchedquiz/edit_rest.php?class=resource&field=addedge&quizid=' +
+                    url: branchedquizRestPath + '?class=resource&field=addedge&quizid=' +
                         quizId + '&startSlot=' + startSlot + '&sesskey=' + M.cfg.sesskey + '&endSlot=' + endSlot,
                     type: 'POST',
                     success: function(result) {
@@ -264,7 +264,7 @@ jsPlumb.ready(function() {
 
         $self.attr('disabled', true);
         $.ajax({
-            url: '/mod/branchedquiz/edit_rest.php?page=1&class=resource&field=move&quizid=' +
+            url: branchedquizRestPath + '?page=1&class=resource&field=move&quizid=' +
                 quizId + '&id=' + selectedQuestion.slotId + '&sesskey=' + M.cfg.sesskey + '&sectionId=' + selectedQuestion.sectionId,
             type: 'POST',
             success: function(result) {
@@ -291,7 +291,7 @@ jsPlumb.ready(function() {
         $self.attr('disabled', true);
         if (confirm('Sind Sie sicher, dass Sie die Frage löschen möchten?')) {
             $.ajax({
-                url: '/mod/branchedquiz/edit_rest.php?class=resource&quizid=' + quizId + '&id=' +
+                url: branchedquizRestPath + '?class=resource&quizid=' + quizId + '&id=' +
                     selectedQuestion.slotId + '&sesskey=' + M.cfg.sesskey,
                 type: 'DELETE',
                 success: function(result) {
@@ -321,7 +321,7 @@ jsPlumb.ready(function() {
         $self.attr('disabled', true);
         if (confirm('Sind Sie sicher, dass Sie die Verbindung löschen möchten?')) {
             $.ajax({
-                url: '/mod/branchedquiz/edit_rest.php?class=edge&quizid=' + quizId + '&id=' +
+                url: branchedquizRestPath + '?class=edge&quizid=' + quizId + '&id=' +
                     selectedConnection.id + '&sesskey=' + M.cfg.sesskey,
                 type: 'DELETE',
                 success: function(result) {
@@ -375,7 +375,7 @@ jsPlumb.ready(function() {
             .find('input, select, button').attr('disabled', true);
 
         $.ajax({
-            url: '/mod/branchedquiz/edit_rest.php?' + data,
+            url: branchedquizRestPath + '?' + data,
             type: 'POST',
             success: function(result) {
                 if (result.error) {

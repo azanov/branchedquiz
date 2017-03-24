@@ -219,6 +219,7 @@ echo '<script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"><
 
 $edges = branchedquiz_get_edges($quiz);
 echo '<script>';
+echo 'var branchedquizRestPath="'.$CFG->wwwroot.'/mod/branchedquiz/edit_rest.php";';
 echo 'var branchedquiz_edges = ';
 echo json_encode($edges);
 echo ';';
