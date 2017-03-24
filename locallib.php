@@ -244,46 +244,19 @@ function branchedquiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark 
         $slot->maxmark = $DB->get_field('question', 'defaultmark', array('id' => $questionid));
     }
 
-    // Always add the question on new page
-
-    // if (is_int($page) && $page >= 1) {
-    //     // Adding on a given page.
-    //     $lastslotbefore = 0;
-    //     foreach (array_reverse($slots) as $otherslot) {
-    //         if ($otherslot->page > $page) {
-    //             $DB->set_field('quiz_slots', 'slot', $otherslot->slot + 1, array('id' => $otherslot->id));
-    //         } else {
-    //             $lastslotbefore = $otherslot->slot;
-    //             break;
-    //         }
-    //     }
-    //     $slot->slot = $lastslotbefore + 1;
-    //     $slot->page = min($page, $maxpage + 1);
-
-    //     $DB->execute("
-    //             UPDATE {quiz_sections}
-    //                SET firstslot = firstslot + 1
-    //              WHERE quizid = ?
-    //                AND firstslot > ?
-    //             ", array($quiz->id, max($lastslotbefore, 1)));
-
-    // } else {
-        $lastslot = end($slots);
-        if ($lastslot) {
-            $slot->slot = $lastslot->slot + 1;
-        } else {
-            $slot->slot = 1;
-        }
-        if ($quiz->questionsperpage && $numonlastpage >= $quiz->questionsperpage) {
-            $slot->page = $maxpage + 1;
-        } else {
-            $slot->page = $maxpage;
-        }
-    // }
+    $lastslot = end($slots);
+    if ($lastslot) {
+        $slot->slot = $lastslot->slot + 1;
+    } else {
+        $slot->slot = 1;
+    }
+    if ($quiz->questionsperpage && $numonlastpage >= $quiz->questionsperpage) {
+        $slot->page = $maxpage + 1;
+    } else {
+        $slot->page = $maxpage;
+    }
 
     $DB->insert_record('quiz_slots', $slot);
-
-
 
     $trans->allow_commit();
 
@@ -299,7 +272,6 @@ function branchedquiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark 
 
     $DB->insert_record('branchedquiz_node', $node);
     $trans->allow_commit();
-
 }
 
 /**
@@ -315,7 +287,7 @@ function page_to_slotid($quizobj, $page){
     $qs = $quizobj->get_questions();
     $slotid = -1;
 
-    foreach(array_keys($qs) as $id){
+    foreach (array_keys($qs) as $id){
         if ($qs[$id]->page == $page){
             $slotid = $qs[$id]->slotid;
             break;
@@ -338,7 +310,7 @@ function page_to_slot($quizobj, $page){
     $qs = $quizobj->get_questions();
     $slot = -1;
 
-    foreach(array_keys($qs) as $id){
+    foreach (array_keys($qs) as $id){
         if ($qs[$id]->page == $page) $slot = $qs[$id]->slot;
     }
 
@@ -358,7 +330,7 @@ function slotid_to_page($quizobj, $slotid){
     $qs = $quizobj->get_questions();
     $page = -1;
 
-    foreach(array_keys($qs) as $id){
+    foreach (array_keys($qs) as $id){
         if ($qs[$id]->slotid == $slotid) $page = $qs[$id]->page;
     }
 
@@ -382,7 +354,7 @@ function get_current_path_slots($attemptobj){
 
     $slots = array();
 
-    foreach(array_keys($qs) as $id){
+    foreach (array_keys($qs) as $id){
         $tmp = ($attemptobj->get_question_mark($qs[$id]->slot));
         if (!empty($tmp)) array_push($slots, $qs[$id]->slot);
     }
@@ -404,7 +376,7 @@ function get_sum_max_grades($attemptobj){
 
     $sum = 0;
 
-    foreach($slots as $slot){
+    foreach ($slots as $slot){
         $sum += $quba->get_question_max_mark($slot);
     }
 
@@ -483,11 +455,11 @@ function branchedquiz_set_grade($newgrade, $quiz) {
     return true;
 }
 
-function branchedquiz_add_edge($quiz, $startSlot, $endSlot) {
+function branchedquiz_add_edge($quiz, $startslot, $endslot) {
     global $DB;
     $edge = new stdClass();
-    $edge->slotid = $startSlot;
-    $edge->next = $endSlot;
+    $edge->slotid = $startslot;
+    $edge->next = $endslot;
     $edge->operator = '';
     $edge->feedbacktext = '';
     return $DB->insert_record('branchedquiz_edge', $edge);

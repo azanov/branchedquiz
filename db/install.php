@@ -31,19 +31,9 @@
  * @see upgrade_plugins_modules()
  */
 function xmldb_branchedquiz_install() {
-	global $DB;
-	$pfx = $DB->get_prefix();
-
-	// $DB->execute('INSERT IGNORE INTO mdl_branchedquiz_node VALUES (\'1\',\'1\',\'1\')');
-	// $DB->execute('INSERT IGNORE INTO mdl_branchedquiz_node VALUES (\'2\',\'2\',\'1\')');
-	// $DB->execute('INSERT IGNORE INTO mdl_branchedquiz_node VALUES (\'3\',\'3\',\'1\')');
-	// $DB->execute('INSERT IGNORE INTO mdl_branchedquiz_node VALUES (\'4\',\'4\',\'1\')');
-	// $DB->execute('INSERT IGNORE INTO mdl_branchedquiz_edge VALUES (\'1\',\'1\',\'2\',\'0\',\'question 1 was false\',\'1\')');
- //        $DB->execute('INSERT IGNORE INTO mdl_branchedquiz_edge VALUES (\'2\',\'1\',\'3\',\'1\',\'question 1 was true\',\'1\')');
- //        $DB->execute('INSERT IGNORE INTO mdl_branchedquiz_edge VALUES (\'3\',\'2\',\'4\',\'-1\',\'q1 = f, q2 = x\',\'1\')');
- //        $DB->execute('INSERT IGNORE INTO mdl_branchedquiz_edge VALUES (\'4\',\'3\',\'4\',\'-1\',\'q1 = t, q3 = x\',\'1\')');
-
-	$DB->execute('CREATE OR REPLACE VIEW '.$pfx.'branchedquiz AS SELECT * FROM '.$pfx.'quiz');
+    global $DB;
+    $pfx = $DB->get_prefix();
+    $DB->execute('CREATE OR REPLACE VIEW '.$pfx.'branchedquiz AS SELECT * FROM '.$pfx.'quiz');
 }
 
 /**

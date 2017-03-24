@@ -58,7 +58,7 @@ $next_slotid = -1;
 
 // print_r($points);
 
-if (!is_null($points)){
+if (!is_null($points)) {
     // echo 'tzest';
     // check if points don't matter  lowerbound == null && upperbound == null
     $edge = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND lowerbound IS NULL AND upperbound IS NULL', array($slotid));
@@ -66,7 +66,7 @@ if (!is_null($points)){
     // print_r($edge);
 
     //if query is empty, then points matter
-    if (!$edge){
+    if (!$edge) {
         $edge_eq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, "=", $points, $points));
         $edge_lt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, "<"));
         $edge_lt_eq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, "<="));
@@ -95,7 +95,7 @@ if (!is_null($points)){
             }
         }
         //operator == less than or equal
-        if ($edge_lt_eq){
+        if ($edge_lt_eq) {
                 foreach ($edge_lt_eq as $lt_eq) {
                     $up = $lt_eq->upperbound;
                     $low = $lt_eq->lowerbound;
@@ -111,7 +111,7 @@ if (!is_null($points)){
                     }
                 }
         }
-    }else{
+    } else {
         $next_slotid = $edge->next;
     }
 

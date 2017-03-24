@@ -28,8 +28,8 @@
  * Custom uninstallation procedure
  */
 function xmldb_branchedquiz_uninstall() {
-	global $DB;
-	$pfx = $DB->get_prefix();
-	$DB->execute('DROP VIEW IF EXISTS '.$pfx.'branchedquiz');
+    global $DB;
+    $pfx = $DB->get_prefix();
+    $DB->execute('DROP VIEW IF EXISTS '.$pfx.'branchedquiz');
     return true;
 }

@@ -27,7 +27,7 @@ require_once("../../config.php");
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
 $id = required_param('id', PARAM_INT);
-$PAGE->set_url('/mod/branchedquiz/index.php', array('id'=>$id));
+$PAGE->set_url('/mod/branchedquiz/index.php', array('id' => $id));
 if (!$course = $DB->get_record('course', array('id' => $id))) {
     print_error('invalidcourseid');
 }
