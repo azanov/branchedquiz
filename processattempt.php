@@ -56,20 +56,15 @@ $points = -1;
 if ($slotid != -1) $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
 $next_slotid = -1;
 
-// print_r($points);
-
 if (!is_null($points)) {
-    // echo 'tzest';
     // check if points don't matter  lowerbound == null && upperbound == null
     $edge = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND lowerbound IS NULL AND upperbound IS NULL', array($slotid));
 
-    // print_r($edge);
-
     //if query is empty, then points matter
     if (!$edge) {
-        $edge_eq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, "=", $points, $points));
-        $edge_lt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, "<"));
-        $edge_lt_eq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, "<="));
+        $edge_eq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, "eq", $points, $points));
+        $edge_lt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, "le"));
+        $edge_lt_eq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, "lq"));
 
         // operator == equal
         if ($edge_eq){
@@ -104,7 +99,7 @@ if (!is_null($points)) {
                         if ($points <= $up && $points >= $low) $next_slotid = $lt_eq->next;
                         // no upperbound
                     } elseif (!is_null($low) && is_null($up)) {
-                        if ($points >= $Low) $next_slotid = $lt_eq->next;
+                        if ($points >= $low) $next_slotid = $lt_eq->next;
                         // no lowerbound
                     } else if (is_null($low) && !is_null($up)) {
                         if ($points <= $up) $next_slotid = $lt_eq->next;
