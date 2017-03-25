@@ -50,8 +50,8 @@ $newheading = optional_param('newheading', '', PARAM_TEXT);
 $shuffle    = optional_param('newshuffle', 0, PARAM_INT);
 $page       = optional_param('page', '', PARAM_INT);
 
-$startSlot   = optional_param('startSlot', '', PARAM_INT);
-$endSlot   = optional_param('endSlot', '', PARAM_INT);
+$startslot   = optional_param('startSlot', '', PARAM_INT);
+$endslot   = optional_param('endSlot', '', PARAM_INT);
 
 $x   = optional_param('x', '', PARAM_INT);
 $y   = optional_param('y', '', PARAM_INT);
@@ -126,8 +126,8 @@ switch($requestmethod) {
 
                     case 'addedge':
                         require_capability('mod/quiz:manage', $modcontext);
-                        $edgeId = branchedquiz_add_edge($quiz, $startSlot, $endSlot);
-                        echo json_encode(array('id' => $edgeId));
+                        $edgeid = branchedquiz_add_edge($quiz, $startslot, $endslot);
+                        echo json_encode(array('id' => $edgeid));
                         break;
 
                     case 'updateedge':
@@ -139,15 +139,14 @@ switch($requestmethod) {
 
                     case 'posnode':
                         require_capability('mod/quiz:manage', $modcontext);
-                        $edgeId = branchedquiz_pos_node($quiz, $id, $x, $y);
+                        $edgeid = branchedquiz_pos_node($quiz, $id, $x, $y);
                         echo json_encode(array('x' => $x, 'y' => $y));
                         break;
 
                     case 'getmaxmark':
                         require_capability('mod/quiz:manage', $modcontext);
                         $slot = $DB->get_record('quiz_slots', array('id' => $id), '*', MUST_EXIST);
-                        echo json_encode(array('instancemaxmark' =>
-                                quiz_format_question_grade($quiz, $slot->maxmark)));
+                        echo json_encode(array('instancemaxmark' => quiz_format_question_grade($quiz, $slot->maxmark)));
                         break;
 
                     case 'updatemaxmark':

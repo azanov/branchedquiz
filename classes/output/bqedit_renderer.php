@@ -171,7 +171,6 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
         $question = $structure->get_question_in_slot($slot);
 
-
         $questionname = shorten_text(format_string($question->name), 100);
 
         $node = branchedquiz_get_node($structure->get_slot_id_for_slot($slot));
@@ -209,7 +208,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         return $output;
     }
 
-	protected function initialise_editing_javascript(structure $structure, \question_edit_contexts $contexts, array $pagevars, \moodle_url $pageurl) {
+    protected function initialise_editing_javascript(structure $structure, \question_edit_contexts $contexts, array $pagevars, \moodle_url $pageurl) {
 
         $config = new \stdClass();
         $config->resourceurl = '/mod/branchedquiz/edit_rest.php';

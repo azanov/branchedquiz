@@ -34,9 +34,9 @@ require_once($CFG->dirroot.'/mod/quiz/renderer.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_branchedquiz_renderer extends mod_quiz_renderer {
-	public function finish_review_link(quiz_attempt $attemptobj) {
+    public function finish_review_link(quiz_attempt $attemptobj) {
 
-		global $CFG;
+        global $CFG;
         $url = $CFG->wwwroot . '/mod/branchedquiz/view.php?id=' . $attemptobj->get_cmid();
 
         if ($attemptobj->get_access_manager(time())->attempt_must_be_in_popup()) {

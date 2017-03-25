@@ -49,12 +49,14 @@ $scrollpos     = optional_param('scrollpos',     '',     PARAM_RAW);
 
 $attemptobj = branchedquiz_attempt::create($attemptid);
 
-//note: the first page in processattempt is 0, in questions however 1
-// if page == -1, user gets  summary page
-$slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage+1);
+// Note: the first page in processattempt is 0, in questions however 1.
+// If page == -1, user gets  summary page.
+$slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage + 1);
 $points = -1;
-if ($slotid != -1) $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
-$next_slotid = -1;
+if ($slotid != -1) {
+    $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
+}
+$nextslotid = -1;
 
 if (!is_null($points)) {
     // check if points don't matter  lowerbound == null && upperbound == null
@@ -62,55 +64,55 @@ if (!is_null($points)) {
 
     //if query is empty, then points matter
     if (!$edge) {
-        $edge_eq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, OPERATOR_EQUAL, $points, $points));
-        $edge_lt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS));
-        $edge_lt_eq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS_OR_EQUAL));
+        $edgeeq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, OPERATOR_EQUAL, $points, $points));
+        $edgelt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS));
+        $edgeeq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS_OR_EQUAL));
 
         // operator == equal
-        if ($edge_eq){
-            assert($edge_eq->upperbound == $edge_eq->lowerbound);
-            $next_slotid = $edge_eq->next;
+        if ($edgeeq){
+            assert($edgeeq->upperbound == $edgeeq->lowerbound);
+            $nextslotid = $edgeeq->next;
 
         }
         // operator == less than
-        if ($edge_lt) {
-            foreach ($edge_lt as $lt) {
+        if ($edgelt) {
+            foreach ($edgelt as $lt) {
                 $up = $lt->upperbound;
                 $low = $lt->lowerbound;
                 // valid values for upperbound and lowerbound
                 if (!is_null($low) && !is_null($up)) {
-                    if ($points < $up && $points > $low) $next_slotid = $lt->next;
+                    if ($points < $up && $points > $low) $nextslotid = $lt->next;
                     // no upperbound
                 } else if (!is_null($low) && is_null($up)) {
-                    if ($points > $low) $next_slotid = $lt->next;
+                    if ($points > $low) $nextslotid = $lt->next;
                     // no lowerbound
                 } else if (is_null($low) && !is_null($up)) {
-                    if ($points < $up) $next_slotid = $lt->next;
+                    if ($points < $up) $nextslotid = $lt->next;
                 }
             }
         }
         //operator == less than or equal
-        if ($edge_lt_eq) {
-                foreach ($edge_lt_eq as $lt_eq) {
-                    $up = $lt_eq->upperbound;
-                    $low = $lt_eq->lowerbound;
+        if ($edgeeq) {
+                foreach ($edgeeq as $lteq) {
+                    $up = $lteq->upperbound;
+                    $low = $lteq->lowerbound;
                     // valid values for upperbound and lowerbound
                     if (!is_null($low) && !is_null($up)) {
-                        if ($points <= $up && $points >= $low) $next_slotid = $lt_eq->next;
+                        if ($points <= $up && $points >= $low) $nextslotid = $lteq->next;
                         // no upperbound
                     } elseif (!is_null($low) && is_null($up)) {
-                        if ($points >= $low) $next_slotid = $lt_eq->next;
+                        if ($points >= $low) $nextslotid = $lteq->next;
                         // no lowerbound
                     } else if (is_null($low) && !is_null($up)) {
-                        if ($points <= $up) $next_slotid = $lt_eq->next;
+                        if ($points <= $up) $nextslotid = $lteq->next;
                     }
                 }
         }
     } else {
-        $next_slotid = $edge->next;
+        $nextslotid = $edge->next;
     }
 
-    $branched_next = slotid_to_page($attemptobj->get_quizobj(), $next_slotid);
+    $branched_next = slotid_to_page($attemptobj->get_quizobj(), $nextslotid);
 
     if ($branched_next != -1) $branched_next -= 1;
 }
@@ -118,7 +120,6 @@ if (!is_null($points)) {
 // Set $nexturl now.
 if ($next) {
     $page =   $branched_next;
-    //$page =   $nextpage;
 } else if ($previous && $thispage > 0) {
     $page = $thispage - 1;
 } else {

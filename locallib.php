@@ -262,7 +262,6 @@ function branchedquiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark 
 
     $trans = $DB->start_delegated_transaction();
     $slot = $DB->get_record_sql('SELECT * FROM {quiz_slots} WHERE quizid = ? AND questionid = ?', array($quiz->id, $questionid));
-    print_r($slot);
     $node = new stdClass();
     $node->quizid = $quiz->id;
     $node->slotid = $slot->id;
@@ -280,15 +279,15 @@ function branchedquiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark 
  * @param $page
  * @return int
  */
-function page_to_slotid($quizobj, $page){
+function page_to_slotid($quizobj, $page) {
     $quizobj->preload_questions();
     $quizobj->load_questions();
-    //questions
+
     $qs = $quizobj->get_questions();
     $slotid = -1;
 
-    foreach (array_keys($qs) as $id){
-        if ($qs[$id]->page == $page){
+    foreach (array_keys($qs) as $id) {
+        if ($qs[$id]->page == $page) {
             $slotid = $qs[$id]->slotid;
             break;
         }
@@ -303,14 +302,14 @@ function page_to_slotid($quizobj, $page){
  * @param $page
  * @return int
  */
-function page_to_slot($quizobj, $page){
+function page_to_slot($quizobj, $page) {
     $quizobj->preload_questions();
     $quizobj->load_questions();
-    //questions
+
     $qs = $quizobj->get_questions();
     $slot = -1;
 
-    foreach (array_keys($qs) as $id){
+    foreach (array_keys($qs) as $id) {
         if ($qs[$id]->page == $page) $slot = $qs[$id]->slot;
     }
 
@@ -323,14 +322,14 @@ function page_to_slot($quizobj, $page){
  * @param $slotid
  * @return int
  */
-function slotid_to_page($quizobj, $slotid){
+function slotid_to_page($quizobj, $slotid) {
     $quizobj->preload_questions();
     $quizobj->load_questions();
-    //questions
+
     $qs = $quizobj->get_questions();
     $page = -1;
 
-    foreach (array_keys($qs) as $id){
+    foreach (array_keys($qs) as $id) {
         if ($qs[$id]->slotid == $slotid) $page = $qs[$id]->page;
     }
 
@@ -344,7 +343,7 @@ function slotid_to_page($quizobj, $slotid){
  * @return array of slots that the user has actually seen in current path
  */
 
-function get_current_path_slots($attemptobj){
+function get_current_path_slots($attemptobj) {
 
     $quizobj = $attemptobj->get_quizobj();
     $quizobj->preload_questions();
@@ -354,7 +353,7 @@ function get_current_path_slots($attemptobj){
 
     $slots = array();
 
-    foreach (array_keys($qs) as $id){
+    foreach (array_keys($qs) as $id) {
         $tmp = ($attemptobj->get_question_mark($qs[$id]->slot));
         if (!empty($tmp)) array_push($slots, $qs[$id]->slot);
     }
@@ -368,7 +367,7 @@ function get_current_path_slots($attemptobj){
  * @return int sum of max grades of all questions in current path
  */
 
-function get_sum_max_grades($attemptobj){
+function get_sum_max_grades($attemptobj) {
 
     $slots = get_current_path_slots($attemptobj);
 
@@ -376,7 +375,7 @@ function get_sum_max_grades($attemptobj){
 
     $sum = 0;
 
-    foreach ($slots as $slot){
+    foreach ($slots as $slot) {
         $sum += $quba->get_question_max_mark($slot);
     }
 
@@ -495,8 +494,8 @@ function branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperboun
     if (empty($operator) || $operator == '') {
         // all results
         $edge->operator = $operator;
-        $edge->lowerbound = NULL;
-        $edge->upperbound = NULL;
+        $edge->lowerbound = null;
+        $edge->upperbound = null;
     } else if ($operator == OPERATOR_EQUAL) {
 
         // fixed result only
@@ -508,12 +507,12 @@ function branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperboun
 
         $edge->operator = OPERATOR_LESS_OR_EQUAL;
         $edge->lowerbound = $lowerbound;
-        $edge->upperbound = NULL;
+        $edge->upperbound = null;
 
     } else if ($operator == OPERATOR_UI_ONLY_MAX) {
 
         $edge->operator = OPERATOR_LESS_OR_EQUAL;
-        $edge->lowerbound = NULL;
+        $edge->lowerbound = null;
         $edge->upperbound = $upperbound;
 
     } else if ($operator == OPERATOR_LESS) {
@@ -531,14 +530,14 @@ function branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperboun
     } else if ($operator == OPERATOR_UI_ONLY_LESS) {
 
         $edge->operator = OPERATOR_LESS;
-        $edge->lowerbound = NULL;
+        $edge->lowerbound = null;
         $edge->upperbound = $upperbound;
 
     } else if ($operator == OPERATOR_UI_ONLY_MORE) {
 
         $edge->operator = OPERATOR_LESS;
         $edge->lowerbound = $lowerbound;
-        $edge->upperbound = NULL;
+        $edge->upperbound = null;
 
     }
 

@@ -123,11 +123,6 @@ class custom_view extends \core_question\bank\view {
     }
 
     public function add_to_quiz_url($questionid) {
-
-        // Pavel Azanov
-        // TODO: we have to include a custom parameter here to handle adding of questions within the subtrees
-
-
         global $CFG;
         $params = $this->baseurl->params();
         $params['addquestion'] = $questionid;

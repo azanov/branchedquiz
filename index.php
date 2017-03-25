@@ -71,11 +71,11 @@ if (!$quizzes = get_all_instances_in_course("quiz", $course)) {
 $showclosingheader = false;
 $showfeedback = false;
 foreach ($quizzes as $quiz) {
-    if ($quiz->timeclose!=0) {
+    if ($quiz->timeclose != 0) {
         $showclosingheader=true;
     }
     if (quiz_has_feedback($quiz)) {
-        $showfeedback=true;
+        $showfeedback = true;
     }
     if ($showclosingheader && $showfeedback) {
         break;
