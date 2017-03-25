@@ -62,9 +62,9 @@ if (!is_null($points)) {
 
     //if query is empty, then points matter
     if (!$edge) {
-        $edge_eq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, "eq", $points, $points));
-        $edge_lt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, "le"));
-        $edge_lt_eq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, "lq"));
+        $edge_eq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, OPERATOR_EQUAL, $points, $points));
+        $edge_lt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS));
+        $edge_lt_eq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS_OR_EQUAL));
 
         // operator == equal
         if ($edge_eq){
