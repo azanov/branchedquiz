@@ -80,7 +80,19 @@ function branchedquiz_update_instance($quiz, $mform) {
 }
 
 function branchedquiz_delete_instance($id) {
-    return quiz_delete_instance($id);
+    global $DB;
+
+    $slots = $DB->get_records_sql('SELECT * FROM {quiz_slots} WHERE quizid = ?', array($id));
+
+    foreach ($slots as $slot) {
+        $DB->delete_records('branchedquiz_edge', array('slotid' => $slot->id));
+    }
+
+    $DB->delete_records('branchedquiz_node', array('quizid' => $id));
+
+    $result = quiz_delete_instance($id);
+
+    return $result;
 }
 
 function branchedquiz_supports($feature) {
