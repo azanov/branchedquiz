@@ -25,6 +25,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Post installation procedure
  *
@@ -43,9 +45,9 @@ function xmldb_branchedquiz_install() {
  * @see upgrade_plugins_modules()
  */
 function xmldb_branchedquiz_install_recovery() {
-	global $DB;
-	$pfx = $DB->get_prefix();
-	$DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz');
+    global $DB;
+    $pfx = $DB->get_prefix();
+    $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz');
     $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz_edge');
     $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz_node');
 }
