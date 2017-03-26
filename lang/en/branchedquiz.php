@@ -28,3 +28,4 @@ $string['modulename_link'] = 'mod/branchedquiz/view';
 $string['modulenameplural'] = 'Quizzes';
 $string['pluginadministration'] = 'Quiz administration';
 $string['pluginname'] = 'Branched Quiz';
+$string['branchedquiz:addinstance'] = 'Add new branched quiz';
