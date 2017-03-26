@@ -216,7 +216,7 @@ echo '    window.history.replaceState = function(state, title, url) {';
 echo '        if (url.indexOf("/quiz/") == -1) __replaceState(state, title, url);';
 echo '    }';
 echo '</script>';
-echo '<script src="https://jsplumbtoolkit.com/community/demo/statemachine/lib/jsplumb.js"></script>';
+
 echo '<style>@import url("'.$CFG->wwwroot .'/mod/branchedquiz/styles.css");</style>';
 echo $output->edit_page($quizobj, $structure, $contexts, $thispageurl, $pagevars);
 
@@ -230,7 +230,8 @@ echo json_encode($edges);
 echo ';';
 echo '</script>';
 
-echo '<script src="'.$CFG->wwwroot .'/mod/branchedquiz/edit.js"></script>';
+$PAGE->requires->js('/mod/branchedquiz/lib/jsplumb.js');
+$PAGE->requires->js('/mod/branchedquiz/edit.js');
 // Questions wrapper end.
 echo html_writer::end_tag('div');
 

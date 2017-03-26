@@ -59,6 +59,7 @@ if ($slotid != -1) {
 }
 
 $nextslotid = -1;
+$branchednext = -1;
 
 if (!is_null($points)) {
     // Check if points don't matter  lowerbound == null && upperbound == null.

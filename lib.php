@@ -71,10 +71,8 @@ function branchedquiz_update_instance($quiz, $mform) {
     // Delete any previous preview attempts.
     branchedquiz_delete_previews($quiz);
 
-    // Repaginate, if asked to.
-    if (!empty($quiz->repaginatenow)) {
-        quiz_repaginate_questions($quiz->id, $quiz->questionsperpage);
-    }
+    // Always repaginate
+    quiz_repaginate_questions($quiz->id, 1);
 
     return true;
 }

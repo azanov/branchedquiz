@@ -250,11 +250,8 @@ function branchedquiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark 
     } else {
         $slot->slot = 1;
     }
-    if ($quiz->questionsperpage && $numonlastpage >= $quiz->questionsperpage) {
-        $slot->page = $maxpage + 1;
-    } else {
-        $slot->page = $maxpage;
-    }
+
+    $slot->page = $maxpage + 1;
 
     $DB->insert_record('quiz_slots', $slot);
 

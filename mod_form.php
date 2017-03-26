@@ -37,4 +37,17 @@ require_once($CFG->dirroot . '/mod/quiz/mod_form.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_branchedquiz_mod_form extends mod_quiz_mod_form {
+
+    protected function definition() {
+        global $PAGE;
+
+        parent::definition();
+        $mform = $this->_form;
+        $mform->setDefault('questionsperpage', 1);
+        $mform->setDefault('navmethod', 'sequential');
+        $mform->setDefault('preferredbehaviour', 'immediatefeedback');
+
+        $PAGE->requires->yui_module('moodle-mod_branchedquiz-modform', 'M.mod_branchedquiz.modform.init');
+    }
+
 }
