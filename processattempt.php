@@ -51,9 +51,13 @@ $attemptobj = branchedquiz_attempt::create($attemptid);
 
 //note: the first page in processattempt is 0, in questions however 1
 // if page == -1, user gets  summary page
-$slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage+1);
+$slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage + 1);
 $points = -1;
-if ($slotid != -1) $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
+
+if ($slotid != -1) {
+    $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage + 1));
+}
+
 $nextslotid = -1;
 
 if (!is_null($points)) {
@@ -78,16 +82,19 @@ if (!is_null($points)) {
                 $low = $lt->lowerbound;
                 // valid values for upperbound and lowerbound
                 if (!is_null($low) && !is_null($up)) {
-                    if ($points < $up && $points > $low)
+                    if ($points < $up && $points > $low) {
                         $nextslotid = $lt->next;
+                    }
                     // no upperbound
                 } else if (!is_null($low) && is_null($up)) {
-                    if ($points > $low)
+                    if ($points > $low) {
                         $nextslotid = $lt->next;
+                    }
                     // no lowerbound
                 } else if (is_null($low) && !is_null($up)) {
-                    if ($points < $up)
+                    if ($points < $up) {
                         $nextslotid = $lt->next;
+                    }
                 }
             }
         }
@@ -98,16 +105,19 @@ if (!is_null($points)) {
                 $low = $lteq->lowerbound;
                 // Valid values for upperbound and lowerbound.
                 if (!is_null($low) && !is_null($up)) {
-                    if ($points <= $up && $points >= $low)
+                    if ($points <= $up && $points >= $low) {
                         $nextslotid = $lteq->next;
+                    }
                     // No upperbound.
                 } else if (!is_null($low) && is_null($up)) {
-                    if ($points >= $low)
+                    if ($points >= $low) {
                         $nextslotid = $lteq->next;
+                    }
                     // No lowerbound.
                 } else if (is_null($low) && !is_null($up)) {
-                    if ($points <= $up)
+                    if ($points <= $up) {
                         $nextslotid = $lteq->next;
+                    }
                 }
             }
         }
@@ -115,15 +125,16 @@ if (!is_null($points)) {
         $nextslotid = $edge->next;
     }
 
-    $branched_next = slotid_to_page($attemptobj->get_quizobj(), $nextslotid);
+    $branchednext = slotid_to_page($attemptobj->get_quizobj(), $nextslotid);
 
-    if ($branched_next != -1)
-        $branched_next -= 1;
+    if ($branchednext != -1) {
+        $branchednext -= 1;
+    }
 }
 
 // Set $nexturl now.
 if ($next) {
-    $page =   $branched_next;
+    $page = $branchednext;
 } else if ($previous && $thispage > 0) {
     $page = $thispage - 1;
 } else {
