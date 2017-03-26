@@ -6,19 +6,11 @@ jsPlumb.ready(function() {
     var selectedConnection = null;
 
     var instance = jsPlumb.getInstance({
-        Endpoint: [
-            "Dot", {
-                radius: 2
-            }
-        ],
+        Endpoint: ["Dot", { radius: 2 }],
         Connector: "StateMachine",
         HoverPaintStyle: { stroke: "#d30c0c", strokeWidth: 2 },
         ConnectionOverlays: [
-            ["Arrow", {
-                location: 1,
-                id: "arrow",
-                length: 14,
-            }],
+            ["Arrow", { location: 1, id: "arrow", length: 14 }],
             ["Label", { label: "Alle", id: "label", cssClass: "aLabel" }]
         ],
         Container: "questionCanvas"
@@ -94,8 +86,7 @@ jsPlumb.ready(function() {
                     y = e.finalPos[1];
 
                 $.ajax({
-                    url: branchedquizRestPath + '?class=resource&field=posnode&quizid=' +
-                        quizId + '&id=' + id + '&sesskey=' + M.cfg.sesskey + '&x=' + x + '&y=' + y,
+                    url: branchedquizRestPath + '?class=resource&field=posnode&quizid=' + quizId + '&id=' + id + '&sesskey=' + M.cfg.sesskey + '&x=' + x + '&y=' + y,
                     type: 'POST',
                     success: function(result) {
                         if (result.error) {
@@ -131,8 +122,7 @@ jsPlumb.ready(function() {
                 endSlot = $target.data('slot-id');
 
                 $.ajax({
-                    url: branchedquizRestPath + '?class=resource&field=addedge&quizid=' +
-                        quizId + '&startSlot=' + startSlot + '&sesskey=' + M.cfg.sesskey + '&endSlot=' + endSlot,
+                    url: branchedquizRestPath + '?class=resource&field=addedge&quizid=' + quizId + '&startSlot=' + startSlot + '&sesskey=' + M.cfg.sesskey + '&endSlot=' + endSlot,
                     type: 'POST',
                     success: function(result) {
                         if (result.error) {
@@ -172,7 +162,6 @@ jsPlumb.ready(function() {
         instance.fire("jsPlumbDemoNodeAdded", el);
     };
 
-    // suspend drawing and initialise.
     instance.batch(function() {
 
         var slots = {};
@@ -291,8 +280,7 @@ jsPlumb.ready(function() {
         $self.attr('disabled', true);
         if (confirm('Sind Sie sicher, dass Sie die Frage löschen möchten?')) {
             $.ajax({
-                url: branchedquizRestPath + '?class=resource&quizid=' + quizId + '&id=' +
-                    selectedQuestion.slotId + '&sesskey=' + M.cfg.sesskey,
+                url: branchedquizRestPath + '?class=resource&quizid=' + quizId + '&id=' + selectedQuestion.slotId + '&sesskey=' + M.cfg.sesskey,
                 type: 'DELETE',
                 success: function(result) {
                     if (result.error) {
@@ -321,8 +309,7 @@ jsPlumb.ready(function() {
         $self.attr('disabled', true);
         if (confirm('Sind Sie sicher, dass Sie die Verbindung löschen möchten?')) {
             $.ajax({
-                url: branchedquizRestPath + '?class=edge&quizid=' + quizId + '&id=' +
-                    selectedConnection.id + '&sesskey=' + M.cfg.sesskey,
+                url: branchedquizRestPath + '?class=edge&quizid=' + quizId + '&id=' + selectedConnection.id + '&sesskey=' + M.cfg.sesskey,
                 type: 'DELETE',
                 success: function(result) {
                     if (result.error) {

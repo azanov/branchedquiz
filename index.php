@@ -46,13 +46,12 @@ $strquizzes = get_string("modulenameplural", "quiz");
 $streditquestions = '';
 $editqcontexts = new question_edit_contexts($coursecontext);
 if ($editqcontexts->have_one_edit_tab_cap('questions')) {
-    $streditquestions =
-        "<form target=\"_parent\" method=\"get\" action=\"$CFG->wwwroot/question/edit.php\">
-           <div>
-           <input type=\"hidden\" name=\"courseid\" value=\"$course->id\" />
-           <input type=\"submit\" value=\"".get_string("editquestions", "quiz")."\" />
-           </div>
-         </form>";
+    $streditquestions = "<form target=\"_parent\" method=\"get\" action=\"$CFG->wwwroot/question/edit.php\">";
+    $streditquestions .= "<div>";
+    $streditquestions .= "<input type=\"hidden\" name=\"courseid\" value=\"$course->id\" />";
+    $streditquestions .= "<input type=\"submit\" value=\"".get_string("editquestions", "quiz")."\" />";
+    $streditquestions .= "</div>";
+    $streditquestions .= "</form>";
 }
 $PAGE->navbar->add($strquizzes);
 $PAGE->set_title($strquizzes);
@@ -72,7 +71,7 @@ $showclosingheader = false;
 $showfeedback = false;
 foreach ($quizzes as $quiz) {
     if ($quiz->timeclose != 0) {
-        $showclosingheader=true;
+        $showclosingheader = true;
     }
     if (quiz_has_feedback($quiz)) {
         $showfeedback = true;

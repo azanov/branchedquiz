@@ -192,42 +192,40 @@ $summax = get_sum_max_grades($attemptobj);
 // Show marks (if the user is allowed to see marks at the moment).
 $grade = branchedquiz_rescale_grade($attempt->sumgrades, $quiz, $summax, false);
 if ($options->marks >= question_display_options::MARK_AND_MAX && quiz_has_grades($quiz)) {
+    if ($attempt->state == quiz_attempt::FINISHED) {
+        if (is_null($grade)) {
+            $summarydata['grade'] = array(
+                'title'   => get_string('grade', 'quiz'),
+                'content' => quiz_format_grade($quiz, $grade),
+            );
+        } else {
+            // Show raw marks only if they are different from the grade (like on the view page).
+            if ($quiz->grade != $summax) {
+                $a = new stdClass();
+                $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
+                $a->maxgrade = quiz_format_grade($quiz, $summax);
+                $summarydata['marks'] = array(
+                    'title'   => get_string('marks', 'quiz'),
+                    'content' => get_string('outofshort', 'quiz', $a),
+                );
+            }
 
-    if ($attempt->state != quiz_attempt::FINISHED) {
-        // Cannot display grade.
-    } else if (is_null($grade)) {
-        $summarydata['grade'] = array(
-            'title'   => get_string('grade', 'quiz'),
-            'content' => quiz_format_grade($quiz, $grade),
-        );
-
-    } else {
-        // Show raw marks only if they are different from the grade (like on the view page).
-        if ($quiz->grade != $summax) {
+            // Now the scaled grade.
             $a = new stdClass();
-            $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
-            $a->maxgrade = quiz_format_grade($quiz, $summax);
-            $summarydata['marks'] = array(
-                'title'   => get_string('marks', 'quiz'),
-                'content' => get_string('outofshort', 'quiz', $a),
+            $a->grade = html_writer::tag('b', quiz_format_grade($quiz, $grade));
+            $a->maxgrade = quiz_format_grade($quiz, $quiz->grade);
+            if ($quiz->grade != 100) {
+                $a->percent = html_writer::tag('b', format_float(
+                        $attempt->sumgrades * 100 / $summax, 0));
+                $formattedgrade = get_string('outofpercent', 'quiz', $a);
+            } else {
+                $formattedgrade = get_string('outof', 'quiz', $a);
+            }
+            $summarydata['grade'] = array(
+                'title'   => get_string('grade', 'quiz'),
+                'content' => $formattedgrade,
             );
         }
-
-        // Now the scaled grade.
-        $a = new stdClass();
-        $a->grade = html_writer::tag('b', quiz_format_grade($quiz, $grade));
-        $a->maxgrade = quiz_format_grade($quiz, $quiz->grade);
-        if ($quiz->grade != 100) {
-            $a->percent = html_writer::tag('b', format_float(
-                    $attempt->sumgrades * 100 / $summax, 0));
-            $formattedgrade = get_string('outofpercent', 'quiz', $a);
-        } else {
-            $formattedgrade = get_string('outof', 'quiz', $a);
-        }
-        $summarydata['grade'] = array(
-            'title'   => get_string('grade', 'quiz'),
-            'content' => $formattedgrade,
-        );
     }
 }
 
