@@ -49,93 +49,76 @@ $scrollpos     = optional_param('scrollpos',     '',     PARAM_RAW);
 
 $attemptobj = branchedquiz_attempt::create($attemptid);
 
-// Note: the first page in processattempt is 0, in questions however 1.
-// If page == -1, user gets  summary page.
-$slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage + 1);
+//note: the first page in processattempt is 0, in questions however 1
+// if page == -1, user gets  summary page
+$slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage+1);
 $points = -1;
-if ($slotid != -1) {
-    $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage + 1));
-}
-$nextslotid = -1;
+if ($slotid != -1) $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
+$next_slotid = -1;
 
 if (!is_null($points)) {
-
-    // Check if points don't matter  lowerbound == null && upperbound == null.
+    // check if points don't matter  lowerbound == null && upperbound == null
     $edge = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND lowerbound IS NULL AND upperbound IS NULL', array($slotid));
 
-    // If query is empty, then points matter.
+    //if query is empty, then points matter
     if (!$edge) {
-        $edgeeq = $DB->get_record_sql(
-            'SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?',
-            array($slotid, OPERATOR_EQUAL, $points, $points));
-        $edgelt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS));
-        $edgeeq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS_OR_EQUAL));
+        $edge_eq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, OPERATOR_EQUAL, $points, $points));
+        $edge_lt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS));
+        $edge_lt_eq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS_OR_EQUAL));
 
-        // Operator == equal.
-        if ($edgeeq) {
-            assert($edgeeq->upperbound == $edgeeq->lowerbound);
-            $nextslotid = $edgeeq->next;
+        // operator == equal
+        if ($edge_eq){
+            assert($edge_eq->upperbound == $edge_eq->lowerbound);
+            $next_slotid = $edge_eq->next;
+
         }
-        // Operator == less than.
-        if ($edgelt) {
-            foreach ($edgelt as $lt) {
+        // operator == less than
+        if ($edge_lt) {
+            foreach ($edge_lt as $lt) {
                 $up = $lt->upperbound;
                 $low = $lt->lowerbound;
-                // Valid values for upperbound and lowerbound.
+                // valid values for upperbound and lowerbound
                 if (!is_null($low) && !is_null($up)) {
-                    if ($points < $up && $points > $low) {
-                        $nextslotid = $lt->next;
-                    }
-                    // No upperbound.
+                    if ($points < $up && $points > $low) $next_slotid = $lt->next;
+                    // no upperbound
                 } else if (!is_null($low) && is_null($up)) {
-                    if ($points > $low) {
-                        $nextslotid = $lt->next;
-                    }
-                    // No lowerbound.
+                    if ($points > $low) $next_slotid = $lt->next;
+                    // no lowerbound
                 } else if (is_null($low) && !is_null($up)) {
-                    if ($points < $up) {
-                        $nextslotid = $lt->next;
-                    }
+                    if ($points < $up) $next_slotid = $lt->next;
                 }
             }
         }
-        // Operator == less than or equal.
-        if ($edgeeq) {
-            foreach ($edgeeq as $lteq) {
-                $up = $lteq->upperbound;
-                $low = $lteq->lowerbound;
-                // Valid values for upperbound and lowerbound.
-                if (!is_null($low) && !is_null($up)) {
-                    if ($points <= $up && $points >= $low) {
-                        $nextslotid = $lteq->next;
-                    }
-                    // No upperbound.
-                } else if (!is_null($low) && is_null($up)) {
-                    if ($points >= $low) {
-                        $nextslotid = $lteq->next;
-                    }
-                    // No lowerbound.
-                } else if (is_null($low) && !is_null($up)) {
-                    if ($points <= $up) {
-                        $nextslotid = $lteq->next;
+        //operator == less than or equal
+        if ($edge_lt_eq) {
+                foreach ($edge_lt_eq as $lt_eq) {
+                    $up = $lt_eq->upperbound;
+                    $low = $lt_eq->lowerbound;
+                    // valid values for upperbound and lowerbound
+                    if (!is_null($low) && !is_null($up)) {
+                        if ($points <= $up && $points >= $low) $next_slotid = $lt_eq->next;
+                        // no upperbound
+                    } elseif (!is_null($low) && is_null($up)) {
+                        if ($points >= $low) $next_slotid = $lt_eq->next;
+                        // no lowerbound
+                    } else if (is_null($low) && !is_null($up)) {
+                        if ($points <= $up) $next_slotid = $lt_eq->next;
                     }
                 }
-            }
         }
     } else {
-        $nextslotid = $edge->next;
+        $next_slotid = $edge->next;
     }
 
-    $branchednext = slotid_to_page($attemptobj->get_quizobj(), $nextslotid);
+    $branched_next = slotid_to_page($attemptobj->get_quizobj(), $next_slotid);
 
-    if ($branchednext != -1) {
-        $branchednext -= 1;
-    }
+    if ($branched_next != -1) $branched_next -= 1;
 }
 
 // Set $nexturl now.
 if ($next) {
-    $page = $branchednext;
+    $page =   $branched_next;
+    //$page =   $nextpage;
 } else if ($previous && $thispage > 0) {
     $page = $thispage - 1;
 } else {
