@@ -61,7 +61,7 @@ function branchedquiz_update_instance($quiz, $mform) {
         quiz_update_grades($quiz);
     }
 
-    $quizdateschanged = $oldquiz->timelimit ! $quiz->timelimit
+    $quizdateschanged = $oldquiz->timelimit != $quiz->timelimit
                      || $oldquiz->timeclose != $quiz->timeclose
                      || $oldquiz->graceperiod != $quiz->graceperiod;
     if ($quizdateschanged) {
