@@ -406,7 +406,7 @@ function branchedquiz_rescale_grade($rawgrade, $quiz, $summax, $format = true) {
     if (is_null($rawgrade)) {
         $grade = null;
     } else if ($summax >= 0.000005) {
-        $grade = $rawgrade * $quiz->grade /$summax;
+        $grade = $rawgrade * $quiz->grade / $summax;
     } else {
         $grade = 0;
     }
