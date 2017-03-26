@@ -54,7 +54,7 @@ $attemptobj = branchedquiz_attempt::create($attemptid);
 $slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage + 1);
 $points = -1;
 if ($slotid != -1) {
-    $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage+1));
+    $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage + 1));
 }
 $nextslotid = -1;
 
@@ -65,12 +65,14 @@ if (!is_null($points)) {
 
     // If query is empty, then points matter.
     if (!$edge) {
-        $edgeeq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, OPERATOR_EQUAL, $points, $points));
+        $edgeeq = $DB->get_record_sql(
+            'SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?',
+            array($slotid, OPERATOR_EQUAL, $points, $points));
         $edgelt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS));
         $edgeeq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS_OR_EQUAL));
 
         // Operator == equal.
-        if ($edgeeq){
+        if ($edgeeq) {
             assert($edgeeq->upperbound == $edgeeq->lowerbound);
             $nextslotid = $edgeeq->next;
         }

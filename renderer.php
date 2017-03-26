@@ -174,7 +174,7 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         $table->data = array();
 
         // Get the summary info for each question.
-        //$slots = $attemptobj->get_slots();
+        // $slots = $attemptobj->get_slots();
         // to show only questions, which the user has seen in current path
         $slots = get_current_path_slots($attemptobj);
         foreach ($slots as $slot) {
