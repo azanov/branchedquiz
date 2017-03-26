@@ -49,8 +49,8 @@ $scrollpos     = optional_param('scrollpos',     '',     PARAM_RAW);
 
 $attemptobj = branchedquiz_attempt::create($attemptid);
 
-//note: the first page in processattempt is 0, in questions however 1
-// if page == -1, user gets  summary page
+// Note: the first page in processattempt is 0, in questions however 1.
+// If page == -1, user gets  summary page.
 $slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage + 1);
 $points = -1;
 
@@ -61,12 +61,14 @@ if ($slotid != -1) {
 $nextslotid = -1;
 
 if (!is_null($points)) {
-    // check if points don't matter  lowerbound == null && upperbound == null
+    // Check if points don't matter  lowerbound == null && upperbound == null.
     $edge = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND lowerbound IS NULL AND upperbound IS NULL', array($slotid));
 
-    //if query is empty, then points matter
+    // If query is empty, then points matter.
     if (!$edge) {
-        $edgeeq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, OPERATOR_EQUAL, $points, $points));
+        $edgeeq = $DB->get_record_sql(
+            'SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?',
+            array($slotid, OPERATOR_EQUAL, $points, $points));
         $edgelt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS));
         $edgelteq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS_OR_EQUAL));
 
@@ -98,7 +100,7 @@ if (!is_null($points)) {
                 }
             }
         }
-        //operator == less than or equal
+        // Operator == less than or equal.
         if ($edgelteq) {
             foreach ($edgelteq as $lteq) {
                 $up = $lteq->upperbound;
