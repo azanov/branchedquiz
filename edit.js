@@ -249,12 +249,17 @@ jsPlumb.ready(function() {
 
         var $self = $(this),
             quizId = $(this).data('quizid'),
-            $currentItem = $('#slot-' + selectedQuestion.slotId);
+            $currentItem = $('#slot-' + selectedQuestion.slotId),
+            url = branchedquizRestPath;
+
+        url += '?page=1&class=resource&field=move&quizid=' + quizId;
+        url += '&id=' + selectedQuestion.slotId;
+        url += '&sesskey=' + M.cfg.sesskey;
+        url += '&sectionId=' + selectedQuestion.sectionId;
 
         $self.attr('disabled', true);
         $.ajax({
-            url: branchedquizRestPath + '?page=1&class=resource&field=move&quizid=' +
-                quizId + '&id=' + selectedQuestion.slotId + '&sesskey=' + M.cfg.sesskey + '&sectionId=' + selectedQuestion.sectionId,
+            url: url,
             type: 'POST',
             success: function(result) {
                 if (result.error) {
