@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017032401;
+$plugin->version   = 2017032602;
 $plugin->requires  = 2016051900;
 $plugin->component = 'mod_branchedquiz';
 $plugin->cron      = 60;
