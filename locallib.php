@@ -310,7 +310,9 @@ function page_to_slot($quizobj, $page) {
     $slot = -1;
 
     foreach (array_keys($qs) as $id) {
-        if ($qs[$id]->page == $page) $slot = $qs[$id]->slot;
+        if ($qs[$id]->page == $page) {
+            $slot = $qs[$id]->slot;
+        }
     }
 
     return $slot;
@@ -330,7 +332,9 @@ function slotid_to_page($quizobj, $slotid) {
     $page = -1;
 
     foreach (array_keys($qs) as $id) {
-        if ($qs[$id]->slotid == $slotid) $page = $qs[$id]->page;
+        if ($qs[$id]->slotid == $slotid) {
+            $page = $qs[$id]->page;
+        }
     }
 
     return $page;
@@ -355,7 +359,9 @@ function get_current_path_slots($attemptobj) {
 
     foreach (array_keys($qs) as $id) {
         $tmp = ($attemptobj->get_question_mark($qs[$id]->slot));
-        if (!empty($tmp)) array_push($slots, $qs[$id]->slot);
+        if (!empty($tmp)) {
+            array_push($slots, $qs[$id]->slot);
+        }
     }
 
     return $slots;
@@ -391,16 +397,16 @@ function get_sum_max_grades($attemptobj) {
  * @param object $quiz the quiz object. Only the fields grade, sumgrades and decimalpoints are used.
  * @param bool|string $format whether to format the results for display
  *      or 'question' to format a question grade (different number of decimal places.
- * @param $sum_max sum of max grades for all slots in current path
+ * @param $summax sum of max grades for all slots in current path
  * @return float|string the rescaled grade, or null/the lang string 'notyetgraded'
  *      if the $grade is null.
  */
-function branchedquiz_rescale_grade($rawgrade, $quiz, $sum_max, $format = true) {
+function branchedquiz_rescale_grade($rawgrade, $quiz, $summax, $format = true) {
 
     if (is_null($rawgrade)) {
         $grade = null;
-    } else if ($sum_max >= 0.000005) {
-        $grade = $rawgrade * $quiz->grade /$sum_max;
+    } else if ($summax >= 0.000005) {
+        $grade = $rawgrade * $quiz->grade /$summax;
     } else {
         $grade = 0;
     }
@@ -436,11 +442,11 @@ function branchedquiz_set_grade($newgrade, $quiz) {
                 UPDATE {quiz_grades}
                 SET grade = ? * grade, timemodified = ?
                 WHERE quiz = ?
-        ", array($newgrade/$oldgrade, $timemodified, $quiz->id));
+        ", array($newgrade / $oldgrade, $timemodified, $quiz->id));
     }
     if ($oldgrade > 1e-7) {
         // Update the quiz_feedback table.
-        $factor = $newgrade/$oldgrade;
+        $factor = $newgrade / $oldgrade;
         $DB->execute("
                 UPDATE {quiz_feedback}
                 SET mingrade = ? * mingrade, maxgrade = ? * maxgrade
@@ -464,11 +470,11 @@ function branchedquiz_add_edge($quiz, $startslot, $endslot) {
     return $DB->insert_record('branchedquiz_edge', $edge);
 }
 
-function branchedquiz_remove_node($quiz, $slotId) {
+function branchedquiz_remove_node($quiz, $slotid) {
     global $DB;
-    $DB->delete_records('branchedquiz_node', array('quizid' => $quiz->id, 'id' => $slotId));
-    $DB->delete_records('branchedquiz_edge', array('slotid' => $slotId));
-    $DB->delete_records('branchedquiz_edge', array('next' => $slotId));
+    $DB->delete_records('branchedquiz_node', array('quizid' => $quiz->id, 'id' => $slotid));
+    $DB->delete_records('branchedquiz_edge', array('slotid' => $slotid));
+    $DB->delete_records('branchedquiz_edge', array('next' => $slotid));
 }
 
 function branchedquiz_pos_node($quiz, $slot, $x, $y) {
@@ -492,13 +498,13 @@ function branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperboun
     $edge = $DB->get_record('branchedquiz_edge', array('id' => $id));
 
     if (empty($operator) || $operator == '') {
-        // all results
+        // All results.
         $edge->operator = $operator;
         $edge->lowerbound = null;
         $edge->upperbound = null;
     } else if ($operator == OPERATOR_EQUAL) {
 
-        // fixed result only
+        // Fixed result only.
         $edge->operator = $operator;
         $edge->lowerbound = $lowerbound;
         $edge->upperbound = $lowerbound;

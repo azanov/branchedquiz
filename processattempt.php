@@ -59,67 +59,81 @@ if ($slotid != -1) {
 $nextslotid = -1;
 
 if (!is_null($points)) {
-    // check if points don't matter  lowerbound == null && upperbound == null
+
+    // Check if points don't matter  lowerbound == null && upperbound == null.
     $edge = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND lowerbound IS NULL AND upperbound IS NULL', array($slotid));
 
-    //if query is empty, then points matter
+    // If query is empty, then points matter.
     if (!$edge) {
         $edgeeq = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ? AND upperbound = ? AND lowerbound = ?', array($slotid, OPERATOR_EQUAL, $points, $points));
         $edgelt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS));
         $edgeeq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS_OR_EQUAL));
 
-        // operator == equal
+        // Operator == equal.
         if ($edgeeq){
             assert($edgeeq->upperbound == $edgeeq->lowerbound);
             $nextslotid = $edgeeq->next;
-
         }
-        // operator == less than
+        // Operator == less than.
         if ($edgelt) {
             foreach ($edgelt as $lt) {
                 $up = $lt->upperbound;
                 $low = $lt->lowerbound;
-                // valid values for upperbound and lowerbound
+                // Valid values for upperbound and lowerbound.
                 if (!is_null($low) && !is_null($up)) {
-                    if ($points < $up && $points > $low) $nextslotid = $lt->next;
-                    // no upperbound
+                    if ($points < $up && $points > $low) {
+                        $nextslotid = $lt->next;
+                    }
+                    // No upperbound.
                 } else if (!is_null($low) && is_null($up)) {
-                    if ($points > $low) $nextslotid = $lt->next;
-                    // no lowerbound
+                    if ($points > $low) {
+                        $nextslotid = $lt->next;
+                    }
+                    // No lowerbound.
                 } else if (is_null($low) && !is_null($up)) {
-                    if ($points < $up) $nextslotid = $lt->next;
+                    if ($points < $up) {
+                        $nextslotid = $lt->next;
+                    }
                 }
             }
         }
-        //operator == less than or equal
+        // Operator == less than or equal.
         if ($edgeeq) {
-                foreach ($edgeeq as $lteq) {
-                    $up = $lteq->upperbound;
-                    $low = $lteq->lowerbound;
-                    // valid values for upperbound and lowerbound
-                    if (!is_null($low) && !is_null($up)) {
-                        if ($points <= $up && $points >= $low) $nextslotid = $lteq->next;
-                        // no upperbound
-                    } elseif (!is_null($low) && is_null($up)) {
-                        if ($points >= $low) $nextslotid = $lteq->next;
-                        // no lowerbound
-                    } else if (is_null($low) && !is_null($up)) {
-                        if ($points <= $up) $nextslotid = $lteq->next;
+            foreach ($edgeeq as $lteq) {
+                $up = $lteq->upperbound;
+                $low = $lteq->lowerbound;
+                // Valid values for upperbound and lowerbound.
+                if (!is_null($low) && !is_null($up)) {
+                    if ($points <= $up && $points >= $low) {
+                        $nextslotid = $lteq->next;
+                    }
+                    // No upperbound.
+                } else if (!is_null($low) && is_null($up)) {
+                    if ($points >= $low) {
+                        $nextslotid = $lteq->next;
+                    }
+                    // No lowerbound.
+                } else if (is_null($low) && !is_null($up)) {
+                    if ($points <= $up) {
+                        $nextslotid = $lteq->next;
                     }
                 }
+            }
         }
     } else {
         $nextslotid = $edge->next;
     }
 
-    $branched_next = slotid_to_page($attemptobj->get_quizobj(), $nextslotid);
+    $branchednext = slotid_to_page($attemptobj->get_quizobj(), $nextslotid);
 
-    if ($branched_next != -1) $branched_next -= 1;
+    if ($branchednext != -1) {
+        $branchednext -= 1;
+    }
 }
 
 // Set $nexturl now.
 if ($next) {
-    $page =   $branched_next;
+    $page = $branchednext;
 } else if ($previous && $thispage > 0) {
     $page = $thispage - 1;
 } else {

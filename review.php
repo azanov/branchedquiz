@@ -203,7 +203,7 @@ if ($options->marks >= question_display_options::MARK_AND_MAX && quiz_has_grades
 
     } else {
         // Show raw marks only if they are different from the grade (like on the view page).
-        if ($quiz->grade !=  $summax) {
+        if ($quiz->grade != $summax) {
             $a = new stdClass();
             $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
             $a->maxgrade = quiz_format_grade($quiz, $summax);
