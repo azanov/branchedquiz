@@ -18,8 +18,8 @@
 
 #page-mod-quiz-edit .mod-branchedquiz-edit-content .slots .section .activity[data-slot="1"]:before {
     background: #f4f9fd;
-    border-radius: 10px;
     border: dashed 1px #0072b8;
+    border-radius: 10px;
     color: #000;
     content: 'start';
     display: block;
@@ -51,8 +51,8 @@
 
 .mod-branchedquiz-edit-content .ep {
     background: none;
-    border-radius: 50%;
     border: solid 1px #0072b8;
+    border-radius: 50%;
     box-shadow: none;
     cursor: pointer;
     height: 10px;
