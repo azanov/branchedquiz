@@ -15,11 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Rest endpoint for ajax editing of quiz structure.
- *
- * @package   mod_quiz
- * @copyright 1999 Martin Dougiamas  http://dougiamas.com
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_branchedquiz
+ * @copyright  2017 onwards Dominik Wittenberg, Paul Youssef, Pavel Azanov, Allessandro Oxymora, Robin Voigt
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 if (!defined('AJAX_SCRIPT')) {
@@ -87,27 +85,6 @@ switch($requestmethod) {
     case 'POST':
     case 'GET': // For debugging.
         switch ($class) {
-            case 'section':
-                $table = 'quiz_sections';
-                $section = $structure->get_section_by_id($id);
-                switch ($field) {
-                    case 'getsectiontitle':
-                        require_capability('mod/quiz:manage', $modcontext);
-                        echo json_encode(array('instancesection' => $section->heading));
-                        break;
-                    case 'updatesectiontitle':
-                        require_capability('mod/quiz:manage', $modcontext);
-                        $structure->set_section_heading($id, $newheading);
-                        echo json_encode(array('instancesection' => format_string($newheading)));
-                        break;
-                    case 'updateshufflequestions':
-                        require_capability('mod/quiz:manage', $modcontext);
-                        $structure->set_section_shuffle($id, $shuffle);
-                        echo json_encode(array('instanceshuffle' => $section->shufflequestions));
-                        break;
-                }
-                break;
-
             case 'resource':
                 switch ($field) {
                     case 'move':
@@ -163,25 +140,6 @@ switch($requestmethod) {
                         echo json_encode(array('instancemaxmark' => quiz_format_question_grade($quiz, $maxmark),
                                 'newsummarks' => quiz_format_grade($quiz, $quiz->sumgrades)));
                         break;
-
-                    case 'updatepagebreak':
-                        require_capability('mod/quiz:manage', $modcontext);
-                        $slots = $structure->update_page_break($id, $value);
-                        $json = array();
-                        foreach ($slots as $slot) {
-                            $json[$slot->slot] = array('id' => $slot->id, 'slot' => $slot->slot,
-                                                            'page' => $slot->page);
-                        }
-                        echo json_encode(array('slots' => $json));
-                        break;
-
-                    case 'updatedependency':
-                        require_capability('mod/quiz:manage', $modcontext);
-                        $slot = $structure->get_slot_by_id($id);
-                        $value = (bool) $value;
-                        $structure->update_question_dependency($slot->id, $value);
-                        echo json_encode(array('requireprevious' => $value));
-                        break;
                 }
                 break;
         }
@@ -189,12 +147,6 @@ switch($requestmethod) {
 
     case 'DELETE':
         switch ($class) {
-            case 'section':
-                require_capability('mod/quiz:manage', $modcontext);
-                $structure->remove_section_heading($id);
-                echo json_encode(array('deleted' => true));
-                break;
-
             case 'resource':
                 require_capability('mod/quiz:manage', $modcontext);
                 if (!$slot = $DB->get_record('quiz_slots', array('quizid' => $quiz->id, 'id' => $id))) {

@@ -1,20 +1,13 @@
 /**
- * The modform class has all the JavaScript specific to mod/quiz/edit.php.
- *
- * @module moodle-mod_branchedquiz-edit
+ * @package    mod_branchedquiz
+ * @copyright  2017 onwards Dominik Wittenberg, Paul Youssef, Pavel Azanov, Allessandro Oxymora, Robin Voigt
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 var EDIT = function() {
     EDIT.superclass.constructor.apply(this, arguments);
 };
 
-/**
- * The coursebase class to provide shared functionality to Modules within
- * Moodle.
- *
- * @class M.course.coursebase
- * @constructor
- */
 Y.extend(EDIT, Y.Base, {
     initializer: function () {
 

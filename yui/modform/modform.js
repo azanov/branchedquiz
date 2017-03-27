@@ -1,20 +1,13 @@
 /**
- * The modform class has all the JavaScript specific to mod/quiz/mod_form.php.
- *
- * @module moodle-mod_branchedquiz-modform
+ * @package    mod_branchedquiz
+ * @copyright  2017 onwards Dominik Wittenberg, Paul Youssef, Pavel Azanov, Allessandro Oxymora, Robin Voigt
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 var MODFORM = function() {
     MODFORM.superclass.constructor.apply(this, arguments);
 };
 
-/**
- * The coursebase class to provide shared functionality to Modules within
- * Moodle.
- *
- * @class M.course.coursebase
- * @constructor
- */
 Y.extend(MODFORM, Y.Base, {
     qppSelect: null,
     navSelect: null,

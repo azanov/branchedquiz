@@ -15,11 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Renderer outputting the quiz editing UI.
- *
- * @package mod_quiz
- * @copyright 2013 The Open University.
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_branchedquiz
+ * @copyright  2017 onwards Dominik Wittenberg, Paul Youssef, Pavel Azanov, Allessandro Oxymora, Robin Voigt
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace mod_branchedquiz\output;
@@ -31,13 +29,6 @@ require_once($CFG->dirroot.'/mod/branchedquiz/lib.php');
 use \mod_quiz\structure;
 use \html_writer;
 
-/**
- * Renderer outputting the quiz editing UI.
- *
- * @copyright 2013 The Open University.
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @since Moodle 2.7
- */
 class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
     public function edit_page(\quiz $quizobj, structure $structure,

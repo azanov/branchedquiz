@@ -15,13 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Library of functions for the quiz module.
- *
- * This contains functions that are called also from outside the quiz module
- * Functions that are only called by the quiz module itself are in {@link locallib.php}
- *
- * @package    mod_quiz
- * @copyright  1999 onwards Martin Dougiamas {@link http://moodle.com}
+ * @package    mod_branchedquiz
+ * @copyright  2017 onwards Dominik Wittenberg, Paul Youssef, Pavel Azanov, Allessandro Oxymora, Robin Voigt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

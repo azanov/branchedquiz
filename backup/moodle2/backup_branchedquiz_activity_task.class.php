@@ -15,13 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Adaptive quiz backup files
- *
- * This module was created as a collaborative effort between Middlebury College
- * and Remote Learner.
- *
  * @package    mod_branchedquiz
- * @copyright  2013 onwards Remote-Learner {@link http://www.remote-learner.ca/}
+ * @copyright  2017 onwards Dominik Wittenberg, Paul Youssef, Pavel Azanov, Allessandro Oxymora, Robin Voigt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

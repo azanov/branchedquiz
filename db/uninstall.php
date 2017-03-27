@@ -15,18 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Provides code to be executed during the module uninstallation
- *
- * @see uninstall_plugin()
- *
- * @package    mod_testflow
- * @copyright  2016 Your Name <your@email.address>
+ * @package    mod_branchedquiz
+ * @copyright  2017 onwards Dominik Wittenberg, Paul Youssef, Pavel Azanov, Allessandro Oxymora, Robin Voigt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Custom uninstallation procedure
- */
 function xmldb_branchedquiz_uninstall() {
     global $DB;
     $pfx = $DB->get_prefix();
