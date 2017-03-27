@@ -10,7 +10,7 @@ var EDIT = function() {
 
 Y.extend(EDIT, Y.Base, {
     initializer: function () {
-    	console.log(arguments)
+        console.log(arguments)
     }
 });
 
