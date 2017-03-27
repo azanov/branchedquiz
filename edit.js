@@ -288,7 +288,6 @@ jsPlumb.ready(function() {
             quizId = $self.data('quizid'),
             sessKey = $self.data('sesskey');
 
-
         if (confirm(M.str.branchedquiz.confirmdeletequestion)) {
             $self.attr('disabled', true);
             $.ajax({
@@ -317,7 +316,6 @@ jsPlumb.ready(function() {
         var $self = $(this),
             quizId = $self.data('quizid'),
             sessKey = $self.data('sesskey');
-
 
         if (confirm(M.str.branchedquiz.confirmdeleteedge)) {
             $self.attr('disabled', true);
