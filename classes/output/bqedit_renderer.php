@@ -165,7 +165,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         $questionname = shorten_text(format_string($question->name), 100);
 
         $node = branchedquiz_get_node($structure->get_slot_id_for_slot($slot));
-        // print_r($node);
+
         $output .= html_writer::tag('div', $questionhtml . $joinhtml,
                 array('class' => $questionclasses, 'id' => 'slot-' . $structure->get_slot_id_for_slot($slot),
                         'data-canfinish' => $structure->can_finish_during_the_attempt($slot),
@@ -386,8 +386,6 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         $icon = $this->pix_icon('icon', $namestr, $qtype->plugin_name(), array('title' => $namestr,
                 'class' => 'icon activityicon', 'alt' => ' ', 'role' => 'presentation'));
 
-        // $editicon = $this->pix_icon('t/edit', '', 'moodle', array('title' => ''));
-
         // Need plain question name without html tags for link title.
         $title = shorten_text(format_string($question->name), 100);
 
@@ -416,10 +414,6 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         $icon = $this->pix_icon('icon', $namestr, $qtype->plugin_name(), array('title' => $namestr,
                 'class' => 'icon activityicon', 'alt' => ' ', 'role' => 'presentation'));
 
-        // $editicon = $this->pix_icon('t/edit', $configuretitle, 'moodle', array('title' => ''));
-
-        // If this is a random question, display a link to show the questions
-        // selected from in the question bank.
         $qbankurl = new \moodle_url('/question/edit.php', array(
                 'cmid' => $structure->get_cmid(),
                 'cat' => $question->category . ',' . $question->contextid,

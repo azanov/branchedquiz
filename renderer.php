@@ -116,7 +116,7 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         }
 
         $navmethod = $attemptobj->get_quiz()->navmethod;
-        // replaced $attemptobj->is_last_page($page) to false - to hide "finish attempt"
+        // Replaced $attemptobj->is_last_page($page) to false - to hide "finish attempt".
         $output .= $this->attempt_navigation_buttons($page, false, $navmethod);
 
         // Some hidden fields to trach what is going on.
@@ -171,8 +171,7 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         $table->data = array();
 
         // Get the summary info for each question.
-        // $slots = $attemptobj->get_slots();
-        // to show only questions, which the user has seen in current path
+        // Show only questions, which the user has seen in current path.
         $slots = get_current_path_slots($attemptobj);
         foreach ($slots as $slot) {
             // Add a section headings if we need one here.

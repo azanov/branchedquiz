@@ -65,27 +65,27 @@ if (!is_null($points)) {
         $edgelt = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS));
         $edgelteq = $DB->get_records_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND operator = ?', array($slotid, OPERATOR_LESS_OR_EQUAL));
 
-        // operator == equal
+        // Operator == equal.
         if ($edgeeq) {
             assert($edgeeq->upperbound == $edgeeq->lowerbound);
             $nextslotid = $edgeeq->next;
         }
-        // operator == less than
+        // Operator == less than.
         if ($edgelt) {
             foreach ($edgelt as $lt) {
                 $up = $lt->upperbound;
                 $low = $lt->lowerbound;
-                // valid values for upperbound and lowerbound
+                // Valid values for upperbound and lowerbound.
                 if (!is_null($low) && !is_null($up)) {
                     if ($points < $up && $points > $low) {
                         $nextslotid = $lt->next;
                     }
-                    // no upperbound
+                    // No upperbound.
                 } else if (!is_null($low) && is_null($up)) {
                     if ($points > $low) {
                         $nextslotid = $lt->next;
                     }
-                    // no lowerbound
+                    // No lowerbound.
                 } else if (is_null($low) && !is_null($up)) {
                     if ($points < $up) {
                         $nextslotid = $lt->next;
