@@ -56,7 +56,7 @@
     box-shadow: none;
     cursor: pointer;
     height: 10px;
-    position: absolute!important;
+    position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
@@ -132,9 +132,9 @@
 }
 
 #page-mod-quiz-edit .mod-branchedquiz-edit-content .menu.align-tr-tr {
+    border-radius: 0;
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
-    border-radius: 0;
     box-shadow: none;
     transform: translateY(30px);
 }
