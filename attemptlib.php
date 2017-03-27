@@ -73,6 +73,8 @@ class branchedquiz extends quiz {
             $quiz = quiz_update_effective_access($quiz, $userid);
         }
 
+        quiz_repaginate_questions($quiz->id, 1);
+
         return new branchedquiz($quiz, $cm, $course);
     }
 

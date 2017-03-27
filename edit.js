@@ -92,7 +92,7 @@ jsPlumb.ready(function() {
                     y = e.finalPos[1];
 
                 $.ajax({
-                    url: branchedquizRestPath + '?class=resource&field=posnode&quizid=' + quizId + '&id=' + id + '&sesskey=' + M.cfg.sesskey + '&x=' + x + '&y=' + y,
+                    url: M.cfg.wwwroot + '/mod/branchedquiz/edit_rest.php?class=resource&field=posnode&quizid=' + quizId + '&id=' + id + '&sesskey=' + M.cfg.sesskey + '&x=' + x + '&y=' + y,
                     type: 'POST',
                     success: function(result) {
                         if (result.error) {
@@ -128,7 +128,7 @@ jsPlumb.ready(function() {
                 endSlot = $target.data('slot-id');
 
                 $.ajax({
-                    url: branchedquizRestPath + '?class=resource&field=addedge&quizid=' + quizId + '&startSlot=' + startSlot + '&sesskey=' + M.cfg.sesskey + '&endSlot=' + endSlot,
+                    url: M.cfg.wwwroot + '/mod/branchedquiz/edit_rest.php?class=resource&field=addedge&quizid=' + quizId + '&startSlot=' + startSlot + '&sesskey=' + M.cfg.sesskey + '&endSlot=' + endSlot,
                     type: 'POST',
                     success: function(result) {
                         if (result.error) {
@@ -256,7 +256,7 @@ jsPlumb.ready(function() {
         var $self = $(this),
             quizId = $(this).data('quizid'),
             $currentItem = $('#slot-' + selectedQuestion.slotId),
-            url = branchedquizRestPath;
+            url = M.cfg.wwwroot + '/mod/branchedquiz/edit_rest.php';
 
         url += '?page=1&class=resource&field=move&quizid=' + quizId;
         url += '&id=' + selectedQuestion.slotId;
@@ -291,7 +291,7 @@ jsPlumb.ready(function() {
         if (confirm(M.str.branchedquiz.confirmdeletequestion)) {
             $self.attr('disabled', true);
             $.ajax({
-                url: branchedquizRestPath + '?class=resource&quizid=' + quizId + '&id=' + selectedQuestion.slotId + '&sesskey=' + M.cfg.sesskey,
+                url: M.cfg.wwwroot + '/mod/branchedquiz/edit_rest.php?class=resource&quizid=' + quizId + '&id=' + selectedQuestion.slotId + '&sesskey=' + M.cfg.sesskey,
                 type: 'DELETE',
                 success: function(result) {
                     if (result.error) {
@@ -320,7 +320,7 @@ jsPlumb.ready(function() {
         if (confirm(M.str.branchedquiz.confirmdeleteedge)) {
             $self.attr('disabled', true);
             $.ajax({
-                url: branchedquizRestPath + '?class=edge&quizid=' + quizId + '&id=' + selectedConnection.id + '&sesskey=' + M.cfg.sesskey,
+                url: M.cfg.wwwroot + '/mod/branchedquiz/edit_rest.php?class=edge&quizid=' + quizId + '&id=' + selectedConnection.id + '&sesskey=' + M.cfg.sesskey,
                 type: 'DELETE',
                 success: function(result) {
                     if (result.error) {
@@ -373,7 +373,7 @@ jsPlumb.ready(function() {
             .find('input, select, button').attr('disabled', true);
 
         $.ajax({
-            url: branchedquizRestPath + '?' + data,
+            url: M.cfg.wwwroot + '/mod/branchedquiz/edit_rest.php?' + data,
             type: 'POST',
             success: function(result) {
                 if (result.error) {
