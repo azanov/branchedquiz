@@ -94,7 +94,7 @@ jsPlumb.ready(function() {
                         }
                     },
                     error: function() {
-                        alert('Verbindung nicht möglich');
+                        alert(M.str.branchedquiz.savenodeposfailed);
                     }
                 });
             }
@@ -151,7 +151,7 @@ jsPlumb.ready(function() {
                         }
                     },
                     error: function() {
-                        alert('Verbindung nicht möglich');
+                        alert(M.str.branchedquiz.connectionfailed);
                     }
                 });
 
@@ -270,7 +270,7 @@ jsPlumb.ready(function() {
                 $self.attr('disabled', null);
             },
             error: function() {
-                alert('Löschen nicht möglich');
+                alert(M.str.branchedquiz.deletefailed);
                 $self.attr('disabled', null)
             }
         });
@@ -282,8 +282,9 @@ jsPlumb.ready(function() {
             quizId = $self.data('quizid'),
             sessKey = $self.data('sesskey');
 
-        $self.attr('disabled', true);
-        if (confirm('Sind Sie sicher, dass Sie die Frage löschen möchten?')) {
+
+        if (confirm(M.str.branchedquiz.confirmdeletequestion)) {
+            $self.attr('disabled', true);
             $.ajax({
                 url: branchedquizRestPath + '?class=resource&quizid=' + quizId + '&id=' + selectedQuestion.slotId + '&sesskey=' + M.cfg.sesskey,
                 type: 'DELETE',
@@ -311,8 +312,9 @@ jsPlumb.ready(function() {
             quizId = $self.data('quizid'),
             sessKey = $self.data('sesskey');
 
-        $self.attr('disabled', true);
-        if (confirm('Sind Sie sicher, dass Sie die Verbindung löschen möchten?')) {
+
+        if (confirm(M.str.branchedquiz.confirmdeleteedge)) {
+            $self.attr('disabled', true);
             $.ajax({
                 url: branchedquizRestPath + '?class=edge&quizid=' + quizId + '&id=' + selectedConnection.id + '&sesskey=' + M.cfg.sesskey,
                 type: 'DELETE',
@@ -383,7 +385,7 @@ jsPlumb.ready(function() {
                 $self.attr('disabled', null).find('input, select, button').attr('disabled', null);
             },
             error: function() {
-                alert('Speichern nicht möglich');
+                alert(M.str.branchedquiz.saveedgefailed);
                 $self.attr('disabled', null).find('input, select, button').attr('disabled', null);
             }
         });

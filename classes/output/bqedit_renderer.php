@@ -243,20 +243,13 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         ), 'moodle');
 
         $this->page->requires->strings_for_js(array(
-                'addpagebreak',
-                'confirmremovesectionheading',
-                'confirmremovequestion',
-                'dragtoafter',
-                'dragtostart',
-                'numquestionsx',
-                'sectionheadingedit',
-                'sectionheadingremove',
-                'removepagebreak',
-                'questiondependencyadd',
-                'questiondependencyfree',
-                'questiondependencyremove',
-                'questiondependsonprevious',
-        ), 'quiz');
+                'connectionfailed',
+                'savenodeposfailed',
+                'deletefailed',
+                'confirmdeletequestion',
+                'confirmdeleteedge',
+                'saveedgefailed',
+        ), 'branchedquiz');
 
         foreach (\question_bank::get_all_qtypes() as $qtype => $notused) {
             $this->page->requires->string_for_js('pluginname', 'qtype_' . $qtype);

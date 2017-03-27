@@ -19,7 +19,6 @@ Y.extend(EDIT, Y.Base, {
     initializer: function () {
 
     }
-
 });
 
 // Ensure that M.mod_branchedquiz exists and that coursebase is initialised correctly

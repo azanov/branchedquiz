@@ -23,15 +23,15 @@
  */
 
 $string['modulename'] = 'Branched Quiz';
-$string['modulename_help'] = 'The branched quiz module is an extended quiz module allowing you to setup advanced branching logic based on the score a user gets for each individual question';
+$string['modulename_help'] = 'Das Branched Quiz Modul ist eine erweiterte Version vom Moodle Quiz/Test Modul und erlaubt die Steuerung der Reihenfolge der Fragen auf Basis von den Punkten, die bei der Beantwortung der einzelnen Fragen vergeben werden.';
 $string['modulename_link'] = 'mod/branchedquiz/view';
 $string['modulenameplural'] = 'Branched Quizzes';
-$string['pluginadministration'] = 'Branched Quiz administration';
+$string['pluginadministration'] = 'Branched Quiz Administration';
 $string['pluginname'] = 'Branched Quiz';
-$string['branchedquiz:addinstance'] = 'Add new branched quiz';
-$string['connectionfailed'] = 'Failed to connect the nodes';
-$string['savenodeposfailed'] = 'Failed to save the node position';
-$string['deletefailed'] = 'Failed to delete';
-$string['confirmdeletequestion'] = 'Do you really want to delete this question?';
-$string['confirmdeleteedge'] = 'Do you really want to delete this connection?';
-$string['saveedgefailed'] = 'Failed to save the connection';
+$string['branchedquiz:addinstance'] = 'Neue Instanz von Branched Quiz anlegen';
+$string['connectionfailed'] = 'Fehler beim Verbinden von Fragen';
+$string['savenodeposfailed'] = '`Fehler beim Speichern der Position';
+$string['deletefailed'] = 'Fehler beim Löschen';
+$string['confirmdeletequestion'] = 'Möchten Sie diese Frage wirklich löschen?';
+$string['confirmdeleteedge'] = 'Möchten Sie diese Verbindung wirklich löschen?';
+$string['saveedgefailed'] = 'Fehler beim Speichern der Verbindung';
