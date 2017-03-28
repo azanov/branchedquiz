@@ -477,6 +477,13 @@ function branchedquiz_pos_node($quiz, $slot, $x, $y) {
     $DB->update_record('branchedquiz_node', $node);
 }
 
+function branchedquiz_set_nodetype($quiz, $slot, $nodetype) {
+    global $DB;
+    $node = $DB->get_record('branchedquiz_node', array('quizid' => $quiz->id, 'slotid' => $slot));
+    $node->nodetype = $nodetype;
+    $DB->update_record('branchedquiz_node', $node);
+}
+
 define("OPERATOR_EQUAL", "eq");
 define("OPERATOR_LESS", "le");
 define("OPERATOR_LESS_OR_EQUAL", "lq");

@@ -33,3 +33,17 @@ $string['deletefailed'] = 'Fehler beim Löschen';
 $string['confirmdeletequestion'] = 'Möchten Sie diese Frage wirklich löschen?';
 $string['confirmdeleteedge'] = 'Möchten Sie diese Verbindung wirklich löschen?';
 $string['saveedgefailed'] = 'Fehler beim Speichern der Verbindung';
+
+$string['setasmainquestion'] = 'Als Hauptfrage setzen';
+$string['setassubquestion'] = 'Als Unterfrage setzen';
+$string['typechangedfailed'] = 'Fehler beim Ändern der Fragenzugehörigkeit';
+$string['allresults'] = 'Alle Ergebnisse';
+$string['fixedresult'] = 'Fixe Punktanzahl';
+$string['atleast'] = 'Mindestens';
+$string['lessthan'] = 'Kleiner als';
+$string['greaterthan'] = 'Größer als';
+$string['maximum'] = 'Maximal';
+$string['interval'] = 'Interval';
+$string['save'] = 'speichern';
+$string['deletequestion'] = 'Frage löschen';
+$string['setasstart'] = 'Als Start-Frage setzen';

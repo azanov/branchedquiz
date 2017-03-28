@@ -224,7 +224,8 @@ jsPlumb.ready(function() {
             text: $self.data('text'),
             title: $self.data('title'),
             sectionId: $self.closest('.section').data('id'),
-            slot: $self.data('slot')
+            slot: $self.data('slot'),
+            nodetype: $self.data('nodetype')
         }
 
         if ($self.hasClass('selected')) {
@@ -235,6 +236,9 @@ jsPlumb.ready(function() {
                 .find('.js-set-first-question')
                 .toggleClass('hidden', selectedQuestion.slot == 1)
                 .end()
+                .find('.js-toggle-main-question')
+                .text(selectedQuestion.nodetype == 0 ? M.str.branchedquiz.setassubquestion : M.str.branchedquiz.setasmainquestion)
+                .end()
                 .find('.js-question-panel-text')
                 .html(selectedQuestion.text)
                 .find('p').each(function(index, item) {
@@ -244,7 +248,9 @@ jsPlumb.ready(function() {
                 });
 
             $pnl.show();
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub, $pnl.find('.question-panel-text')[0]]);
+            if (MathJax && MathJax.Hub && MathJax.Hub.Queue) {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, $pnl.find('.question-panel-text')[0]]);
+            }
         } else {
             $pnl.hide();
         }
@@ -277,6 +283,40 @@ jsPlumb.ready(function() {
             },
             error: function() {
                 alert(M.str.branchedquiz.deletefailed);
+                $self.attr('disabled', null)
+            }
+        });
+
+    });
+
+    $('.js-toggle-main-question').on('click', function() {
+
+        var $self = $(this),
+            quizId = $(this).data('quizid'),
+            $currentItem = $('#slot-' + selectedQuestion.slotId),
+            url = M.cfg.wwwroot + '/mod/branchedquiz/edit_rest.php';
+
+        url += '?class=resource&field=togglemain&quizid=' + quizId;
+        url += '&id=' + selectedQuestion.slotId;
+        url += '&sesskey=' + M.cfg.sesskey;
+        url += '&value=' + (selectedQuestion.nodetype == 0 ? 1 : 0);
+
+        $self.attr('disabled', true);
+        $.ajax({
+            url: url,
+            type: 'POST',
+            success: function(result) {
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    $currentItem.attr('data-nodetype', result.nodetype);
+                    selectedQuestion.nodetype = result.nodetype;
+                    $self.text(result.nodetype == 1 ? M.str.branchedquiz.setasmainquestion : M.str.branchedquiz.setassubquestion);
+                }
+                $self.attr('disabled', null);
+            },
+            error: function() {
+                alert(M.str.branchedquiz.typechangedfailed);
                 $self.attr('disabled', null)
             }
         });

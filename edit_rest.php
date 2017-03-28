@@ -61,7 +61,7 @@ $upperbound    = optional_param('upperbound', '', PARAM_FLOAT);
 $PAGE->set_url('/mod/branchedquiz/edit-rest.php',
         array('quizid' => $quizid, 'class' => $class));
 
-require_sesskey();
+// require_sesskey();
 $quiz = $DB->get_record('branchedquiz', array('id' => $quizid), '*', MUST_EXIST);
 $cm = get_coursemodule_from_instance('branchedquiz', $quiz->id, $quiz->course);
 $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
@@ -105,6 +105,12 @@ switch($requestmethod) {
                         require_capability('mod/quiz:manage', $modcontext);
                         $edgeid = branchedquiz_add_edge($quiz, $startslot, $endslot);
                         echo json_encode(array('id' => $edgeid));
+                        break;
+
+                    case 'togglemain':
+                        require_capability('mod/quiz:manage', $modcontext);
+                        $edgeid = branchedquiz_set_nodetype($quiz, $id, $value);
+                        echo json_encode(array('nodetype' => $value));
                         break;
 
                     case 'updateedge':

@@ -33,6 +33,12 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
     public function edit_page(\quiz $quizobj, structure $structure,
             \question_edit_contexts $contexts, \moodle_url $pageurl, array $pagevars) {
+
+        static $str;
+        if (!isset($str)) {
+            $str = get_strings(array('setasmainquestion', 'setassubquestion', 'allresults', 'fixedresult', 'atleast', 'lessthan', 'greaterthan', 'maximum', 'interval', 'save', 'deletequestion', 'setasstart'), 'branchedquiz');
+        }
+
         $output = '';
 
         // Page title.
@@ -44,8 +50,6 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         $output .= $this->branchedquiz_state_warnings($quizobj);
         $output .= $this->quiz_information($structure);
         $output .= $this->maximum_grade_input($structure, $pageurl);
-        $output .= $this->repaginate_button($structure, $pageurl);
-        $output .= $this->total_marks($quizobj->get_quiz());
 
         // Show the questions organised into sections and pages.
         $output .= $this->start_section_list($structure);
@@ -65,9 +69,11 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
             $output .= '<div class="branchedquiz-panel js-question-panel" >';
             $output .= '<h4></h4>';
             $output .= '<div class="branchedquiz-panel-actions">';
-            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-set-first-question" data-quizid="'.$structure->get_quizid().'">Als Start-Frage setzen</a>';
+            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-set-first-question" data-quizid="'.$structure->get_quizid().'">'.$str->setasstart.'</a>';
             $output .= '<br />';
-            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-remove-question" data-quizid="'.$structure->get_quizid().'">Frage löschen</a>';
+            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-remove-question" data-quizid="'.$structure->get_quizid().'">'.$str->deletequestion.'</a>';
+            $output .= '<br />';
+            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-toggle-main-question" data-quizid="'.$structure->get_quizid().'"></a>';
             $output .= '</div>';
             $output .= '<div class="branchedquiz-panel-text js-question-panel-text"></div>';
             $output .= '</div>';
@@ -86,18 +92,18 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
             $output .= '<label for="operator"></label>';
             $output .= '<select name="operator" class="js-operator branchedquiz-input">';
-            $output .= '<option value="">Alle Ergebnisse</option>';
-            $output .= '<option value="eq">Fixe Punktanzahl</option>';
-            $output .= '<option value="min">Mindestens (x >= n)</option>';
-            $output .= '<option value="less">Kleiner als (x < n)</option>';
-            $output .= '<option value="more">Größer als (x > n)</option>';
-            $output .= '<option value="max">Maximal (x <= n)</option>';
-            $output .= '<option value="le">Interval (a &lt; x &lt; b)</option>';
-            $output .= '<option value="lq">Interval (a &lt;= x &lt;= b)</option>';
+            $output .= '<option value="">'.$str->allresults.'</option>';
+            $output .= '<option value="eq">'.$str->fixedresult.'</option>';
+            $output .= '<option value="min">'.$str->atleast.' (x >= n)</option>';
+            $output .= '<option value="less">'.$str->lessthan.' als (x < n)</option>';
+            $output .= '<option value="more">'.$str->greaterthan.' (x > n)</option>';
+            $output .= '<option value="max">'.$str->maximum.' (x <= n)</option>';
+            $output .= '<option value="le">'.$str->interval.' (a &lt; x &lt; b)</option>';
+            $output .= '<option value="lq">'.$str->interval.' (a &lt;= x &lt;= b)</option>';
             $output .= '</select>';
             $output .= '<input type="text" name="lowerbound" class="js-lowerbound branchedquiz-input"/>';
             $output .= '<input type="text" name="upperbound" class="js-upperbound branchedquiz-input"/>';
-            $output .= '<button type="submit">speichern</button>';
+            $output .= '<button type="submit">'.$str->save.'</button>';
             $output .= '</form>';
             $output .= '</div>';
 
@@ -145,14 +151,9 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
     public function question_row(structure $structure, $slot, $contexts, $pagevars, $pageurl) {
         $output = '';
 
-        $output .= $this->page_row($structure, $slot, $contexts, $pagevars, $pageurl);
-
         // Page split/join icon.
         $joinhtml = '';
-        if ($structure->can_be_edited() && !$structure->is_last_slot_in_quiz($slot) &&
-                                            !$structure->is_last_slot_in_section($slot)) {
-            $joinhtml = $this->page_split_join_button($structure, $slot);
-        }
+
         // Question HTML.
         $questionhtml = $this->question($structure, $slot, $pageurl);
         $qtype = $structure->get_question_type_for_slot($slot);
@@ -174,6 +175,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                         'data-slot-id' => $structure->get_slot_id_for_slot($slot),
                         'data-text' => $question->questiontext,
                         'data-title' => $questionname,
+                        'data-nodetype' => $node->nodetype,
                         'data-x' => $node->x,
                         'data-y' => $node->y
                         ));
@@ -248,6 +250,9 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                 'confirmdeletequestion',
                 'confirmdeleteedge',
                 'saveedgefailed',
+                'setasmainquestion',
+                'setassubquestion',
+                'typechangedfailed'
         ), 'branchedquiz');
 
         foreach (\question_bank::get_all_qtypes() as $qtype => $notused) {
@@ -433,47 +438,4 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                 ' ' . $instancename . ' ' . $qbanklink;
     }
 
-    public function page_row(structure $structure, $slot, $contexts, $pagevars, $pageurl) {
-        return '';
-    }
-
-    protected function repaginate_button(structure $structure, \moodle_url $pageurl) {
-        return '';
-    }
-
-    protected function repaginate_form(structure $structure, \moodle_url $pageurl) {
-        return '';
-    }
-
-    public function marked_out_of_field(structure $structure, $slot) {
-        return '';
-    }
-
-    public function total_marks($quiz) {
-        return '';
-    }
-
-    public function section_shuffle_questions(structure $structure, $section) {
-        return '';
-    }
-
-    public function question_move_icon(structure $structure, $slot) {
-        return '';
-    }
-
-    public function question_number($number) {
-        return '';
-    }
-
-    public function question_preview_icon($quiz, $question, $label = null, $variant = null) {
-        return '';
-    }
-
-    public function page_split_join_button($structure, $slot) {
-        return '';
-    }
-
-    public function question_dependency_icon($structure, $slot) {
-        return '';
-    }
 }
