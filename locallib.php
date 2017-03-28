@@ -367,17 +367,44 @@ function get_current_path_slots($attemptobj) {
 
 function get_sum_max_grades($attemptobj) {
 
+    global $DB;
     $slots = get_current_path_slots($attemptobj);
 
     $quba = $attemptobj->get_quba();
 
     $sum = 0;
-
     foreach ($slots as $slot) {
-        $sum += $quba->get_question_max_mark($slot);
+
+        $node = $DB->get_record_sql('SELECT * FROM {branchedquiz_node} WHERE slotid = ?', array(slot_to_slotid($attemptobj->get_quizobj(),$slot)));
+        //Main questions are 0 and sub questions are 1
+        //Our max grade is the sum of all main questions
+        if ($node->nodetype == 0)
+            $sum += $quba->get_question_max_mark($slot);
     }
 
+
     return $sum;
+}
+
+/**Converts from slot to slotids
+ * @param $quizobj
+ * @param $slot
+ * @return int $slotid
+ */
+function slot_to_slotid($quizobj, $slot) {
+    $quizobj->preload_questions();
+    $quizobj->load_questions();
+
+    $qs = $quizobj->get_questions();
+    $slotid = -1;
+
+    foreach (array_keys($qs) as $id) {
+        if ($qs[$id]->slot == $slot) {
+            $slotid = $qs[$id]->slotid;
+        }
+    }
+
+    return $slotid;
 }
 
 
