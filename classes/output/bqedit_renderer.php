@@ -146,12 +146,12 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
         $output = '';
         foreach ($structure->get_slots_in_section($section->id) as $slot) {
-            $output .= $this->question_row($structure, $slot, $contexts, $pagevars, $pageurl);
+            $output .= $this->question_row_ex($structure, $slot, $contexts, $pagevars, $pageurl, $section);
         }
         return html_writer::tag('div', $output, array('class' => 'section img-text js-question-canvas jtk-surface jtk-surface-nopan', 'id' => 'questionCanvas'));
     }
 
-    public function question_row(structure $structure, $slot, $contexts, $pagevars, $pageurl) {
+    public function question_row_ex(structure $structure, $slot, $contexts, $pagevars, $pageurl, $section) {
         $output = '';
 
         // Page split/join icon.
@@ -180,7 +180,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                         'data-title' => $questionname,
                         'data-nodetype' => $node->nodetype,
                         'data-x' => $node->x,
-                        'data-y' => $node->y
+                        'data-y' => $node->y,
+                        'data-section-id' => $section->id
                         ));
 
         return $output;

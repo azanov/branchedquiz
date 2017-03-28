@@ -176,5 +176,22 @@ class branchedquiz_attempt extends quiz_attempt {
         }
     }
 
+    public function get_question_status($slot, $showcorrectness) {
+        return $this->quba->get_question_state_string($slot, false);
+    }
 
+    protected function number_questions() {
+        $number = 1;
+        foreach ($this->pagelayout as $page => $slots) {
+            foreach ($slots as $slot) {
+                if ($length = $this->is_real_question($slot)) {
+                    $this->questionnumbers[$slot] = $number;
+                    $number += $length;
+                } else {
+                    $this->questionnumbers[$slot] = get_string('infoshort', 'quiz');
+                }
+                $this->questionpages[$slot] = $page;
+            }
+        }
+    }
 }

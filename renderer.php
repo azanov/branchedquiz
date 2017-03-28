@@ -23,6 +23,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/quiz/renderer.php');
+require_once($CFG->dirroot.'/mod/branchedquiz/lib.php');
 
 /**
  * The renderer for the quiz module.
@@ -173,7 +174,22 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         // Get the summary info for each question.
         // Show only questions, which the user has seen in current path.
         $slots = get_current_path_slots($attemptobj);
+
+        $page = 0;
+        $subPage = 0;
+
         foreach ($slots as $slot) {
+
+            $slot_id = page_to_slotid($attemptobj->get_quizobj(), $slot);
+            $node = branchedquiz_get_node($slot_id);
+
+            if ($node->nodetype == 0) {
+                $page++;
+                $subPage = 0;
+            } else {
+                $subPage++;
+            }
+
             // Add a section headings if we need one here.
             $heading = $attemptobj->get_heading_before_slot($slot);
             if ($heading) {
@@ -197,7 +213,7 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
             }
             if ($attemptobj->can_navigate_to($slot)) {
                 $row = array(html_writer::link($attemptobj->attempt_url($slot),
-                    $attemptobj->get_question_number($slot) . $flag),
+                    $page . ($node->nodetype == 1 ? '.'.$subPage : '') . $flag),
                     $attemptobj->get_question_status($slot, $displayoptions->correctness));
             } else {
                 $row = array($attemptobj->get_question_number($slot) . $flag,
@@ -207,8 +223,13 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
                 $row[] = $attemptobj->get_question_mark($slot);
             }
             $table->data[] = $row;
+
+
+
+
+
             $table->rowclasses[] = 'quizsummary' . $slot . ' ' . $attemptobj->get_question_state_class(
-                    $slot, $displayoptions->correctness);
+                    $slot, false) . ($node->nodetype == 0 ? ' main-question' : ' sub-question');
         }
 
         // Print the summary table.
@@ -216,4 +237,5 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
 
         return $output;
     }
+
 }
