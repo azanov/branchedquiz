@@ -36,7 +36,10 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
         static $str;
         if (!isset($str)) {
-            $str = get_strings(array('setasmainquestion', 'setassubquestion', 'allresults', 'fixedresult', 'atleast', 'lessthan', 'greaterthan', 'maximum', 'interval', 'save', 'deletequestion', 'setasstart'), 'branchedquiz');
+            $str = get_strings(array(
+                'setasmainquestion', 'setassubquestion', 'allresults', 'fixedresult',
+                'atleast', 'lessthan', 'greaterthan', 'maximum', 'interval', 'save',
+                'deletequestion', 'setasstart'), 'branchedquiz');
         }
 
         $output = '';
