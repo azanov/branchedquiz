@@ -45,9 +45,15 @@ $attemptobj = branchedquiz_attempt::create($attemptid);
 // If page == -1, user gets  summary page.
 $slotid = page_to_slotid($attemptobj->get_quizobj(), $thispage + 1);
 $points = -1;
+$slot = page_to_slot($attemptobj->get_quizobj(), $thispage + 1);
 
 if ($slotid != -1) {
-    $points = $attemptobj->get_unformatted_question_mark(page_to_slot($attemptobj->get_quizobj(), $thispage + 1));
+    $points = $attemptobj->get_unformatted_question_mark($slot);
+}
+
+if ($attemptobj->is_real_question($slot) == 0) {
+    // not a real question, must be a description in-between
+    $points = 0;
 }
 
 $nextslotid = -1;
