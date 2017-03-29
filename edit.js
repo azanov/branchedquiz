@@ -127,6 +127,14 @@ jsPlumb.ready(function() {
                     startSlot = $source.data('slot-id')
                 endSlot = $target.data('slot-id');
 
+                for(var key in connections) {
+                    var c = connections[key];
+                    if (c.slotid == startSlot && c.next == endSlot && c.operator == '' && c.lowerbound == null && c.upperbound == null) {
+                        alert(M.str.branchedquiz.connectionexists);
+                        return false;
+                    }
+                }
+
                 $.ajax({
                     url: M.cfg.wwwroot + '/mod/branchedquiz/edit_rest.php?class=resource&field=addedge&quizid=' + quizId + '&startSlot=' + startSlot + '&sesskey=' + M.cfg.sesskey + '&endSlot=' + endSlot,
                     type: 'POST',

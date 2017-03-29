@@ -47,3 +47,4 @@ $string['interval'] = 'Interval';
 $string['save'] = 'speichern';
 $string['deletequestion'] = 'Frage löschen';
 $string['setasstart'] = 'Als Start-Frage setzen';
+$string['connectionexists'] = 'Diese Verbindung existiert bereits';
