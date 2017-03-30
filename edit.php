@@ -196,7 +196,6 @@ echo '        if (url.indexOf("/quiz/") == -1) __replaceState(state, title, url)
 echo '    }';
 echo '</script>';
 
-// echo '<style>@import url("'.$CFG->wwwroot .'/mod/branchedquiz/styles.css");</style>';
 echo $output->edit_page($quizobj, $structure, $contexts, $thispageurl, $pagevars);
 
 echo '<script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>';

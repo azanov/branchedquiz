@@ -30,7 +30,7 @@ Y.extend(MODFORM, Y.Base, {
 
 });
 
-// Ensure that M.mod_branchedquiz exists and that coursebase is initialised correctly
+// Ensure that M.mod_branchedquiz exists and that coursebase is initialised correctly.
 M.mod_branchedquiz = M.mod_branchedquiz || {};
 M.mod_branchedquiz.modform = M.mod_branchedquiz.modform || new MODFORM();
 M.mod_branchedquiz.modform.init = function() {
