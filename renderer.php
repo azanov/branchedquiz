@@ -84,14 +84,10 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         }
 
         // Enable the 'next' button, if the question has been asnwered.
-        if($answered) {
+        if ($answered) {
             $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'next',
                 'value' => $nextlabel, 'class' => 'mod_quiz-next-nav'));
         }
-//        else{
-//            $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'next',
-//                'value' => $nextlabel, 'class' => 'mod_quiz-next-nav', 'disabled' => 'disabled'));
-//        }
 
         return $output;
     }
@@ -135,8 +131,10 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
 
         $answered = false;
 
-        //Check if question is answered or is not a real question (descirption question).
-        if (!is_null($points) || !$attemptobj->is_real_question($slot)) $answered = true;
+        // Check if question is answered or is not a real question (descirption question).
+        if (!is_null($points) || !$attemptobj->is_real_question($slot)) {
+            $answered = true;
+        }
 
         $output = '';
 
