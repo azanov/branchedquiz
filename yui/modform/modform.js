@@ -21,10 +21,7 @@ Y.extend(MODFORM, Y.Base, {
         this.qppSelect.set('value', 1);
         this.qppSelect.set('disabled', 1);
 
-        this.navSelect.set('value', 'sequential');
-        this.navSelect.set('disabled', 1);
-
-        this.navSelect.set('value', 'sequential');
+        this.navSelect.set('value', 'free');
         this.navSelect.set('disabled', 1);
 
         this.pbhSelect.set('value', 'immediatefeedback');

@@ -41,7 +41,7 @@ class mod_branchedquiz_mod_form extends mod_quiz_mod_form {
         parent::definition();
         $mform = $this->_form;
         $mform->setDefault('questionsperpage', 1);
-        $mform->setDefault('navmethod', 'sequential');
+        $mform->setDefault('navmethod', 'free');
         $mform->setDefault('preferredbehaviour', 'immediatefeedback');
 
         $PAGE->requires->yui_module('moodle-mod_branchedquiz-modform', 'M.mod_branchedquiz.modform.init');
