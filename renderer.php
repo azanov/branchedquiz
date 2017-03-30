@@ -32,6 +32,27 @@ require_once($CFG->dirroot.'/mod/branchedquiz/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_branchedquiz_renderer extends mod_quiz_renderer {
+
+    /**
+     * Branched Attempt Page
+     *
+     * @param quiz_attempt $attemptobj Instance of quiz_attempt
+     * @param int $page Current page number
+     * @param quiz_access_manager $accessmanager Instance of quiz_access_manager
+     * @param array $messages An array of messages
+     * @param array $slots Contains an array of integers that relate to questions
+     * @param int $id The ID of an attempt
+     * @param int $nextpage The number of the next page
+     */
+    public function branched_attempt_page($attemptobj, $page, $accessmanager, $messages, $slots, $id,
+                                          $nextpage) {
+        $output = '';
+        $output .= $this->header();
+        $output .= $this->quiz_notices($messages);
+        $output .= $this->branched_attempt_form($attemptobj, $page, $slots, $id, $nextpage);
+        $output .= $this->footer();
+        return $output;
+    }
     public function finish_review_link(quiz_attempt $attemptobj) {
 
         global $CFG;
@@ -51,7 +72,7 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         }
     }
 
-    protected function attempt_navigation_buttons($page, $lastpage, $navmethod = 'free') {
+    protected function branched_attempt_navigation_buttons($page, $lastpage, $answered, $navmethod = 'free') {
         $output = '';
 
         $output .= html_writer::start_tag('div', array('class' => 'submitbtns'));
@@ -61,9 +82,16 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         } else {
             $nextlabel = get_string('navigatenext', 'quiz');
         }
-        $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'next',
+
+        // Enable the 'next' button, if the question has been asnwered.
+        if($answered) {
+            $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'next',
                 'value' => $nextlabel, 'class' => 'mod_quiz-next-nav'));
-        $output .= html_writer::end_tag('div');
+        }
+//        else{
+//            $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'next',
+//                'value' => $nextlabel, 'class' => 'mod_quiz-next-nav', 'disabled' => 'disabled'));
+//        }
 
         return $output;
     }
@@ -100,7 +128,16 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
      * @param int $id ID of the attempt
      * @param int $nextpage Next page number
      */
-    public function attempt_form($attemptobj, $page, $slots, $id, $nextpage) {
+    public function branched_attempt_form($attemptobj, $page, $slots, $id, $nextpage) {
+
+        $slot = end($slots);
+        $points = $attemptobj->get_unformatted_question_mark($slot);
+
+        $answered = false;
+
+        //Check if question is answered or is not a real question (descirption question).
+        if (!is_null($points) || !$attemptobj->is_real_question($slot)) $answered = true;
+
         $output = '';
 
         // Start the form.
@@ -118,7 +155,7 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
 
         $navmethod = $attemptobj->get_quiz()->navmethod;
         // Replaced $attemptobj->is_last_page($page) to false - to hide "finish attempt".
-        $output .= $this->attempt_navigation_buttons($page, false, $navmethod);
+        $output .= $this->branched_attempt_navigation_buttons($page, false, $answered, $navmethod);
 
         // Some hidden fields to trach what is going on.
         $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'attempt',

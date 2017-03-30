@@ -129,4 +129,4 @@ if ($attemptobj->is_last_page($page)) {
     $nextpage = $page + 1;
 }
 
-echo $output->attempt_page($attemptobj, $page, $accessmanager, $messages, $slots, $id, $nextpage);
+echo $output->branched_attempt_page($attemptobj, $page, $accessmanager, $messages, $slots, $id, $nextpage);

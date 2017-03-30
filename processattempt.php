@@ -51,11 +51,6 @@ if ($slotid != -1) {
     $points = $attemptobj->get_unformatted_question_mark($slot);
 }
 
-//if ($attemptobj->is_real_question($slot) == 0) {
-//    // not a real question, must be a description in-between
-//    $points = 0;
-//}
-
 $nextslotid = -1;
 $branchednext = -1;
 
@@ -131,17 +126,14 @@ if (!is_null($points) && $next) {
     if ($branchednext != -1) {
         $branchednext -= 1;
     }
-}
-
-else if (is_null($points) && $next){
+} else if (is_null($points) && $next){
     $edge = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND lowerbound IS NULL AND upperbound IS NULL', array($slotid));
 
     if (!is_null($edge)){
-
         $nextslotid = $edge->next;
         $branchednext = slotid_to_page($attemptobj->get_quizobj(), $nextslotid);
-        if ($branchednext != -1) $branchednext -= 1;
-
+        if ($branchednext != -1)
+            $branchednext -= 1;
     }
 }
 
