@@ -51,15 +51,15 @@ if ($slotid != -1) {
     $points = $attemptobj->get_unformatted_question_mark($slot);
 }
 
-if ($attemptobj->is_real_question($slot) == 0) {
-    // not a real question, must be a description in-between
-    $points = 0;
-}
+//if ($attemptobj->is_real_question($slot) == 0) {
+//    // not a real question, must be a description in-between
+//    $points = 0;
+//}
 
 $nextslotid = -1;
 $branchednext = -1;
 
-if (!is_null($points)) {
+if (!is_null($points) && $next) {
     // Check if points don't matter  lowerbound == null && upperbound == null.
     $edge = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND lowerbound IS NULL AND upperbound IS NULL', array($slotid));
 
@@ -133,6 +133,18 @@ if (!is_null($points)) {
     }
 }
 
+else if (is_null($points) && $next){
+    $edge = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND lowerbound IS NULL AND upperbound IS NULL', array($slotid));
+
+    if (!is_null($edge)){
+
+        $nextslotid = $edge->next;
+        $branchednext = slotid_to_page($attemptobj->get_quizobj(), $nextslotid);
+        if ($branchednext != -1) $branchednext -= 1;
+
+    }
+}
+
 // Set $nexturl now.
 if ($next) {
     $page = $branchednext;
@@ -167,7 +179,7 @@ if (!$attemptobj->is_preview_user()) {
 // If the attempt is already closed, send them to the review page.
 if ($attemptobj->is_finished()) {
     throw new moodle_quiz_exception($attemptobj->get_quizobj(),
-            'attemptalreadyclosed', null, $attemptobj->review_url());
+        'attemptalreadyclosed', null, $attemptobj->review_url());
 }
 
 // Process the attempt, getting the new status for the attempt.
