@@ -194,4 +194,12 @@ class branchedquiz_attempt extends quiz_attempt {
             }
         }
     }
+
+    protected function render_restart_preview_link($output) {
+        if (!$this->attemptobj->is_own_preview()) {
+            return '';
+        }
+        return $output->restart_preview_button(new moodle_url(
+                $this->attemptobj->start_attempt_url(), array('forcenew' => true)));
+    }
 }
