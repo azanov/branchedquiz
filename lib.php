@@ -276,7 +276,7 @@ function branchedquiz_grade_item_update($quiz, $grades = null) {
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 function branchedquiz_update_grades($quiz, $userid = 0, $nullifnone = true) {
-    global $CFG, $DB;
+    global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
     if ($quiz->grade == 0) {

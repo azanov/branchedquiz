@@ -536,6 +536,7 @@ define("OPERATOR_UI_ONLY_MORE", "more");
 
 /**
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 function branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperbound) {
     global $DB;
@@ -597,6 +598,9 @@ function branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperboun
     return $edge;
 }
 
+/**
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
 function branchedquiz_remove_edge($quiz, $id) {
     global $DB;
     $DB->delete_records('branchedquiz_edge', array('id' => $id));
