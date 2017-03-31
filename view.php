@@ -147,11 +147,6 @@ if ($attempts) {
 
     $viewobj->attemptcolumn  = $quiz->attempts != 1;
 
-    $viewobj->gradecolumn    = $someoptions->marks >= question_display_options::MARK_AND_MAX &&
-            quiz_has_grades($quiz);
-    $viewobj->markcolumn     = $viewobj->gradecolumn && ($quiz->grade != $quiz->sumgrades);
-    $viewobj->overallstats   = $lastfinishedattempt && $alloptions->marks >= question_display_options::MARK_AND_MAX;
-
     $viewobj->feedbackcolumn = quiz_has_feedback($quiz) && $alloptions->overallfeedback;
 }
 
