@@ -257,7 +257,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                 'setasmainquestion',
                 'setassubquestion',
                 'typechangedfailed',
-                'connectionexists'
+                'connectionexists',
+                'connectionconflict'
         ), 'branchedquiz');
 
         foreach (\question_bank::get_all_qtypes() as $qtype => $notused) {

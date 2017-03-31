@@ -48,3 +48,4 @@ $string['save'] = 'speichern';
 $string['deletequestion'] = 'Frage löschen';
 $string['setasstart'] = 'Als Start-Frage setzen';
 $string['connectionexists'] = 'Diese Verbindung existiert bereits';
+$string['connectionconflict'] = 'Diese Verbindung steht im Konflikt mit einer bereits vorhandenen Verbindung';

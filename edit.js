@@ -129,8 +129,8 @@ jsPlumb.ready(function() {
 
                 for(var key in connections) {
                     var c = connections[key];
-                    if (c.slotid == startSlot && c.next == endSlot && c.operator == '' && c.lowerbound == null && c.upperbound == null) {
-                        alert(M.str.branchedquiz.connectionexists);
+                    if (c.slotid == startSlot && c.operator == '' && c.lowerbound == null && c.upperbound == null) {
+                        alert(c.next == endSlot ? M.str.branchedquiz.connectionexists : M.str.branchedquiz.connectionconflict);
                         return false;
                     }
                 }
@@ -376,6 +376,8 @@ jsPlumb.ready(function() {
                     } else {
                         $('.js-edge-panel').hide();
                         instance.detach(selectedConnection.instance);
+                        delete connections[selectedConnection.id];
+                        selectedConnection = null;
                     }
                     $self.attr('disabled', null);
                 },
