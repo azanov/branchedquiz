@@ -95,6 +95,9 @@ class branchedquiz extends quiz {
 
 class branchedquiz_attempt extends quiz_attempt {
 
+    /**
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+     */
     public function __construct($attempt, $quiz, $cm, $course, $loadquestions = true) {
         parent::__construct($attempt, $quiz, $cm, $course, $loadquestions);
         $this->quizobj = new branchedquiz($quiz, $cm, $course);
@@ -134,6 +137,10 @@ class branchedquiz_attempt extends quiz_attempt {
         return new moodle_url('/mod/branchedquiz/summary.php', array('attempt' => $this->attempt->id));
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     protected function page_and_question_url($script, $slot, $page, $showall, $thispage) {
 
         $defaultshowall = $this->get_default_show_all($script);
@@ -181,6 +188,9 @@ class branchedquiz_attempt extends quiz_attempt {
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function get_question_status($slot, $showcorrectness) {
         return $this->quba->get_question_state_string($slot, false);
     }
@@ -204,6 +214,10 @@ class branchedquiz_attempt extends quiz_attempt {
         return $this->render_question_helper_ex($slot, $reviewing, $thispageurl, $renderer, null, $page, $subpage);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     protected function render_question_helper_ex($slot, $reviewing, $thispageurl,
         mod_quiz_renderer $renderer, $seq, $page, $subpage) {
 

@@ -31,6 +31,54 @@ use \html_writer;
 
 class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
+    public function question_panel(structure $structure, $str) {
+        return '<div class="branchedquiz-panel js-question-panel">
+                    <h4></h4>
+                    <div class="branchedquiz-panel-actions">
+                        <a href="javascript:;" class="branchedquiz-panel-action js-set-first-question" data-quizid="'.
+                        $structure->get_quizid().'">'.$str->setasstart.'</a>
+                        <br />
+                        <a href="javascript:;" class="branchedquiz-panel-action js-remove-question" data-quizid="'.
+                        $structure->get_quizid().'">'.$str->deletequestion.'</a>
+                        <br />
+                        <a href="javascript:;" class="branchedquiz-panel-action js-toggle-main-question" data-quizid="'.
+                        $structure->get_quizid().'"></a>
+                    </div>
+                    <div class="branchedquiz-panel-text js-question-panel-text"></div>
+                </div>';
+    }
+
+    public function edge_panel(structure $structure, $str) {
+        return '<div class="branchedquiz-panel js-edge-panel">
+                    <h4>'.$str->connection.'</h4>
+                    <div class="branchedquiz-panel-actions">
+                        <a href="javascript:;" class="branchedquiz-panel-action js-remove-edge" data-quizid="'.
+                        $structure->get_quizid().'">'.$str->deleteconnection.'</a>
+                    </div>
+                    <form action="javascript:;" method="POST" class="js-edge-form branchedquiz-form">
+                        <input type="hidden" name="class" value="resource"/>
+                        <input type="hidden" name="field" value="updateedge"/>
+                        <input type="hidden" name="sesskey" value="'.sesskey().'"/>
+                        <input type="hidden" name="quizid" value="'.$structure->get_quizid().'" />
+                        <input type="hidden" name="id" class="js-edge-id" />
+                        <label for="operator"></label>
+                        <select name="operator" class="js-operator branchedquiz-input">
+                            <option value="">'.$str->allresults.'</option>
+                            <option value="eq">'.$str->fixedresult.'</option>
+                            <option value="min">'.$str->atleast.' (x >= n)</option>
+                            <option value="less">'.$str->lessthan.' (x < n)</option>
+                            <option value="more">'.$str->greaterthan.' (x > n)</option>
+                            <option value="max">'.$str->maximum.' (x <= n)</option>
+                            <option value="le">'.$str->interval.' (a &lt; x &lt; b)</option>
+                            <option value="lq">'.$str->interval.' (a &lt;= x &lt;= b)</option>
+                        </select>
+                        <input type="text" name="lowerbound" class="js-lowerbound branchedquiz-input"/>
+                        <input type="text" name="upperbound" class="js-upperbound branchedquiz-input"/>
+                        <button type="submit">'.$str->save.'</button>
+                    </form>
+                </div>';
+    }
+
     public function edit_page(\quiz $quizobj, structure $structure,
             \question_edit_contexts $contexts, \moodle_url $pageurl, array $pagevars) {
 
@@ -39,7 +87,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
             $str = get_strings(array(
                 'setasmainquestion', 'setassubquestion', 'allresults', 'fixedresult',
                 'atleast', 'lessthan', 'greaterthan', 'maximum', 'interval', 'save',
-                'deletequestion', 'setasstart'), 'branchedquiz');
+                'deletequestion', 'setasstart', 'connection', 'deleteconnection'), 'branchedquiz');
         }
 
         $output = '';
@@ -69,53 +117,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
             $output .= $this->start_section($structure, $section);
 
             $output .= $this->questions_in_section($structure, $section, $contexts, $pagevars, $pageurl);
-            $output .= '<div class="branchedquiz-panel js-question-panel" >';
-            $output .= '<h4></h4>';
-            $output .= '<div class="branchedquiz-panel-actions">';
-            $output .= '<a href="javascript:;"';
-            $output .= ' class="branchedquiz-panel-action js-set-first-question" data-quizid="';
-            $output .= $structure->get_quizid().'">'.$str->setasstart.'</a>';
-            $output .= '<br />';
-            $output .= '<a href="javascript:;"';
-            $output .= ' class="branchedquiz-panel-action js-remove-question" data-quizid="';
-            $output .= $structure->get_quizid().'">'.$str->deletequestion.'</a>';
-            $output .= '<br />';
-            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-toggle-main-question" data-quizid="'.
-                $structure->get_quizid().'"></a>';
-            $output .= '</div>';
-            $output .= '<div class="branchedquiz-panel-text js-question-panel-text"></div>';
-            $output .= '</div>';
-
-            $output .= '<div class="branchedquiz-panel js-edge-panel" >';
-            $output .= '<h4>Verbindung</h4>';
-            $output .= '<div class="branchedquiz-panel-actions">';
-            $output .= '<a href="javascript:;"';
-            $output .= ' class="branchedquiz-panel-action js-remove-edge" data-quizid="';
-            $output .= $structure->get_quizid().'">Verbindung löschen</a>';
-            $output .= '</div>';
-            $output .= '<form action="javascript:;" method="POST" class="js-edge-form branchedquiz-form">';
-            $output .= '<input type="hidden" name="class" value="resource"/>';
-            $output .= '<input type="hidden" name="field" value="updateedge"/>';
-            $output .= '<input type="hidden" name="sesskey" value="'.sesskey().'"/>';
-            $output .= '<input type="hidden" name="quizid" value="'.$structure->get_quizid().'" />';
-            $output .= '<input type="hidden" name="id" class="js-edge-id" />';
-
-            $output .= '<label for="operator"></label>';
-            $output .= '<select name="operator" class="js-operator branchedquiz-input">';
-            $output .= '<option value="">'.$str->allresults.'</option>';
-            $output .= '<option value="eq">'.$str->fixedresult.'</option>';
-            $output .= '<option value="min">'.$str->atleast.' (x >= n)</option>';
-            $output .= '<option value="less">'.$str->lessthan.' als (x < n)</option>';
-            $output .= '<option value="more">'.$str->greaterthan.' (x > n)</option>';
-            $output .= '<option value="max">'.$str->maximum.' (x <= n)</option>';
-            $output .= '<option value="le">'.$str->interval.' (a &lt; x &lt; b)</option>';
-            $output .= '<option value="lq">'.$str->interval.' (a &lt;= x &lt;= b)</option>';
-            $output .= '</select>';
-            $output .= '<input type="text" name="lowerbound" class="js-lowerbound branchedquiz-input"/>';
-            $output .= '<input type="text" name="upperbound" class="js-upperbound branchedquiz-input"/>';
-            $output .= '<button type="submit">'.$str->save.'</button>';
-            $output .= '</form>';
-            $output .= '</div>';
+            $output .= question_panel($structure, $str);
+            $output .= edge_panel($structure, $str);
 
             $output .= $this->end_section();
         }
@@ -160,6 +163,9 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                 'id' => 'questionCanvas'));
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function question_row_ex(structure $structure, $slot, $contexts, $pagevars, $pageurl, $section) {
         $output = '';
 
@@ -215,6 +221,9 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         return $output;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     */
     protected function initialise_editing_javascript(structure $structure,
         \question_edit_contexts $contexts, array $pagevars, \moodle_url $pageurl) {
 

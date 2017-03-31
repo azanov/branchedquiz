@@ -42,6 +42,7 @@ class restore_adaptivequiz_activity_structure_step extends restore_questions_act
     /**
      * Process the adaptivequiz element
      * @param stdClass an object whose properties are nodes in the adatpviequiz structure
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function process_adaptivequiz($data) {
     }
@@ -49,6 +50,7 @@ class restore_adaptivequiz_activity_structure_step extends restore_questions_act
     /**
      * Process the activity instance to question categories relation structure\
      * @param stdClass an object whose properties are nodes in the adatpviequiz_question structure
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function process_adaptivequiz_question($data) {
 
@@ -57,6 +59,7 @@ class restore_adaptivequiz_activity_structure_step extends restore_questions_act
     /**
      * Process the activity instance to question categories relation structure
      * @param stdClass an object whose properties are nodes in the adatpviequiz_attempt structure
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function process_adaptivequiz_attempt($data) {
 
@@ -65,6 +68,7 @@ class restore_adaptivequiz_activity_structure_step extends restore_questions_act
     /**
      * This function assigns the new question usage by activity id to the attempt
      * @param int $newusageid a new question usage by activity id
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function inform_new_usage_id($newusageid) {
 

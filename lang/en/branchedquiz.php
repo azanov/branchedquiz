@@ -49,3 +49,5 @@ $string['deletequestion'] = 'Delete question';
 $string['setasstart'] = 'Set as start question';
 $string['connectionexists'] = 'This connection already exists!';
 $string['connectionconflict'] = 'This connection conflicts with an already existing one!';
+$string['connection'] = 'Connection';
+$string['deleteconnection'] = 'Remove connection';

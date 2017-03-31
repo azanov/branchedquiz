@@ -35,9 +35,6 @@ class backup_branchedquiz_activity_structure_step extends backup_questions_activ
      * @return string the root element (branchedquiz), wrapped into standard activity structure.
      */
     protected function define_structure() {
-        // To know if we are including userinfo.
-        $userinfo = $this->get_setting_value('userinfo');
-
         // Define each element separated.
         $nodes = array();
         $branchedquiz = new backup_nested_element('branchedquiz', array('id'), $nodes);
