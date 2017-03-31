@@ -210,10 +210,10 @@ class branchedquiz_attempt extends quiz_attempt {
 
         $number = $page.($subpage == 0 ? '' : '.'.$subpage);
 
-        $questionAttempt = $this->get_question_attempt($slot);
+        $questionattempt = $this->get_question_attempt($slot);
 
         if ($slot != $originalslot) {
-            $originalmaxmark = $questionAttempt->get_max_mark();
+            $originalmaxmark = $questionattempt->get_max_mark();
             $this->get_question_attempt($slot)->set_max_mark($this->get_question_attempt($originalslot)->get_max_mark());
         }
 
@@ -240,7 +240,7 @@ class branchedquiz_attempt extends quiz_attempt {
             $this->get_question_attempt($slot)->set_max_mark($originalmaxmark);
         }
 
-        $questionName = $questionAttempt->get_question()->name;
+        $questionName = $questionattempt->get_question()->name;
 
         if ($subpage != 0) {
             $collapse = '<a id="collapse-hide-'.$slot.'" href="#collapse-hide-'.$slot.'" class="branchedquiz-collapse-hide">'.$number.' '.$questionName.' &#9660;'.'</a>';
