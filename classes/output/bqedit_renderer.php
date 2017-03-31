@@ -31,7 +31,7 @@ use \html_writer;
 
 class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
-    public function question_panel(structure $structure, $str) {
+    protected function question_panel(structure $structure, $str) {
         return '<div class="branchedquiz-panel js-question-panel">
                     <h4></h4>
                     <div class="branchedquiz-panel-actions">
@@ -48,7 +48,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                 </div>';
     }
 
-    public function edge_panel(structure $structure, $str) {
+    protected function edge_panel(structure $structure, $str) {
         return '<div class="branchedquiz-panel js-edge-panel">
                     <h4>'.$str->connection.'</h4>
                     <div class="branchedquiz-panel-actions">
@@ -117,8 +117,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
             $output .= $this->start_section($structure, $section);
 
             $output .= $this->questions_in_section($structure, $section, $contexts, $pagevars, $pageurl);
-            $output .= question_panel($structure, $str);
-            $output .= edge_panel($structure, $str);
+            $output .= $this->question_panel($structure, $str);
+            $output .= $this->edge_panel($structure, $str);
 
             $output .= $this->end_section();
         }

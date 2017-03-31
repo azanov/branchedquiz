@@ -29,6 +29,9 @@ function branchedquiz_add_instance($quiz) {
     return quiz_add_instance($quiz);
 }
 
+/**
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
 function branchedquiz_update_instance($quiz, $mform) {
     global $CFG, $DB;
     require_once($CFG->dirroot . '/mod/quiz/locallib.php');
@@ -95,6 +98,9 @@ function branchedquiz_supports($feature) {
     return quiz_supports($feature);
 }
 
+/**
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
 function branchedquiz_extend_settings_navigation($settings, $quiznode) {
     global $PAGE, $CFG;
 
@@ -165,6 +171,10 @@ function branchedquiz_extend_settings_navigation($settings, $quiznode) {
     question_extend_settings_navigation($quiznode, $PAGE->cm->context)->trim_if_empty();
 }
 
+/**
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ */
 function branchedquiz_grade_item_update($quiz, $grades = null) {
     global $CFG, $OUTPUT;
     require_once($CFG->dirroot . '/mod/quiz/locallib.php');
@@ -262,6 +272,9 @@ function branchedquiz_grade_item_update($quiz, $grades = null) {
     return grade_update('mod/branchedquiz', $quiz->course, 'mod', 'branchedquiz', $quiz->id, 0, $grades, $params);
 }
 
+/**
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 function branchedquiz_update_grades($quiz, $userid = 0, $nullifnone = true) {
     global $CFG, $DB;
     require_once($CFG->libdir . '/gradelib.php');
@@ -283,6 +296,9 @@ function branchedquiz_update_grades($quiz, $userid = 0, $nullifnone = true) {
     }
 }
 
+/**
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 function branchedquiz_attempt_summary_link_to_reports($quiz, $cm, $context, $returnzero = false,
         $currentgroup = 0) {
     global $CFG;
@@ -296,6 +312,9 @@ function branchedquiz_attempt_summary_link_to_reports($quiz, $cm, $context, $ret
     return html_writer::link($url, $summary);
 }
 
+/**
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ */
 function branchedquiz_get_edges($quiz) {
     global $DB;
     $sql = 'SELECT {branchedquiz_edge}.* FROM {branchedquiz_edge} ';

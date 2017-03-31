@@ -26,6 +26,10 @@ require_once($CFG->dirroot.'/mod/quiz/locallib.php');
 require_once($CFG->dirroot.'/mod/branchedquiz/lib.php');
 require_once($CFG->dirroot.'/mod/branchedquiz/attemptlib.php');
 
+/**
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 function branchedquiz_create_attempt(quiz $quizobj, $attemptnumber, $lastattempt, $timenow, $ispreview = false, $userid = null) {
     global $USER;
 
@@ -79,7 +83,7 @@ function branchedquiz_create_attempt(quiz $quizobj, $attemptnumber, $lastattempt
 }
 
 function branchedquiz_save_best_grade($quiz, $userid = null, $attempts = array()) {
-    global $DB, $OUTPUT, $USER;
+    global $DB, $USER;
 
     if (empty($userid)) {
         $userid = $USER->id;
@@ -206,6 +210,9 @@ function branchedquiz_prepare_and_start_new_attempt(branchedquiz $quizobj, $atte
     return $attempt;
 }
 
+/**
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
 function branchedquiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark = null) {
     global $DB;
     $slots = $DB->get_records('quiz_slots', array('quizid' => $quiz->id),
@@ -420,6 +427,7 @@ function slot_to_slotid($quizobj, $slot) {
  * @param $summax sum of max grades for all slots in current path
  * @return float|string the rescaled grade, or null/the lang string 'notyetgraded'
  *      if the $grade is null.
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 function branchedquiz_rescale_grade($rawgrade, $quiz, $summax, $format = true) {
 
@@ -480,6 +488,9 @@ function branchedquiz_set_grade($newgrade, $quiz) {
     return true;
 }
 
+/**
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
 function branchedquiz_add_edge($quiz, $startslot, $endslot) {
     global $DB;
     $edge = new stdClass();
@@ -497,6 +508,9 @@ function branchedquiz_remove_node($quiz, $slotid) {
     $DB->delete_records('branchedquiz_edge', array('next' => $slotid));
 }
 
+/**
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
 function branchedquiz_pos_node($quiz, $slot, $x, $y) {
     global $DB;
     $node = $DB->get_record('branchedquiz_node', array('quizid' => $quiz->id, 'slotid' => $slot));
@@ -520,6 +534,9 @@ define("OPERATOR_UI_ONLY_MIN", "min");
 define("OPERATOR_UI_ONLY_LESS", "less");
 define("OPERATOR_UI_ONLY_MORE", "more");
 
+/**
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ */
 function branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperbound) {
     global $DB;
     $edge = $DB->get_record('branchedquiz_edge', array('id' => $id));

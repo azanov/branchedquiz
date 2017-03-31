@@ -28,13 +28,16 @@ require_once($CFG->dirroot.'/mod/quiz/classes/question/bank/custom_view.php');
 class custom_view extends \mod_quiz\question\bank\custom_view {
 
     public function add_to_quiz_url($questionid) {
-        global $CFG;
         $params = $this->baseurl->params();
         $params['addquestion'] = $questionid;
         $params['sesskey'] = sesskey();
         return new \moodle_url('/mod/branchedquiz/edit.php', $params);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+     */
     protected function display_options_form($showquestiontext, $scriptpath = '/mod/mod_quiz/edit.php', $showtextoption = false) {
         // Override script path.
         parent::display_options_form($showquestiontext, '/mod/mod_branchedquiz/edit.php', $showtextoption);
