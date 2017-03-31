@@ -240,11 +240,11 @@ class branchedquiz_attempt extends quiz_attempt {
             $this->get_question_attempt($slot)->set_max_mark($originalmaxmark);
         }
 
-        $questionName = $questionattempt->get_question()->name;
+        $questionname = $questionattempt->get_question()->name;
 
         if ($subpage != 0) {
-            $collapse = '<a id="collapse-hide-'.$slot.'" href="#collapse-hide-'.$slot.'" class="branchedquiz-collapse-hide">'.$number.' '.$questionName.' &#9660;'.'</a>';
-            $collapse .= '<a id="collapse-show-'.$slot.'" href="#collapse-show-'.$slot.'" class="branchedquiz-collapse-show">'.$number.' '.$questionName.' &#9650;'.'</a>';
+            $collapse = '<a id="collapse-hide-'.$slot.'" href="#collapse-hide-'.$slot.'" class="branchedquiz-collapse-hide">'.$number.' '.$questionname.' &#9660;'.'</a>';
+            $collapse .= '<a id="collapse-show-'.$slot.'" href="#collapse-show-'.$slot.'" class="branchedquiz-collapse-show">'.$number.' '.$questionname.' &#9650;'.'</a>';
 
             $output = '<div class="branchedquiz-collapse">'.$collapse.'<div class="branchedquiz-collapse-details">'.$output.'</div></div>';
         }
