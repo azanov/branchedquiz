@@ -189,6 +189,8 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
      *
      * @param quiz_attempt $attemptobj
      * @param mod_quiz_display_options $displayoptions
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function summary_table($attemptobj, $displayoptions) {
         // Prepare the summary table header.
@@ -218,12 +220,8 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
             $slotid = page_to_slotid($attemptobj->get_quizobj(), $slot);
             $node = branchedquiz_get_node($slotid);
 
-            if ($node->nodetype == 0) {
-                $page++;
-                $subpage = 0;
-            } else {
-                $subpage++;
-            }
+            $page = $node->nodetype == 0 ? $page + 1 : $page;
+            $subpage = $node->nodetype == 0 ? 0 : $subpage + 1;
 
             // Add a section headings if we need one here.
             $heading = $attemptobj->get_heading_before_slot($slot);
