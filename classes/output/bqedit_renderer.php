@@ -80,7 +80,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
             $output .= ' class="branchedquiz-panel-action js-remove-question" data-quizid="';
             $output .= $structure->get_quizid().'">'.$str->deletequestion.'</a>';
             $output .= '<br />';
-            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-toggle-main-question" data-quizid="'.$structure->get_quizid().'"></a>';
+            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-toggle-main-question" data-quizid="'.
+                $structure->get_quizid().'"></a>';
             $output .= '</div>';
             $output .= '<div class="branchedquiz-panel-text js-question-panel-text"></div>';
             $output .= '</div>';

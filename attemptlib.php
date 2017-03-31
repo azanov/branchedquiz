@@ -246,12 +246,11 @@ class branchedquiz_attempt extends quiz_attempt {
 
         if ($subpage != 0) {
 
-            $output =
-                '<div data-page="'.$page.'" data-subpage="'.$subpage.'" class="branchedquiz-collapse">
-                    <a id="collapse-hide-'.$slot.'" href="#collapse-hide-'.$slot.'" class="branchedquiz-collapse-hide">'.$number.' '.$questionname.' &#9660;'.'</a>
-                    <a id="collapse-show-'.$slot.'" href="#collapse-show-'.$slot.'" class="branchedquiz-collapse-show">'.$number.' '.$questionname.' &#9650;'.'</a>
-                    <div class="branchedquiz-collapse-details">'.$output.'</div>
-                </div>';
+            $output = '<div data-page="'.$page.'" data-subpage="'.$subpage.'" class="branchedquiz-collapse">
+                           <a id="collapse-hide-'.$slot.'" href="#collapse-hide-'.$slot.'" class="branchedquiz-collapse-hide">'.$number.' '.$questionname.' &#9660;'.'</a>
+                           <a id="collapse-show-'.$slot.'" href="#collapse-show-'.$slot.'" class="branchedquiz-collapse-show">'.$number.' '.$questionname.' &#9650;'.'</a>
+                           <div class="branchedquiz-collapse-details">'.$output.'</div>
+                       </div>';
         }
 
         return $output;

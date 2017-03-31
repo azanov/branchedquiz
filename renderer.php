@@ -30,6 +30,7 @@ require_once($CFG->dirroot.'/mod/branchedquiz/lib.php');
  *
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class mod_branchedquiz_renderer extends mod_quiz_renderer {
 
