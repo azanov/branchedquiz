@@ -20,6 +20,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 if (!defined('AJAX_SCRIPT')) {
     define('AJAX_SCRIPT', true);
 }
@@ -61,7 +63,7 @@ $upperbound    = optional_param('upperbound', '', PARAM_FLOAT);
 $PAGE->set_url('/mod/branchedquiz/edit-rest.php',
         array('quizid' => $quizid, 'class' => $class));
 
-// require_sesskey();
+// Consider calling require_sesskey().
 $quiz = $DB->get_record('branchedquiz', array('id' => $quizid), '*', MUST_EXIST);
 $cm = get_coursemodule_from_instance('branchedquiz', $quiz->id, $quiz->course);
 $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);

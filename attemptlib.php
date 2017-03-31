@@ -204,7 +204,9 @@ class branchedquiz_attempt extends quiz_attempt {
         return $this->render_question_helper_ex($slot, $reviewing, $thispageurl, $renderer, null, $page, $subpage);
     }
 
-    protected function render_question_helper_ex($slot, $reviewing, $thispageurl, mod_quiz_renderer $renderer, $seq, $page, $subpage) {
+    protected function render_question_helper_ex($slot, $reviewing, $thispageurl,
+        mod_quiz_renderer $renderer, $seq, $page, $subpage) {
+
         $originalslot = $this->get_original_slot($slot);
         $displayoptions = $this->get_display_options_with_edit_link($reviewing, $slot, $thispageurl);
 

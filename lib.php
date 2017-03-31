@@ -298,9 +298,11 @@ function branchedquiz_attempt_summary_link_to_reports($quiz, $cm, $context, $ret
 
 function branchedquiz_get_edges($quiz) {
     global $DB;
-    $edges = $DB->get_records_sql(
-        'SELECT {branchedquiz_edge}.* FROM {branchedquiz_edge} INNER JOIN {quiz_slots} ON {quiz_slots}.id = {branchedquiz_edge}.slotid WHERE {quiz_slots}.quizid = ?',
-        array($quiz->id));
+    $sql = 'SELECT {branchedquiz_edge}.* FROM {branchedquiz_edge} ';
+    $sql .= 'INNER JOIN {quiz_slots} ON {quiz_slots}.id = {branchedquiz_edge}.slotid ';
+    $sql .= 'WHERE {quiz_slots}.quizid = ?';
+
+    $edges = $DB->get_records_sql($sql, array($quiz->id));
 
     foreach ($edges as $edge) {
         if ($edge->operator == OPERATOR_LESS_OR_EQUAL && $edge->upperbound == null) {

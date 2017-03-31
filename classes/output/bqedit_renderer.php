@@ -72,9 +72,13 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
             $output .= '<div class="branchedquiz-panel js-question-panel" >';
             $output .= '<h4></h4>';
             $output .= '<div class="branchedquiz-panel-actions">';
-            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-set-first-question" data-quizid="'.$structure->get_quizid().'">'.$str->setasstart.'</a>';
+            $output .= '<a href="javascript:;"';
+            $output .= ' class="branchedquiz-panel-action js-set-first-question" data-quizid="';
+            $output .= $structure->get_quizid().'">'.$str->setasstart.'</a>';
             $output .= '<br />';
-            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-remove-question" data-quizid="'.$structure->get_quizid().'">'.$str->deletequestion.'</a>';
+            $output .= '<a href="javascript:;"';
+            $output .= ' class="branchedquiz-panel-action js-remove-question" data-quizid="';
+            $output .= $structure->get_quizid().'">'.$str->deletequestion.'</a>';
             $output .= '<br />';
             $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-toggle-main-question" data-quizid="'.$structure->get_quizid().'"></a>';
             $output .= '</div>';
@@ -84,7 +88,9 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
             $output .= '<div class="branchedquiz-panel js-edge-panel" >';
             $output .= '<h4>Verbindung</h4>';
             $output .= '<div class="branchedquiz-panel-actions">';
-            $output .= '<a href="javascript:;" class="branchedquiz-panel-action js-remove-edge" data-quizid="'.$structure->get_quizid().'">Verbindung löschen</a>';
+            $output .= '<a href="javascript:;"';
+            $output .= ' class="branchedquiz-panel-action js-remove-edge" data-quizid="';
+            $output .= $structure->get_quizid().'">Verbindung löschen</a>';
             $output .= '</div>';
             $output .= '<form action="javascript:;" method="POST" class="js-edge-form branchedquiz-form">';
             $output .= '<input type="hidden" name="class" value="resource"/>';
@@ -148,7 +154,9 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         foreach ($structure->get_slots_in_section($section->id) as $slot) {
             $output .= $this->question_row_ex($structure, $slot, $contexts, $pagevars, $pageurl, $section);
         }
-        return html_writer::tag('div', $output, array('class' => 'section img-text js-question-canvas jtk-surface jtk-surface-nopan', 'id' => 'questionCanvas'));
+        return html_writer::tag('div', $output,
+            array('class' => 'section img-text js-question-canvas jtk-surface jtk-surface-nopan',
+                'id' => 'questionCanvas'));
     }
 
     public function question_row_ex(structure $structure, $slot, $contexts, $pagevars, $pageurl, $section) {
@@ -197,7 +205,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         }
 
         $output .= html_writer::start_tag('div', array('id' => 'section-'.$section->id,
-            'class' => 'section main clearfix'.$sectionstyle, 'role' => 'region', 'data-id' => $section->id, 'data-quiz-id' => $structure->get_quizid(),
+            'class' => 'section main clearfix'.$sectionstyle,
+            'role' => 'region', 'data-id' => $section->id, 'data-quiz-id' => $structure->get_quizid(),
             'aria-label' => $section->heading));
 
         $output .= html_writer::start_div('content');
@@ -205,7 +214,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         return $output;
     }
 
-    protected function initialise_editing_javascript(structure $structure, \question_edit_contexts $contexts, array $pagevars, \moodle_url $pageurl) {
+    protected function initialise_editing_javascript(structure $structure,
+        \question_edit_contexts $contexts, array $pagevars, \moodle_url $pageurl) {
 
         $config = new \stdClass();
         $config->resourceurl = '/mod/branchedquiz/edit_rest.php';
@@ -315,7 +325,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         $actions['questionbank'] = new \action_menu_link_secondary($pageurl, $icon, $str->questionbank, $attributes);
 
         // Add a random question.
-        $returnurl = new \moodle_url('/mod/branchedquiz/edit.php', array('cmid' => $structure->get_cmid(), 'data-addonpage' => $page));
+        $returnurl = new \moodle_url('/mod/branchedquiz/edit.php',
+            array('cmid' => $structure->get_cmid(), 'data-addonpage' => $page));
         $params = array('returnurl' => $returnurl, 'cmid' => $structure->get_cmid(), 'appendqnumstring' => 'addarandomquestion');
         $url = new \moodle_url('/mod/branchedquiz/addrandom.php', $params);
         $icon = new \pix_icon('t/add', $str->addarandomquestion, 'moodle', array('class' => 'iconsmall', 'title' => ''));

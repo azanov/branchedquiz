@@ -15,7 +15,6 @@ YUI.add('moodle-mod_branchedquiz-quizquestionbank', function (Y, NAME) {
     // You should have received a copy of the GNU General Public License
     // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
     /**
      * Add questions from question bank functionality for a popup in quiz editing page.
      *
@@ -25,11 +24,11 @@ YUI.add('moodle-mod_branchedquiz-quizquestionbank', function (Y, NAME) {
      */
 
     var CSS = {
-            QBANKLOADING:       'div.questionbankloading',
-            ADDQUESTIONLINKS:   'ul.menu a.questionbank',
-            ADDTOQUIZCONTAINER: 'td.addtoquizaction',
-            PREVIEWCONTAINER:   'td.previewaction',
-            SEARCHOPTIONS:      '#advancedsearch'
+        QBANKLOADING:       'div.questionbankloading',
+        ADDQUESTIONLINKS:   'ul.menu a.questionbank',
+        ADDTOQUIZCONTAINER: 'td.addtoquizaction',
+        PREVIEWCONTAINER:   'td.previewaction',
+        SEARCHOPTIONS:      '#advancedsearch'
     };
 
     var PARAMS = {
