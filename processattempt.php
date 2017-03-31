@@ -129,7 +129,7 @@ if (!is_null($points) && $next) {
 } else if (is_null($points) && $next) {
     $edge = $DB->get_record_sql('SELECT * FROM {branchedquiz_edge} WHERE slotid = ? AND lowerbound IS NULL AND upperbound IS NULL', array($slotid));
 
-    if (!is_null($edge)) {
+    if (!is_null($edge) && $edge != false) {
         $nextslotid = $edge->next;
         $branchednext = slotid_to_page($attemptobj->get_quizobj(), $nextslotid);
         if ($branchednext != -1) {
