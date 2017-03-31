@@ -95,6 +95,11 @@ class branchedquiz extends quiz {
 
 class branchedquiz_attempt extends quiz_attempt {
 
+    public function __construct($attempt, $quiz, $cm, $course, $loadquestions = true) {
+        parent::__construct($attempt, $quiz, $cm, $course, $loadquestions);
+        $this->quizobj = new branchedquiz($quiz, $cm, $course);
+    }
+
     public function get_quba() {
         return $this->quba;
     }
@@ -193,13 +198,5 @@ class branchedquiz_attempt extends quiz_attempt {
                 $this->questionpages[$slot] = $page;
             }
         }
-    }
-
-    protected function render_restart_preview_link($output) {
-        if (!$this->attemptobj->is_own_preview()) {
-            return '';
-        }
-        return $output->restart_preview_button(new moodle_url(
-                $this->attemptobj->start_attempt_url(), array('forcenew' => true)));
     }
 }
