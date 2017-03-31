@@ -30,8 +30,8 @@ require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
 require_once($CFG->dirroot . '/mod/branchedquiz/classes/output/bqedit_renderer.php');
 require_once($CFG->dirroot . '/question/editlib.php');
 
-list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
-        question_edit_setup('editq', '/mod/branchedquizquiz/edit.php', true);
+list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) = question_edit_setup(
+    'editq', '/mod/branchedquizquiz/edit.php', true);
 
 // Get the course object and related bits.
 $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
