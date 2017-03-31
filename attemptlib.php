@@ -199,4 +199,56 @@ class branchedquiz_attempt extends quiz_attempt {
             }
         }
     }
+
+    public function render_question_ex($slot, $reviewing, mod_quiz_renderer $renderer, $thispageurl = null, $page, $subpage) {
+        return $this->render_question_helper_ex($slot, $reviewing, $thispageurl, $renderer, null, $page, $subpage);
+    }
+
+    protected function render_question_helper_ex($slot, $reviewing, $thispageurl, mod_quiz_renderer $renderer, $seq, $page, $subpage) {
+        $originalslot = $this->get_original_slot($slot);
+        $displayoptions = $this->get_display_options_with_edit_link($reviewing, $slot, $thispageurl);
+
+        $number = $page.($subpage == 0 ? '' : '.'.$subpage);
+
+        $questionAttempt = $this->get_question_attempt($slot);
+
+        if ($slot != $originalslot) {
+            $originalmaxmark = $questionAttempt->get_max_mark();
+            $this->get_question_attempt($slot)->set_max_mark($this->get_question_attempt($originalslot)->get_max_mark());
+        }
+
+        if ($this->can_question_be_redone_now($slot)) {
+            $displayoptions->extrainfocontent = $renderer->redo_question_button(
+                    $slot, $displayoptions->readonly);
+        }
+
+        if ($displayoptions->history && $displayoptions->questionreviewlink) {
+            $links = $this->links_to_other_redos($slot, $displayoptions->questionreviewlink);
+            if ($links) {
+                $displayoptions->extrahistorycontent = html_writer::tag('p',
+                        get_string('redoesofthisquestion', 'quiz', $renderer->render($links)));
+            }
+        }
+
+        if ($seq === null) {
+            $output = $this->quba->render_question($slot, $displayoptions, $number);
+        } else {
+            $output = $this->quba->render_question_at_step($slot, $seq, $displayoptions, $number);
+        }
+
+        if ($slot != $originalslot) {
+            $this->get_question_attempt($slot)->set_max_mark($originalmaxmark);
+        }
+
+        $questionName = $questionAttempt->get_question()->name;
+
+        if ($subpage != 0) {
+            $collapse = '<a id="collapse-hide-'.$slot.'" href="#collapse-hide-'.$slot.'" class="branchedquiz-collapse-hide">'.$number.' '.$questionName.' &#9660;'.'</a>';
+            $collapse .= '<a id="collapse-show-'.$slot.'" href="#collapse-show-'.$slot.'" class="branchedquiz-collapse-show">'.$number.' '.$questionName.' &#9650;'.'</a>';
+
+            $output = '<div class="branchedquiz-collapse">'.$collapse.'<div class="branchedquiz-collapse-details">'.$output.'</div></div>';
+        }
+
+        return $output;
+    }
 }

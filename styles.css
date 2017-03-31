@@ -196,3 +196,29 @@ input[type="text"].branchedquiz-input {
 .path-mod-branchedquiz .feedback .incorrect {
     display: none;
 }
+
+
+.branchedquiz-collapse {
+    margin: 20px 0;
+    padding-left: 8.5em;
+}
+
+.branchedquiz-collapse-show,
+.branchedquiz-collapse-hide, {
+    display: block;
+}
+
+.branchedquiz-collapse-details {
+    margin-top: 20px;
+}
+
+.branchedquiz-collapse-details,
+.branchedquiz-collapse-show,
+.branchedquiz-collapse-hide:target {
+    display: none;
+}
+.branchedquiz-collapse-hide:target + .branchedquiz-collapse-show,
+.branchedquiz-collapse-hide:target ~ .branchedquiz-collapse-details {
+    display: block;
+}
+

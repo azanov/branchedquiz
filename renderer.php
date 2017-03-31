@@ -269,4 +269,28 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         return $output;
     }
 
+    public function questions(quiz_attempt $attemptobj, $reviewing, $slots, $page, $showall,
+                              mod_quiz_display_options $displayoptions) {
+        $output = '';
+        $page = 0;
+        $subpage = 0;
+
+        foreach ($slots as $slot) {
+
+            $slotid = page_to_slotid($attemptobj->get_quizobj(), $slot);
+            $node = branchedquiz_get_node($slotid);
+
+            if ($node->nodetype == 0) {
+                $page++;
+                $subpage = 0;
+            } else {
+                $subpage++;
+            }
+
+            $output .= $attemptobj->render_question_ex($slot, $reviewing, $this,
+                    $attemptobj->review_url($slot, $page, $showall), $page, $subpage);
+        }
+        return $output;
+    }
+
 }
