@@ -243,10 +243,13 @@ class branchedquiz_attempt extends quiz_attempt {
         $questionname = $questionattempt->get_question()->name;
 
         if ($subpage != 0) {
-            $collapse = '<a id="collapse-hide-'.$slot.'" href="#collapse-hide-'.$slot.'" class="branchedquiz-collapse-hide">'.$number.' '.$questionname.' &#9660;'.'</a>';
-            $collapse .= '<a id="collapse-show-'.$slot.'" href="#collapse-show-'.$slot.'" class="branchedquiz-collapse-show">'.$number.' '.$questionname.' &#9650;'.'</a>';
+            $collapse = '<a id="collapse-hide-'.$slot.'" href="#collapse-hide-'.$slot.'" class="branchedquiz-collapse-hide">';
+            $collapse .= $number.' '.$questionname.' &#9660;'.'</a>';
+            $collapse .= '<a id="collapse-show-'.$slot.'" href="#collapse-show-'.$slot.'" class="branchedquiz-collapse-show">';
+            $collapse .= $number.' '.$questionname.' &#9650;'.'</a>';
 
-            $output = '<div class="branchedquiz-collapse">'.$collapse.'<div class="branchedquiz-collapse-details">'.$output.'</div></div>';
+            $output = '<div class="branchedquiz-collapse">'.$collapse.'<div class="branchedquiz-collapse-details">';
+            $output .= $output.'</div></div>';
         }
 
         return $output;

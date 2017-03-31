@@ -189,20 +189,12 @@ $PAGE->requires->js('/question/qengine.js');
 
 // Questions wrapper start.
 echo html_writer::start_tag('div', array('class' => 'mod-quiz-edit-content mod-branchedquiz-edit-content'));
-echo '<script>';
-echo '    var __replaceState = window.history.replaceState;';
-echo '    window.history.replaceState = function(state, title, url) {';
-echo '        if (url.indexOf("/quiz/") == -1) __replaceState(state, title, url);';
-echo '    }';
-echo '</script>';
 
 echo $output->edit_page($quizobj, $structure, $contexts, $thispageurl, $pagevars);
-
 echo '<script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>';
 
 $edges = branchedquiz_get_edges($quiz);
 echo '<script>';
-echo 'var branchedquizRestPath="'.$CFG->wwwroot.'/mod/branchedquiz/edit_rest.php";';
 echo 'var branchedquiz_edges = ';
 echo json_encode($edges);
 echo ';';

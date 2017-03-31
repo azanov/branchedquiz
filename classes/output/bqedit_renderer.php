@@ -123,8 +123,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
             $popups = '';
 
             $popups .= $this->question_bank_loading();
-            $this->page->requires->yui_module('moodle-mod_quiz-quizquestionbank',
-                    'M.mod_quiz.quizquestionbank.init',
+            $this->page->requires->yui_module('moodle-mod_branchedquiz-quizquestionbank',
+                    'M.mod_branchedquiz.quizquestionbank.init',
                     array('class' => 'questionbank', 'cmid' => $structure->get_cmid()));
 
             $popups .= $this->random_question_form($pageurl, $contexts, $pagevars);
@@ -217,14 +217,6 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
         unset($config->pagehtml);
         unset($config->addpageiconhtml);
-
-        $this->page->requires->yui_module('moodle-mod_branchedquiz-edit', 'M.mod_branchedquiz.edit.init',
-                array(array(
-                        'courseid' => $structure,
-                        'quizid' => $structure->get_quizid(),
-                        'ajaxurl' => $config->resourceurl,
-                        'config' => $config,
-                )), null, true);
 
         $this->page->requires->strings_for_js(array(
                 'clicktohideshow',
