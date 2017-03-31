@@ -167,11 +167,25 @@ YUI.add('moodle-mod_branchedquiz-quizquestionbank', function (Y, NAME) {
 
             // Question preview. Needs to open in a pop-up.
             if (e.currentTarget.ancestor(CSS.PREVIEWCONTAINER)) {
+                var options = [
+                    'height=600',
+                    'width=800',
+                    'top=0',
+                    'left=0',
+                    'menubar=0',
+                    'location=0',
+                    'scrollbars',
+                    'resizable',
+                    'toolbar',
+                    'status',
+                    'directories=0',
+                    'fullscreen=0',
+                    'dependent'
+                ];
                 window.openpopup(e, {
                     url: e.currentTarget.get('href'),
                     name: 'questionpreview',
-                    options: 'height=600,width=800,top=0,left=0,menubar=0,location=0,scrollbars,' +
-                             'resizable,toolbar,status,directories=0,fullscreen=0,dependent'
+                    options: options
                 });
                 return;
             }
