@@ -300,7 +300,8 @@ jsPlumb.ready(function() {
                 if (result.error) {
                     alert(result.error);
                 } else {
-                    $currentItem.attr('data-slot', 1).siblings().attr('data-slot', '0')
+                    selectedQuestion.slot = 1;
+                    $currentItem.data('slot', 1).siblings().data('slot', 0)
                 }
                 $self.attr('disabled', null);
             },

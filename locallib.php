@@ -524,6 +524,7 @@ function branchedquiz_set_nodetype($quiz, $slot, $nodetype) {
     $node = $DB->get_record('branchedquiz_node', array('quizid' => $quiz->id, 'slotid' => $slot));
     $node->nodetype = $nodetype;
     $DB->update_record('branchedquiz_node', $node);
+    return $nodetype;
 }
 
 define("OPERATOR_EQUAL", "eq");
