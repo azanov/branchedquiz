@@ -246,7 +246,9 @@ class branchedquiz_attempt extends quiz_attempt {
             }
         }
 
-        if (!$reviewing) $number = '';
+        if (!$reviewing) {
+            $number = '';
+        }
 
         if ($seq === null) {
             $output = $this->quba->render_question($slot, $displayoptions, $number);

@@ -228,8 +228,6 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
             return $keys[$aslotdid] > $keys[$bslotdid] ? 1 : -1;
         });
 
-        // print_r($branchedattempt);
-
         foreach ($slots as $slot) {
 
             $slotid = page_to_slotid($attemptobj->get_quizobj(), $slot);

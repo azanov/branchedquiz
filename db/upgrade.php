@@ -48,9 +48,6 @@ function xmldb_branchedquiz_upgrade($oldversion) {
 
         // Branchedquiz savepoint reached.
         upgrade_mod_savepoint(true, 2017040308, 'branchedquiz');
-
-        quiz_delete_previews($quiz);
-
     }
 
     return true;
