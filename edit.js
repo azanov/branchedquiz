@@ -248,6 +248,7 @@ jsPlumb.ready(function() {
             title: $self.data('title'),
             sectionId: $self.closest('.section').data('id'),
             slot: $self.data('slot'),
+            maxmark: $self.data('maxmark'),
             nodetype: $self.data('nodetype')
         }
 
@@ -261,6 +262,12 @@ jsPlumb.ready(function() {
                 .end()
                 .find('.js-toggle-main-question')
                 .text(selectedQuestion.nodetype == 0 ? M.str.branchedquiz.setassubquestion : M.str.branchedquiz.setasmainquestion)
+                .end()
+                .find('.js-slot-id')
+                .val(selectedQuestion.slotId)
+                .end()
+                .find('.js-maxmark')
+                .val(selectedQuestion.maxmark)
                 .end()
                 .find('.js-question-panel-text')
                 .html(selectedQuestion.text)
@@ -301,7 +308,12 @@ jsPlumb.ready(function() {
                     alert(result.error);
                 } else {
                     selectedQuestion.slot = 1;
-                    $currentItem.data('slot', 1).siblings().data('slot', 0)
+                    $currentItem
+                        .data('slot', 1)
+                        .addClass('activity-first')
+                        .siblings()
+                        .removeClass('activity-first')
+                        .data('slot', 0)
                 }
                 $self.attr('disabled', null);
             },
@@ -333,7 +345,8 @@ jsPlumb.ready(function() {
                 if (result.error) {
                     alert(result.error);
                 } else {
-                    $currentItem.attr('data-nodetype', result.nodetype);
+                    $currentItem.data('nodetype', result.nodetype);
+                    $currentItem[result.nodetype == 0 ? 'addClass' : 'removeClass']('activity-main');
                     selectedQuestion.nodetype = result.nodetype;
                     $self.text(result.nodetype == 1 ? M.str.branchedquiz.setasmainquestion : M.str.branchedquiz.setassubquestion);
                 }
@@ -451,6 +464,34 @@ jsPlumb.ready(function() {
                     selectedConnection.instance.getOverlay('label').setLabel(getEdgeLabel(selectedConnection));
                     selectedConnection = null;
                     $('.js-edge-panel').hide();
+                }
+                $self.attr('disabled', null).find('input, select, button').attr('disabled', null);
+            },
+            error: function() {
+                alert(M.str.branchedquiz.saveedgefailed);
+                $self.attr('disabled', null).find('input, select, button').attr('disabled', null);
+            }
+        });
+        return false;
+    });
+
+    $('.js-node-form').on('submit', function(e) {
+        e.preventDefault();
+        var $self = $(this);
+        var data = $self.serialize();
+        var $currentItem = $('#slot-' + selectedQuestion.slotId);
+        $self.attr('disabled', true)
+            .find('input, select, button').attr('disabled', true);
+
+        $.ajax({
+            url: M.cfg.wwwroot + '/mod/branchedquiz/edit_rest.php?' + data,
+            type: 'POST',
+            success: function(result) {
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    selectedQuestion.maxmark = result.maxmark;
+                    $currentItem.data('maxmark', result.maxmark);
                 }
                 $self.attr('disabled', null).find('input, select, button').attr('disabled', null);
             },

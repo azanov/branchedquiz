@@ -148,8 +148,8 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
 
         // Print all the questions.
         foreach ($slots as $slot) {
-            $output .= $attemptobj->render_question($slot, false, $this,
-                $attemptobj->attempt_url($slot, $page), $this);
+            $output .= $attemptobj->render_question_ex($slot, false, $this,
+                $attemptobj->attempt_url($slot, $page), 0, 0);
         }
 
         $navmethod = $attemptobj->get_quiz()->navmethod;
@@ -216,6 +216,20 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         $page = 0;
         $subpage = 0;
 
+        global $DB;
+        $branchedattempt = $DB->get_record('branchedquiz_attempts', array('attemptid' => $attemptobj->get_attemptid()));
+        $sortedslotids = explode(',', $branchedattempt->layout);
+
+        $keys = array_flip($sortedslotids);
+
+        usort($slots, function ($a, $b) use ($keys, $attemptobj) {
+            $aslotdid = page_to_slotid($attemptobj->get_quizobj(), $a);
+            $bslotdid = page_to_slotid($attemptobj->get_quizobj(), $b);
+            return $keys[$aslotdid] > $keys[$bslotdid] ? 1 : -1;
+        });
+
+        // print_r($branchedattempt);
+
         foreach ($slots as $slot) {
 
             $slotid = page_to_slotid($attemptobj->get_quizobj(), $slot);
@@ -273,6 +287,18 @@ class mod_branchedquiz_renderer extends mod_quiz_renderer {
         $output = '';
         $page = 0;
         $subpage = 0;
+
+        global $DB;
+        $branchedattempt = $DB->get_record('branchedquiz_attempts', array('attemptid' => $attemptobj->get_attemptid()));
+        $sortedslotids = explode(',', $branchedattempt->layout);
+
+        $keys = array_flip($sortedslotids);
+
+        usort($slots, function ($a, $b) use ($keys, $attemptobj) {
+            $aslotdid = page_to_slotid($attemptobj->get_quizobj(), $a);
+            $bslotdid = page_to_slotid($attemptobj->get_quizobj(), $b);
+            return $keys[$aslotdid] > $keys[$bslotdid] ? 1 : -1;
+        });
 
         foreach ($slots as $slot) {
 

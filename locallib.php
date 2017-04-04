@@ -201,11 +201,18 @@ function branchedquiz_prepare_and_start_new_attempt(branchedquiz $quizobj, $atte
         $attempt = quiz_start_attempt_built_on_last($quba, $attempt, $lastattempt);
     }
 
+    // $attempt->layout = '1';
+
     $transaction = $DB->start_delegated_transaction();
 
     $attempt = quiz_attempt_save_started($quizobj, $quba, $attempt);
 
     $transaction->allow_commit();
+
+    $branchedattempt = new stdClass();
+    $branchedattempt->attemptid = $attempt->id;
+    $branchedattempt->layout = slot_to_slotid($quizobj, 1);
+    $DB->insert_record('branchedquiz_attempts', $branchedattempt);
 
     return $attempt;
 }
@@ -605,4 +612,13 @@ function branchedquiz_update_edge($quiz, $id, $operator, $lowerbound, $upperboun
 function branchedquiz_remove_edge($quiz, $id) {
     global $DB;
     $DB->delete_records('branchedquiz_edge', array('id' => $id));
+}
+
+function branchedquiz_append_layout_page($attemptid, $slotid) {
+    global $DB;
+    $attempt = $DB->get_record('branchedquiz_attempts', array('attemptid' => $attemptid));
+
+    $attempt->layout = (($attempt->layout).','.$slotid);
+
+    $DB->update_record('branchedquiz_attempts', $attempt);
 }

@@ -145,6 +145,9 @@ if (!is_null($points) && $next) {
 // Set $nexturl now.
 if ($next) {
     $page = $branchednext;
+    if ($page != -1) {
+        branchedquiz_append_layout_page($attemptid, $nextslotid);
+    }
 } else if ($previous && $thispage > 0) {
     $page = $thispage - 1;
 } else {

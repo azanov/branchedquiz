@@ -12,13 +12,13 @@
         <TABLE NAME="branchedquiz_edge" COMMENT="Stores one edge of the generated graph">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
+                <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
                 <FIELD NAME="lowerbound" TYPE="number" NOTNULL="false" LENGTH="10" SEQUENCE="false" DECIMALS="5" />
-                <FIELD NAME="operator" TYPE="text" NOTNULL="true" LENGTH="8"/>
+                <FIELD NAME="operator" TYPE="text" NOTNULL="true" LENGTH="8" SEQUENCE="false"/>
                 <FIELD NAME="upperbound" TYPE="number" NOTNULL="false" LENGTH="10" SEQUENCE="false" DECIMALS="5" />
-                <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="-1" />
-                <FIELD NAME="prev" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" />
-                <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="false" LENGTH="2048" />
+                <FIELD NAME="next" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="-1" SEQUENCE="false"/>
+                <FIELD NAME="prev" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0" SEQUENCE="false" />
+                <FIELD NAME="feedbacktext" TYPE="text" NOTNULL="false" LENGTH="2048" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
@@ -33,11 +33,11 @@
         <TABLE NAME="branchedquiz_node" COMMENT="Stores the node that a edge referes to">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" />
-                <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" />
-                <FIELD NAME="x" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="30" />
-                <FIELD NAME="y" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="30" />
-                <FIELD NAME="nodetype" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" />
+                <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="x" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="30" SEQUENCE="false"/>
+                <FIELD NAME="y" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="30" SEQUENCE="false"/>
+                <FIELD NAME="nodetype" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
@@ -47,6 +47,17 @@
             <INDEXES>
                 <INDEX NAME="slotid" UNIQUE="true" FIELDS="slotid" />
             </INDEXES>
+        </TABLE>
+        <TABLE NAME="branchedquiz_attempts">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+                <FIELD NAME="attemptid" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="layout" TYPE="text" NOTNULL="false" LENGTH="1024" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="attemptid" TYPE="foreign" FIELDS="quizid" REFTABLE="quiz_attempts" REFFIELDS="id" />
+            </KEYS>
         </TABLE>
     </TABLES>
 </XMLDB>

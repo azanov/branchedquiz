@@ -43,6 +43,18 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                         <br />
                         <a href="javascript:;" class="branchedquiz-panel-action js-toggle-main-question" data-quizid="'.
                         $structure->get_quizid().'"></a>
+                        <hr />
+                        <form action="javascript:;" method="POST" class="js-node-form branchedquiz-form">
+                            <input type="hidden" name="class" value="resource"/>
+                            <input type="hidden" name="field" value="updatemaxmark"/>
+                            <input type="hidden" name="sesskey" value="'.sesskey().'"/>
+                            <input type="hidden" name="quizid" value="'.$structure->get_quizid().'" />
+                            <input type="hidden" name="id" class="js-slot-id" />
+                            <label for="maxmark">'.get_string('maxmark', 'quiz').'</label>
+                            <input id="maxmark" type="text" name="maxmark" class="js-maxmark branchedquiz-input"/>
+                            <button type="submit" class="branchedquiz-save">'.$str->save.'</button>
+                        </form>
+                        <hr />
                     </div>
                     <div class="branchedquiz-panel-text js-question-panel-text"></div>
                 </div>';
@@ -74,7 +86,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                         </select>
                         <input type="text" name="lowerbound" class="js-lowerbound branchedquiz-input"/>
                         <input type="text" name="upperbound" class="js-upperbound branchedquiz-input"/>
-                        <button type="submit">'.$str->save.'</button>
+                        <button type="submit" class="branchedquiz-save">'.$str->save.'</button>
                     </form>
                 </div>';
     }
@@ -172,10 +184,14 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
         // Page split/join icon.
         $joinhtml = '';
 
+        $node = branchedquiz_get_node($structure->get_slot_id_for_slot($slot));
+
         // Question HTML.
         $questionhtml = $this->question($structure, $slot, $pageurl);
         $qtype = $structure->get_question_type_for_slot($slot);
-        $questionclasses = 'activity js-branchedquiz-question ' . $qtype . ' qtype_' . $qtype . ' slot';
+        $questionclasses = 'activity js-branchedquiz-question ' . $qtype . ' qtype_' . $qtype . ' slot'.
+            ($node->nodetype == 0 ? ' activity-main' : '').
+            ($slot == 1 ? ' activity-first' : '');
 
         $questionhtml = '<div class="ep"></div>'.$questionhtml;
 
@@ -183,7 +199,7 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
         $questionname = shorten_text(format_string($question->name), 100);
 
-        $node = branchedquiz_get_node($structure->get_slot_id_for_slot($slot));
+
 
         $output .= html_writer::tag('div', $questionhtml . $joinhtml,
                 array('class' => $questionclasses, 'id' => 'slot-' . $structure->get_slot_id_for_slot($slot),
@@ -196,7 +212,8 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
                         'data-nodetype' => $node->nodetype,
                         'data-x' => $node->x,
                         'data-y' => $node->y,
-                        'data-section-id' => $section->id
+                        'data-section-id' => $section->id,
+                        'data-maxmark' => $structure->formatted_question_grade($slot)
                         ));
 
         return $output;
