@@ -45,4 +45,5 @@ function xmldb_branchedquiz_install_recovery() {
     $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz');
     $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz_edge');
     $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz_node');
+    $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz_attempts');
 }
