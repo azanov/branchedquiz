@@ -48,11 +48,11 @@
                 <INDEX NAME="slotid" UNIQUE="true" FIELDS="slotid" />
             </INDEXES>
         </TABLE>
-        <TABLE NAME="branchedquiz_attempts">
+        <TABLE NAME="branchedquiz_attempts" COMMENT="Stores the attempts">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="attemptid" TYPE="int" LENGTH="10" NOTNULL="true" />
-                <FIELD NAME="layout" TYPE="text" NOTNULL="false" LENGTH="1024" />
+                <FIELD NAME="attemptid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="layout" TYPE="text" NOTNULL="false" LENGTH="1024" SEQUENCE="false" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />

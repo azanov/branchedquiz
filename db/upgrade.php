@@ -22,6 +22,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+
+
 function xmldb_branchedquiz_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
@@ -49,6 +51,8 @@ function xmldb_branchedquiz_upgrade($oldversion) {
 
         // Branchedquiz savepoint reached.
         upgrade_mod_savepoint(true, 2017040308, 'branchedquiz');
+
+        quiz_delete_previews($quiz);
 
     }
 
