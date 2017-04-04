@@ -20,12 +20,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// require_once(dirname(__FILE__) . '/../../config.php');
-
 if (!defined('AJAX_SCRIPT')) {
     define('AJAX_SCRIPT', true);
 }
 
+require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 require_once($CFG->dirroot . '/mod/branchedquiz/lib.php');
 require_once($CFG->dirroot . '/mod/branchedquiz/locallib.php');
