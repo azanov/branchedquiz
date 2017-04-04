@@ -48,7 +48,7 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
-                <KEY NAME="attemptid" TYPE="foreign" FIELDS="quizid" REFTABLE="quiz_attempts" REFFIELDS="id" />
+                <KEY NAME="attemptid" TYPE="foreign" FIELDS="attemptid" REFTABLE="quiz_attempts" REFFIELDS="id" />
             </KEYS>
         </TABLE>
     </TABLES>
