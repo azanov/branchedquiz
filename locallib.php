@@ -201,8 +201,6 @@ function branchedquiz_prepare_and_start_new_attempt(branchedquiz $quizobj, $atte
         $attempt = quiz_start_attempt_built_on_last($quba, $attempt, $lastattempt);
     }
 
-    // $attempt->layout = '1';
-
     $transaction = $DB->start_delegated_transaction();
 
     $attempt = quiz_attempt_save_started($quizobj, $quba, $attempt);

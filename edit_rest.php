@@ -61,7 +61,7 @@ $upperbound    = optional_param('upperbound', '', PARAM_FLOAT);
 $PAGE->set_url('/mod/branchedquiz/edit-rest.php',
         array('quizid' => $quizid, 'class' => $class));
 
-// require_sesskey();
+// TODO: Consider using require_sesskey().
 $quiz = $DB->get_record('branchedquiz', array('id' => $quizid), '*', MUST_EXIST);
 $cm = get_coursemodule_from_instance('branchedquiz', $quiz->id, $quiz->course);
 $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
@@ -143,7 +143,8 @@ switch($requestmethod) {
                             quiz_update_all_final_grades($quiz);
                             quiz_update_grades($quiz, 0, true);
                         }
-                        echo json_encode(array('maxmark' => $maxmark, 'instancemaxmark' => quiz_format_question_grade($quiz, $maxmark),
+                        echo json_encode(array('maxmark' => $maxmark,
+                            'instancemaxmark' => quiz_format_question_grade($quiz, $maxmark),
                                 'newsummarks' => quiz_format_grade($quiz, $quiz->sumgrades)));
                         break;
                 }

@@ -22,15 +22,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-
-
 function xmldb_branchedquiz_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2017040308) {
 
-    	$table = new xmldb_table('branchedquiz_attempts');
+        $table = new xmldb_table('branchedquiz_attempts');
 
         // Adding fields to table branchedquiz_node.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -42,7 +40,6 @@ function xmldb_branchedquiz_upgrade($oldversion) {
         $table->add_key('attemptid', XMLDB_KEY_FOREIGN, array('attemptid'), 'quiz_attempts', array('id'));
 
         // Adding indexes to table branchedquiz_node.
-        // $table->add_index('attemptid', XMLDB_INDEX_UNIQUE, array('attemptid'));
 
         // Conditionally launch create table for branchedquiz_node.
         if (!$dbman->table_exists($table)) {

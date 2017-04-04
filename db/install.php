@@ -30,7 +30,6 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_branchedquiz_install() {
     global $DB;
     $pfx = $DB->get_prefix();
-    $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz');
     $DB->execute('CREATE OR REPLACE VIEW '.$pfx.'branchedquiz AS SELECT * FROM '.$pfx.'quiz');
 }
 
@@ -42,7 +41,6 @@ function xmldb_branchedquiz_install() {
 function xmldb_branchedquiz_install_recovery() {
     global $DB;
     $pfx = $DB->get_prefix();
-    $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz');
     $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz_edge');
     $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz_node');
     $DB->execute('DROP TABLE IF EXISTS '.$pfx.'branchedquiz_attempts');

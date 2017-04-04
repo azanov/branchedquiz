@@ -199,8 +199,6 @@ class bqedit_renderer extends \mod_quiz\output\edit_renderer {
 
         $questionname = shorten_text(format_string($question->name), 100);
 
-
-
         $output .= html_writer::tag('div', $questionhtml . $joinhtml,
                 array('class' => $questionclasses, 'id' => 'slot-' . $structure->get_slot_id_for_slot($slot),
                         'data-canfinish' => $structure->can_finish_during_the_attempt($slot),
